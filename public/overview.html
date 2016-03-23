@@ -1,0 +1,201 @@
+<div ng-show="nodes">
+  <div ng-include src="'stats.html'"></div>
+  <div class="row">
+    <div class="col-lg-5">
+      <div class="row">
+        <div class="col-lg-6 col-sm-6 form-element">
+          <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm form-inverse" placeholder="filter indices by name or aliases">
+        </div>
+        <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
+          <input type="checkbox" ng-model="paginator.filter.closed">
+          <i class="fa fa-fw fa-folder-o"> </i> closed ({{closed_indices}})
+        </div>
+        <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
+          <input type="checkbox" ng-model="paginator.filter.special">
+          <i class="fa fa-fw fa-asterisk"> </i> special ({{special_indices}})
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="row">
+        <div class="col-lg-6 col-sm-6 form-element">
+          <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm form-inverse"
+                 placeholder="filter nodes by name">
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2">
+      <ng-pagination page="page" paginator="paginator" label="'selected indices'"></ng-pagination>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-condensed table-rounded table-inverse shard-map">
+    <thead>
+      <tr>
+        <th>
+          <div class="row">
+            <div class="col-lg-3 col-md-6">
+              <i class="fa fa-lock fa-2x table-control red normal-action" ng-click="enableShardAllocation()" ng-hide="shardAllocation"></i>
+              <i class="fa fa-unlock fa-2x table-control normal-action" ng-click="disableShardAllocation()" ng-show="shardAllocation"></i>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView" ng-click="expandedView = true"></i>
+              <i class="fa fa-compress fa-2x normal-action table-control" ng-show="expandedView" ng-click="expandedView = false"></i>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <i class="fa fa-sort-alpha-asc fa-2x normal-action table-control" title="sort ascending" ng-show="indices_filter.asc" ng-click="indices_filter.asc = false"></i>
+              <i class="fa fa-sort-alpha-desc fa-2x normal-action table-control" title="sort descending" ng-hide="indices_filter.asc" ng-click="indices_filter.asc = true"></i>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="dropdown">
+              <span class="title normal-action" type="button" id="dropcluster" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-caret-down fa-2x table-control"></i>
+              </span>
+                <div class="dropdown-menu" aria-labelledby="dropcluster">
+                  <span class="dropdown-item" type="button" ng-click="closeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-folder"> </i> close selected
+                  </span>
+                  <span class="dropdown-item" type="button" ng-click="openIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-folder-open"> </i> open selected
+                  </span>
+                  <span class="dropdown-item" type="button" ng-click="optimizeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-wrench"> </i> optimize selected
+                  </span>
+                  <span class="dropdown-item" type="button" ng-click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-refresh"> </i> refresh selected
+                  </span>
+                  <span class="dropdown-item" type="button" ng-click="clearIndicesCache()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-circle-o"> </i> clear selected caches
+                  </span>
+                  <div class="dropdown-divider">
+                  </div>
+                  <span class="dropdown-item" type="button" ng-click="deleteIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-trash red"> </i> delete selected
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </th>
+        <th ng-repeat="index in page.elements track by $index">
+          <div ng-show="index">
+            <div class="dropdown">
+              <span class="title normal-action" type="button" id="drop_{{index.name}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-caret-down pull-right"></i>{{index.name}}
+              </span>
+              <div class="dropdown-menu" aria-labelledby="drop_{{index.name}}">
+                <span class="dropdown-item" type="button" ng-click="getIndexSettings(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-info-circle"> </i> show settings
+                </span>
+                <span class="dropdown-item" type="button" ng-click="getIndexMapping(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-code"> </i> show mappings
+                </span>
+                <span class="dropdown-item" type="button" ng-show="index.closed" ng-click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-folder-open"> </i> open index
+                </span>
+                <span class="dropdown-item" type="button" ng-hide="index.closed" ng-click="closeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-folder"> </i> close index
+                </span>
+                <span class="dropdown-item" type="button" ng-click="optimizeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-wrench"> </i> optimize index
+                </span>
+                <span class="dropdown-item" type="button" ng-click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-refresh"> </i> refresh index
+                </span>
+                <span class="dropdown-item" type="button" ng-click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <i class="fa fa-fw fa-circle-o"> </i> clear cache
+                </span>
+                <!-- span class="dropdown-item" type="button">
+                  <i class="fa fa-fw fa-cog"> </i> edit settings
+                </span TODO: implement -->
+                <div class="dropdown-divider"></div>
+                  <span class="dropdown-item" type="button" ng-click="deleteIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <i class="fa fa-fw fa-trash red"> </i> delete index
+                  </span>
+                </div>
+              </div>
+            <div class="subtitle">
+          <span>
+            <i class="fa fa-tag" ng-show="index.aliases[0]"></i> {{index.aliases[0]}}&nbsp;
+          </span>
+            </div>
+            <div class="detail">
+        <span ng-hide="index.closed">
+          <span>shards: {{index.num_shards}} * {{index.num_replicas}} |</span>
+          <span>docs: {{index.doc_count | number}} |</span>
+          <span>size: {{index.size_in_bytes | bytes}}</span>
+        </span>
+              &nbsp;
+            </div>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-show="unassigned_shards > 0">
+        <td>
+          <div class="subtitle">
+            <i class="fa fa-warning yellow"> </i> {{unassigned_shards}} unassigned shards
+          </div>
+          <div class="detail">
+            <span class="normal-action" ng-show="indices_filter.healthy" ng-click="indices_filter.healthy = false"><i>show only unhealthy indices</i></span>
+            <span class="normal-action" ng-hide="indices_filter.healthy" ng-click="indices_filter.healthy = true"><i>show all indices</i></span>
+          </div>
+        </td>
+        <td ng-repeat="index in page.elements track by $index">
+        <span ng-repeat="shard in index.shards.unassigned track by $index">
+          <ng-shard shard=shard></ng-shard>
+        </span>
+        </td>
+      </tr>
+      <tr ng-repeat="node in nodes track by $index">
+        <td>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="node-badges title">
+                <div ng-show="node.master">
+                  <i ng-show="node.current_master" class="fa fa-fw fa-star" title="current master"></i>
+                  <i ng-show="!node.current_master" class="fa fa-fw fa-star-o" title="master eligible"></i>
+                </div>
+                <div ng-show="node.data">
+                  <i class="fa fa-fw fa-hdd-o" title="data node"></i>
+                </div>
+              </div>
+              <div class="node-info">
+                <div class="title">
+                  <span class="normal-action" type="button" ng-click="nodeStats(node.id)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    {{node.name}}
+                  </span>
+                </div>
+                <div class="detail">{{node.host}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row row-condensed">
+            <div class="col-lg-3 col-condensed">
+              <ng-progress value="node.heap.used_percent" max="100" text="'heap'"/>
+            </div>
+            <div class="col-lg-3 col-condensed">
+              <ng-progress value="node.disk.used_percent" max="100" text="'disk'"/>
+            </div>
+            <div class="col-lg-3 col-condensed">
+              <ng-progress value="node.cpu_percent" max="100" text="'cpu'"/>
+            </div>
+            <div class="col-lg-3 col-condensed">
+              <ng-progress value="node.load_average" max="node.available_processors" text="'load'"/>
+            </div>
+          </div>
+          <div ng-show="expandedView" class="node-labels">
+            <span class="label label-details">JVM: {{node.jvm_version}}</span>
+            <span class="label label-details">ES: {{node.es_version}}</span>
+          </div>
+        </td>
+        <td ng-repeat="index in page.elements track by $index">
+        <span ng-repeat="shard in index.shards[node.id] | orderBy:'shard' track by $index">
+          <ng-shard shard=shard></ng-shard>
+        </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,28 @@
+<nav class="navbar navbar-dark navbar-fixed-top bg-inverse navbar-{{status}}" ng-controller="NavbarController">
+  <a class="navbar-brand" href="#"><i class="fa fa-cloud"></i> CEREBRO</a>
+
+  <div id="navbar">
+    <nav class="nav navbar-nav pull-xs-left" ng-show="host">
+      <a class="nav-item nav-link" href="#overview">overview</a>
+    </nav>
+    <nav class="nav navbar-nav pull-xs-right">
+      <span class="nav-item nav-element">
+        <span class="title">
+          <a href="#connect" class="nav-item nav-link pull-right">
+            <i class="fa fa-plug pull-right"></i>
+          </a>
+        </span>
+      </span>
+    </nav>
+    <nav class="nav navbar-nav pull-xs-right">
+      <span class="nav-item nav-element">
+        <span ng-hide="host">
+          <i>Not connected</i>
+        </span>
+        <span ng-show="host">
+          {{host}}
+        </span>
+      </span>
+    </nav>
+  </div>
+</nav>

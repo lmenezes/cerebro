@@ -1,0 +1,17 @@
+<div class="page-ctrl">
+  <span ng-show="page.previous" class="pgnt-btn normal-action bordered pull-left" ng-click="paginator.previousPage()">
+    <i class="fa fa-fw fa-angle-double-left"></i>
+  </span>
+    <span ng-hide="page.previous" class="pgnt-btn bordered pull-left">
+    <i class="fa fa-fw fa-angle-double-left inactive-action"></i>
+  </span>
+  <span ng-show="page.next" class="pgnt-btn normal-action bordered pull-right" ng-click="paginator.nextPage()">
+    <i class="fa fa-fw fa-angle-double-right"></i>
+  </span>
+  <span ng-hide="page.next" class="pgnt-btn bordered pull-right">
+    <i class="fa fa-fw fa-angle-double-right inactive-action"></i>
+  </span>
+  <span class="pgnt-info">
+    {{page.first | number:0}}-{{page.last | number:0}} of {{page.total | number:0}} {{label || ''}}
+  </span>
+</div>

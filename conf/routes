@@ -1,0 +1,31 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+
+# Home page
+GET        /                                 controllers.Application.index()
+
+#
+GET        /main                             controllers.Main.index()
+GET        /apis/overview                    controllers.ClusterOverviewController.index()
+POST       /apis/:indices/_close             @controllers.elasticsearch.CloseIndexController.index(indices)
+POST       /apis/:indices/_open              @controllers.elasticsearch.OpenIndexController.index(indices)
+POST       /apis/:indices/_optimize          @controllers.elasticsearch.OptimizeIndexController.index(indices)
+POST       /apis/:indices/_cache/clear       @controllers.elasticsearch.ClearIndexCacheController.index(indices)
+POST       /apis/:indices/_refresh           @controllers.elasticsearch.RefreshIndexController.index(indices)
+DELETE     /apis/:indices/_delete            @controllers.elasticsearch.DeleteIndexController.index(indices)
+GET        /apis/:index/_settings            @controllers.elasticsearch.GetIndexSettings.index(index)
+GET        /apis/:index/_mapping             @controllers.elasticsearch.GetIndexMapping.index(index)
+PUT        /apis/_cluster/settings           @controllers.elasticsearch.PutClusterSettings.index
+GET        /apis/_nodes/:nodes/stats         @controllers.elasticsearch.NodeStatsController.index(nodes)
+PUT        /apis/disable_allocation          @controllers.elasticsearch.DisableShardAllocationController.index()
+PUT        /apis/enable_allocation           @controllers.elasticsearch.EnableShardAllocationController.index()
+
+GET        /apis/hosts                       @controllers.HostsController.index
+
+
+# Map the JS resource paths
+GET        /webjars/*file                    controllers.WebJarAssets.at(file)
+GET        /assets/*file                     controllers.Assets.at(path="/public", file)
+GET        /*file                            controllers.Assets.versioned(path="/public", file: Asset)

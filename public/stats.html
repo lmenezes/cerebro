@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="stats" ng-controller="StatsController">
+      <div class="row">
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{cluster_name}}
+        </span>
+      </span>
+        </div>
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{number_of_nodes | number:0}}
+        </span>
+        <span class="stat-description">
+          nodes
+        </span>
+      </span>
+        </div>
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{indices | number:0}}
+        </span>
+        <span class="stat-description">
+          indices
+        </span>
+      </span>
+        </div>
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{total_shards | number:0}}
+        </span>
+        <span class="stat-description">
+          shards
+        </span>
+      </span>
+        </div>
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{docs_count | number:0}}
+        </span>
+        <span class="stat-description">
+          docs
+        </span>
+      </span>
+        </div>
+        <div class="col-lg-2">
+      <span class="stat">
+        <span class="stat-value">
+            {{size_in_bytes | bytes}}
+        </span>
+      </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

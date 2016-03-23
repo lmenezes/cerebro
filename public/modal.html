@@ -1,0 +1,19 @@
+<div class="modal custom-modal" id="confirm_dialog" tabindex="-1" role="dialog" ng-controller="ModalController">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="fa fa-times-circle-o normal-action pull-right" data-dismiss="modal" ng-click='service.close()'></i>
+      </div>
+      <span class="modal-body" ng-show="service.text">{{service.text}}</span>
+      <pre class="modal-body" ng-show="service.info">{{service.info}}</pre>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click='service.close()'>
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click='service.confirm()' ng-show="service.confirm">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

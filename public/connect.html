@@ -1,0 +1,36 @@
+<div class="row connect-page">
+  <div class="col-lg-offset-3 col-lg-6">
+    <div>
+      <h2><i class="fa fa-cloud"></i> Welcome to Cerebro</h2>
+    </div>
+    <div class="content">
+      <div>
+        <label>Known hosts</label>
+      </div>
+      <table class="table table-bordered table-condensed table-rounded table-inverse shard-map">
+        <tr ng-repeat="host in hosts track by $index">
+          <td>
+          <span class="pull-right">
+            <i class="fa fa-fw fa-plug normal-action" ng-click="connect(host)"> </i>
+          </span>
+            <span class="normal-action" ng-click="connect(host)">{{host}}</span>
+          </td>
+        </tr>
+      </table>
+      <div class="form-group row">
+        <div class="col-xs-12">
+          <label for="newHost">Connect to a new host</label>
+          <input id="newHost" type="text" ng-model="host" class="form-control form-control-sm form-inverse" placeholder="example: http://localhost:9200">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-xs-12">
+        <span class="pull-left subtitle" ng-show="connecting">
+          <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting
+        </span>
+          <button type="button" class="btn btn-primary pull-right" ng-click="connect(host)">Connect</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="alert-block" id="{{a.id}}" ng-repeat="a in alerts">
+  <div class="alert" ng-class="a.class">
+		<span class="pull-right normal-action" ng-click='remove(a.id)'>
+			<i class="fa fa-times-circle"></i>
+		</span>
+    <i ng-class="a.icon">&nbsp;</i>
+    <a ng-class="a.class" data-toggle="collapse" data-parent="#alert_box_{{a.id}}" target="_self" href="#alert_details_{{a.id}}" ng-show="a.hasResponse()">
+      {{a.message}}
+    </a>
+    <span ng-show="!a.hasResponse()">{{a.message}}</span>
+    <div ng-show="a.hasResponse()" id="alert_details_{{a.id}}" class="panel-collapse collapse">
+      <pre ng-class="a.class" class="alert response-pre">{{a.getResponse()}}</pre>
+    </div>
+  </div>
+</div>
