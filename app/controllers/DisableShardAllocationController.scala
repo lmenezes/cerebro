@@ -2,14 +2,8 @@ package controllers
 
 import elastic.ElasticClient.disableShardAllocation
 
-import scala.concurrent.ExecutionContext.Implicits.global
+class DisableShardAllocationController extends ElasticActionController {
 
-class DisableShardAllocationController extends BaseController {
-
-  def processRequest = { request =>
-    disableShardAllocation(request.host).map {
-      response => Status(response.status)(response.body)
-    }
-  }
+  def processElasticRequest = request => disableShardAllocation(request.host)
 
 }

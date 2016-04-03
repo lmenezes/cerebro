@@ -6,7 +6,6 @@ import models.overview.ClusterOverview
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
 class ClusterOverviewController extends BaseController {
 
   def processRequest = {
