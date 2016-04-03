@@ -1,9 +1,7 @@
 package controllers
 
-import elastic.ElasticClient
-
 class Main extends ElasticActionController {
 
-  def processElasticRequest = request => ElasticClient.main(request.host)
+  def processElasticRequest = (request, client) => client.main(request.host)
 
 }

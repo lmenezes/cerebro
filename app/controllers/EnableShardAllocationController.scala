@@ -1,9 +1,7 @@
 package controllers
 
-import elastic.ElasticClient.enableShardAllocation
-
 class EnableShardAllocationController extends ElasticActionController {
 
-  def processElasticRequest = request => enableShardAllocation(request.host)
+  def processElasticRequest = (request, client) => client.enableShardAllocation(request.host)
 
 }

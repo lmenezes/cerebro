@@ -1,9 +1,7 @@
 package controllers
 
-import elastic.ElasticClient.refreshIndex
-
 class RefreshIndexController extends ElasticActionController {
 
-  def processElasticRequest = request => refreshIndex(request.get("indices"), request.host)
+  def processElasticRequest = (request, client) => client.refreshIndex(request.get("indices"), request.host)
 
 }

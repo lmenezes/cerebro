@@ -1,9 +1,7 @@
 package controllers
 
-import elastic.ElasticClient.nodesStats
-
 class NodeStatsController extends ElasticActionController {
 
-  def processElasticRequest = request => nodesStats(request.get("node"), request.host)
+  def processElasticRequest = (request, client) => client.nodesStats(request.get("node"), request.host)
 
 }

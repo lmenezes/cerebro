@@ -1,23 +1,26 @@
 package controllers
 
+import elastic.ElasticClient
 import models.CerebroRequest
 import play.api.Logger
+import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 trait BaseController extends Controller {
 
   protected val logger = Logger("elastic")
 
-  def execute = Action.async(parse.json) { request =>
+  final def execute = Action.async(parse.json) { request =>
     try {
-      processRequest(CerebroRequest(request.body))
+      processRequest(CerebroRequest(request.body), ElasticClient)
     } catch {
-      case _ => Future.successful(Status(500)(s"Error")) // FIXME: proper error handling
+      case NonFatal(e) => Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
     }
   }
 
-  def processRequest: CerebroRequest => Future[Result]
+  def processRequest: (CerebroRequest, ElasticClient) => Future[Result]
 
 }

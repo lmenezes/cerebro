@@ -1,16 +1,15 @@
 package controllers
 
-import elastic.ElasticClient.{getIndexRecovery, getShardStats}
 import models.ShardStats
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class GetShardStats extends BaseController {
 
-  def processRequest = { r =>
-    getShardStats(r.get("index"), r.host).zip(getIndexRecovery(r.get("index"), r.host)).map {
+  def processRequest = (request, client) => {
+    client.getShardStats(request.get("index"), request.host).zip(client.getIndexRecovery(request.get("index"), request.host)).map {
       case (stats, recovery) =>
-        val shardStats = ShardStats(r.get("index"), r.get("node"), r.getInt("shard"), stats.body, recovery.body)
+        val shardStats = ShardStats(request.get("index"), request.get("node"), request.getInt("shard"), stats.body, recovery.body)
         Status(200)(shardStats)
     }
   }

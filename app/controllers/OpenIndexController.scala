@@ -1,9 +1,7 @@
 package controllers
 
-import elastic.ElasticClient.openIndex
-
 class OpenIndexController extends ElasticActionController {
 
-  def processElasticRequest = request => openIndex(request.get("indices"), request.host)
+  def processElasticRequest = (request, client) => client.openIndex(request.get("indices"), request.host)
 
 }

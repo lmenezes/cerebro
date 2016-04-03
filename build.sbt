@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "org.elasticsearch" %  "elasticsearch" % "2.2.0",
   "com.typesafe.play" %% "play-ws"       % "2.4.6",
   "org.specs2"        %% "specs2-junit"  % "3.6.5",
-  "org.specs2"        %% "specs2-core"   % "3.6.5"
+  "org.specs2"        %% "specs2-core"   % "3.6.5",
+  "org.specs2"        %% "specs2-mock"   % "3.6.5"
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
