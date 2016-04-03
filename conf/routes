@@ -21,6 +21,7 @@ POST       /apis/update_cluster_settings     @controllers.elasticsearch.PutClust
 POST       /apis/get_node_stats              @controllers.elasticsearch.NodeStatsController.index
 POST       /apis/disable_shard_allocation    @controllers.elasticsearch.DisableShardAllocationController.index
 POST       /apis/enable_shard_allocation     @controllers.elasticsearch.EnableShardAllocationController.index
+POST       /apis/get_shard_stats             @controllers.elasticsearch.GetShardStats.index
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

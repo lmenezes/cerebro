@@ -4,6 +4,8 @@ import play.api.Play.current
 import play.api.libs.ws.WS
 import play.api.mvc.Results.EmptyContent
 
+import scala.concurrent.Future
+
 trait ElasticClient {
 
   def main(host: String) =
@@ -68,6 +70,13 @@ trait ElasticClient {
 
   def disableShardAllocation(host: String) =
     putClusterSettings(allocationSettings("none"), host)
+
+  def getShardStats(index: String, host: String) =
+    ElasticResponse(WS.url(s"$host/$index/_stats?level=shards&human=true").get())
+
+  def getIndexRecovery(index: String, host: String) =
+    ElasticResponse(WS.url(s"$host/$index/_recovery?active_only=true&human=true").get())
+
 
 }
 

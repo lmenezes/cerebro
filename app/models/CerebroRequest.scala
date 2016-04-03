@@ -5,7 +5,11 @@ import play.api.libs.json.JsValue
 
 class CerebroRequest(val host: String, body: JsValue) {
 
-  def get(name: String) = (body \ name).asOpt[String].getOrElse(throw MissingRequiredParamException(name))
+  def get(name: String) =
+    (body \ name).asOpt[String].getOrElse(throw MissingRequiredParamException(name))
+
+  def getInt(name: String) =
+    (body \ name).asOpt[Int].getOrElse(throw MissingRequiredParamException(name))
 
   def getArray(name: String) = (body \ name).asOpt[Array[String]].getOrElse(throw MissingRequiredParamException(name))
 

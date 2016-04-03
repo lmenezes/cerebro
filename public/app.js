@@ -327,6 +327,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
       );
     };
 
+    $scope.shardStats = function(index, node, shard) {
+      DataService.getShardStats(index, node, shard, displayInfo, error);
+    };
+
     $scope.nodeStats = function(node) {
       DataService.nodeStats(node, displayInfo, error);
     };
@@ -981,6 +985,22 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
     $http(config).
         success(success).
         error(error);
+  };
+
+  this.getShardStats = function(index, node, shard, success, error) {
+    var config = {
+      method: 'POST',
+      url: baseUrl + '/apis/get_shard_stats',
+      data: {
+        host: host,
+        index: index,
+        node: node,
+        shard: shard
+      }
+    };
+    $http(config).
+    success(success).
+    error(error);
   };
 
   this.getHosts = function (success, error) {

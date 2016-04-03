@@ -209,6 +209,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
       );
     };
 
+    $scope.shardStats = function(index, node, shard) {
+      DataService.getShardStats(index, node, shard, displayInfo, error);
+    };
+
     $scope.nodeStats = function(node) {
       DataService.nodeStats(node, displayInfo, error);
     };

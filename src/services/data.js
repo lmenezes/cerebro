@@ -208,6 +208,22 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
         error(error);
   };
 
+  this.getShardStats = function(index, node, shard, success, error) {
+    var config = {
+      method: 'POST',
+      url: baseUrl + '/apis/get_shard_stats',
+      data: {
+        host: host,
+        index: index,
+        node: node,
+        shard: shard
+      }
+    };
+    $http(config).
+    success(success).
+    error(error);
+  };
+
   this.getHosts = function (success, error) {
     var config = {
       method: 'GET',
