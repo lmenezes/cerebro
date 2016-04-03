@@ -785,26 +785,27 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   var baseUrl = $location.protocol() + '://' + $location.host() + ':' + $location.port();
 
+  var successfulRefresh = function(success) {
+    return function(response) {
+      data = response;
+      if (success) {
+        success(response);
+      }
+    }
+  };
+
+  var failedRefresh = function(error) {
+    return function(response) {
+      data = undefined;
+      if (error) {
+        error(response);
+      }
+    }
+  };
+
   var refresh = function(success, error) {
     if (host) {
-      var config = {
-        method: 'GET',
-        url: baseUrl + '/apis/overview',
-        params: {host: host}
-      };
-      $http(config).
-          success(function(response) {
-            data = response;
-            if (success) {
-              success(response);
-            }
-          }).
-          error(function(response) {
-            data = undefined;
-            if (error) {
-              error(response);
-            }
-          });
+      request('/apis/overview', {}, successfulRefresh(success), failedRefresh(error));
     } else {
       $location.path("/connect");
     }

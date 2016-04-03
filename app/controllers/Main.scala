@@ -1,10 +1,14 @@
 package controllers
 
-import controllers.elasticsearch.ElasticsearchController
 import elastic.ElasticClient
+import scala.concurrent.ExecutionContext.Implicits.global
 
-object Main extends ElasticsearchController {
+class Main extends BaseController {
 
-  def index = processRequest { request => ElasticClient.main(request.host) }
+  def processRequest = { request =>
+    ElasticClient.main(request.host).map { response =>
+      Status(response.status)(response.body)
+    }
+  }
 
 }

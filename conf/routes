@@ -7,21 +7,21 @@
 GET        /                                 controllers.Application.index()
 
 #
-GET        /main                             controllers.Main.index()
-GET        /apis/overview                    controllers.ClusterOverviewController.index()
-POST       /apis/close_indices               @controllers.elasticsearch.CloseIndexController.index
-POST       /apis/open_indices                @controllers.elasticsearch.OpenIndexController.index
-POST       /apis/optimize_indices            @controllers.elasticsearch.OptimizeIndexController.index
-POST       /apis/clear_indices_cache         @controllers.elasticsearch.ClearIndexCacheController.index
-POST       /apis/refresh_indices             @controllers.elasticsearch.RefreshIndexController.index
-POST       /apis/delete_indices              @controllers.elasticsearch.DeleteIndexController.index
-POST       /apis/get_index_settings          @controllers.elasticsearch.GetIndexSettings.index
-POST       /apis/get_index_mapping           @controllers.elasticsearch.GetIndexMapping.index
-POST       /apis/update_cluster_settings     @controllers.elasticsearch.PutClusterSettings.index
-POST       /apis/get_node_stats              @controllers.elasticsearch.NodeStatsController.index
-POST       /apis/disable_shard_allocation    @controllers.elasticsearch.DisableShardAllocationController.index
-POST       /apis/enable_shard_allocation     @controllers.elasticsearch.EnableShardAllocationController.index
-POST       /apis/get_shard_stats             @controllers.elasticsearch.GetShardStats.index
+POST       /main                             @controllers.Main.execute
+POST       /apis/overview                    @controllers.ClusterOverviewController.execute
+POST       /apis/close_indices               @controllers.CloseIndexController.execute
+POST       /apis/open_indices                @controllers.OpenIndexController.execute
+POST       /apis/optimize_indices            @controllers.OptimizeIndexController.execute
+POST       /apis/clear_indices_cache         @controllers.ClearIndexCacheController.execute
+POST       /apis/refresh_indices             @controllers.RefreshIndexController.execute
+POST       /apis/delete_indices              @controllers.DeleteIndexController.execute
+POST       /apis/get_index_settings          @controllers.GetIndexSettings.execute
+POST       /apis/get_index_mapping           @controllers.GetIndexMapping.execute
+POST       /apis/update_cluster_settings     @controllers.PutClusterSettings.execute
+POST       /apis/get_node_stats              @controllers.NodeStatsController.execute
+POST       /apis/disable_shard_allocation    @controllers.DisableShardAllocationController.execute
+POST       /apis/enable_shard_allocation     @controllers.EnableShardAllocationController.execute
+POST       /apis/get_shard_stats             @controllers.GetShardStats.execute
 
 GET        /apis/hosts                       @controllers.HostsController.index
 
