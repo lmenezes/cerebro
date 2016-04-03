@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class DisableShardAllocationController extends ElasticsearchController {
 
-  def index() = processRequest(ElasticClient.disableShardAllocation(_))
+  def index = processRequest { request => ElasticClient.disableShardAllocation(request.host) }
 
 }

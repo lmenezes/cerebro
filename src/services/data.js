@@ -59,8 +59,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.closeIndex = function(index, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/' + index + '/_close',
-      params: {host: host}
+      url: baseUrl + '/apis/close_indices',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
         success(success).
@@ -70,8 +73,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.openIndex = function(index, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/' + index + '/_open',
-      params: {host: host}
+      url: baseUrl + '/apis/open_indices',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
         success(success).
@@ -81,8 +87,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.optimizeIndex = function(index, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/' + index + '/_optimize',
-      params: {host: host}
+      url: baseUrl + '/apis/optimize_indices',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
     success(success).
@@ -92,8 +101,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.refreshIndex = function(index, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/' + index + '/_refresh',
-      params: {host: host}
+      url: baseUrl + '/apis/refresh_indices',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
     success(success).
@@ -103,8 +115,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.clearIndexCache = function(index, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/' + index + '/_cache/clear',
-      params: {host: host}
+      url: baseUrl + '/apis/clear_indices_cache',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
     success(success).
@@ -113,9 +128,12 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.deleteIndex = function(index, success, error) {
     var config = {
-      method: 'DELETE',
-      url: baseUrl + '/apis/' + index + '/_delete',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/delete_indices',
+      data: {
+        host: host,
+        indices: index
+      }
     };
     $http(config).
     success(success).
@@ -124,9 +142,12 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.getIndexSettings = function(index, success, error) {
     var config = {
-      method: 'GET',
-      url: baseUrl + '/apis/' + index + '/_settings',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/get_index_settings',
+      data: {
+        host: host,
+        index: index
+      }
     };
     $http(config).
     success(success).
@@ -135,9 +156,12 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.getIndexMapping = function(index, success, error) {
     var config = {
-      method: 'GET',
-      url: baseUrl + '/apis/' + index + '/_mapping',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/get_index_mapping',
+      data: {
+        host: host,
+        index: index
+      }
     };
     $http(config).
     success(success).
@@ -146,9 +170,12 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.nodeStats = function(node, success, error) {
     var config = {
-      method: 'GET',
-      url: baseUrl + '/apis/_nodes/' + node + '/stats',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/get_node_stats',
+      data: {
+        host: host,
+        node: node
+      }
     };
     $http(config).
     success(success).
@@ -157,9 +184,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.enableShardAllocation = function(success, error) {
     var config = {
-      method: 'PUT',
-      url: baseUrl + '/apis/enable_allocation',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/enable_shard_allocation',
+      data: {
+        host: host
+      }
     };
     $http(config).
     success(success).
@@ -168,9 +197,11 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
 
   this.disableShardAllocation = function(success, error) {
     var config = {
-      method: 'PUT',
-      url: baseUrl + '/apis/disable_allocation',
-      params: {host: host}
+      method: 'POST',
+      url: baseUrl + '/apis/disable_shard_allocation',
+      data: {
+        host: host
+      }
     };
     $http(config).
         success(success).

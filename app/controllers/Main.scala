@@ -5,6 +5,6 @@ import elastic.ElasticClient
 
 object Main extends ElasticsearchController {
 
-  def index = processRequest(ElasticClient.main(_))
+  def index = processRequest { request => ElasticClient.main(request.host) }
 
 }

@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class ClearIndexCacheController extends ElasticsearchController {
 
-  def index(indices: String) = processRequest(ElasticClient.clearIndexCache(indices, _))
+  def index = processRequest { request => ElasticClient.clearIndexCache(request.get("indices"), request.host) }
 
 }

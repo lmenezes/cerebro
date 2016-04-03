@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class NodeStatsController extends ElasticsearchController {
 
-  def index(nodes: String) = processRequest(ElasticClient.nodesStats(nodes, _))
+  def index = processRequest { request => ElasticClient.nodesStats(request.get("node"), request.host) }
 
 }

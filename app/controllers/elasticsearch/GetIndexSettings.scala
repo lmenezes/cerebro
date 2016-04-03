@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class GetIndexSettings extends ElasticsearchController {
 
-  def index(indices: String) = processRequest(ElasticClient.getIndexSettings(indices, _))
+  def index = processRequest { request => ElasticClient.getIndexSettings(request.get("index"), request.host) }
 
 }

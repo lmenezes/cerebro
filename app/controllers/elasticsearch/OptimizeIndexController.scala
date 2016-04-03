@@ -7,6 +7,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class OptimizeIndexController extends ElasticsearchController {
 
-  def index(indices: String) = processRequest(ElasticClient.optimizeIndex(indices, _))
+  def index = processRequest { request => ElasticClient.optimizeIndex(request.get("indices"), request.host) }
 
 }

@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class PutClusterSettings extends ElasticsearchController {
 
-  def index = processRequest(ElasticClient.putClusterSettings("", _))
+  def index = processRequest { request => ElasticClient.putClusterSettings(request.get("settings"), request.host) }
 
 }

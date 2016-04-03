@@ -5,6 +5,6 @@ import elastic.ElasticClient
 
 class OpenIndexController extends ElasticsearchController {
 
-  def index(indices: String) = processRequest(ElasticClient.openIndex(indices, _))
+  def index = processRequest { request => ElasticClient.openIndex(request.get("indices"), request.host) }
 
 }

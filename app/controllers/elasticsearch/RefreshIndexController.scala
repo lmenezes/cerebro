@@ -4,6 +4,6 @@ import elastic.ElasticClient
 
 class RefreshIndexController extends ElasticsearchController {
 
-  def index(indices: String) = processRequest(ElasticClient.refreshIndex(indices, _))
+  def index = processRequest { request => ElasticClient.refreshIndex(request.get("indices"), request.host) }
 
 }
