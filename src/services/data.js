@@ -57,171 +57,61 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   autoRefresh();
 
   this.closeIndex = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/close_indices',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-        success(success).
-        error(error);
+    request('/apis/close_indices', {indices: index}, success, error);
   };
 
   this.openIndex = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/open_indices',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-        success(success).
-        error(error);
+    request('/apis/open_indices', {indices: index}, success, error);
   };
 
   this.optimizeIndex = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/optimize_indices',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/optimize_indices', {indices: index}, success, error);
   };
 
   this.refreshIndex = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/refresh_indices',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/refresh_indices', {indices: index}, success, error);
   };
 
   this.clearIndexCache = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/clear_indices_cache',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/clear_indices_cache', {indices: index}, success, error);
   };
 
   this.deleteIndex = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/delete_indices',
-      data: {
-        host: host,
-        indices: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/delete_indices', {indices: index}, success, error);
   };
 
   this.getIndexSettings = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/get_index_settings',
-      data: {
-        host: host,
-        index: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/get_index_settings', {index: index}, success, error);
   };
 
   this.getIndexMapping = function(index, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/get_index_mapping',
-      data: {
-        host: host,
-        index: index
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/get_index_mapping', {index: index}, success, error);
   };
 
   this.nodeStats = function(node, success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/get_node_stats',
-      data: {
-        host: host,
-        node: node
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/get_node_stats', {node: node}, success, error);
   };
 
   this.enableShardAllocation = function(success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/enable_shard_allocation',
-      data: {
-        host: host
-      }
-    };
-    $http(config).
-    success(success).
-    error(error);
+    request('/apis/enable_shard_allocation', {}, success, error);
   };
 
   this.disableShardAllocation = function(success, error) {
-    var config = {
-      method: 'POST',
-      url: baseUrl + '/apis/disable_shard_allocation',
-      data: {
-        host: host
-      }
-    };
-    $http(config).
-        success(success).
-        error(error);
+    request('/apis/disable_shard_allocation', {}, success, error);
   };
 
   this.getShardStats = function(index, node, shard, success, error) {
+    var data = {index: index, node: node, shard: shard};
+    request('/apis/get_shard_stats', data, success, error);
+  };
+
+  var request = function(path, data, success, error) {
     var config = {
       method: 'POST',
-      url: baseUrl + '/apis/get_shard_stats',
-      data: {
-        host: host,
-        index: index,
-        node: node,
-        shard: shard
-      }
+      url: baseUrl + path,
+      data: angular.merge(data, {host: host}) // adds host to data
     };
-    $http(config).
-    success(success).
-    error(error);
+    $http(config).success(success).error(error);
   };
 
   this.getHosts = function (success, error) {
