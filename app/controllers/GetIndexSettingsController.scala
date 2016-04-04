@@ -1,6 +1,6 @@
 package controllers
 
-class GetIndexSettings extends ElasticActionController {
+class GetIndexSettingsController extends ElasticActionController {
 
   def processElasticRequest = (request, client) => client.getIndexSettings(request.get("index"), request.host)
 

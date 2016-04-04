@@ -15,7 +15,7 @@ POST       /apis/optimize_indices            @controllers.OptimizeIndexControlle
 POST       /apis/clear_indices_cache         @controllers.ClearIndexCacheController.execute
 POST       /apis/refresh_indices             @controllers.RefreshIndexController.execute
 POST       /apis/delete_indices              @controllers.DeleteIndexController.execute
-POST       /apis/get_index_settings          @controllers.GetIndexSettings.execute
+POST       /apis/get_index_settings          @controllers.GetIndexSettingsController.execute
 POST       /apis/get_index_mapping           @controllers.GetIndexMappingController.execute
 POST       /apis/update_cluster_settings     @controllers.PutClusterSettings.execute
 POST       /apis/get_node_stats              @controllers.NodeStatsController.execute
