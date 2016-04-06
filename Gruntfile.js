@@ -48,8 +48,8 @@ module.exports = function(grunt) {
       }
     },
     qunit: {
-      all: []
-    }
+      all: ['./tests/all.html']
+    },
   });
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -61,5 +61,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jscs");
   grunt.registerTask('dev', ['watch'])
   grunt.registerTask('build',
-      ['clean', 'copy', 'concat' ]);
+      ['clean', 'copy', 'concat', 'qunit' ]);
 };
