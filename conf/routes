@@ -18,7 +18,7 @@ POST       /apis/delete_indices              @controllers.DeleteIndexController.
 POST       /apis/get_index_settings          @controllers.GetIndexSettingsController.execute
 POST       /apis/get_index_mapping           @controllers.GetIndexMappingController.execute
 POST       /apis/update_cluster_settings     @controllers.PutClusterSettings.execute
-POST       /apis/get_node_stats              @controllers.NodeStatsController.execute
+POST       /apis/get_node_stats              @controllers.GetNodeStatsController.execute
 POST       /apis/disable_shard_allocation    @controllers.DisableShardAllocationController.execute
 POST       /apis/enable_shard_allocation     @controllers.EnableShardAllocationController.execute
 POST       /apis/get_shard_stats             @controllers.GetShardStatsController.execute

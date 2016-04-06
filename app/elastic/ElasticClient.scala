@@ -20,7 +20,7 @@ trait ElasticClient {
   def nodesStats(host: String) =
     ElasticResponse(WS.url(s"$host/_nodes/stats/jvm,fs,os,process").get())
 
-  def nodesStats(node: String, host: String) =
+  def nodeStats(node: String, host: String) =
     ElasticResponse(WS.url(s"$host/_nodes/$node/stats?human").get())
 
   def clusterSettings(host: String) =
