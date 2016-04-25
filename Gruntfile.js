@@ -24,6 +24,7 @@ module.exports = function(grunt) {
     concat: {
       vendorjs: {
         src: [
+            'src/lib/*/*.js'
         ],
         dest: 'public/lib.js'
       },

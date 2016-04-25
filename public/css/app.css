@@ -380,3 +380,52 @@ table.shard-map {
 .navbar-dark .navbar-nav .nav-link {
     font-weight: 300 !important;
 }
+
+/* JSON TREE CSS */
+.jstValue {
+    white-space: pre-wrap;
+    font-size: 12px;
+    font-weight: 400;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+    line-height: normal;
+    display: block;
+}
+.jstComma {
+    white-space: pre-wrap;
+}
+.jstProperty {
+    color: #D0D0D0;
+    word-wrap: break-word;
+}
+.jstBracket {
+    white-space: pre-wrap;
+}
+.jstBool {
+    color: #2525CC;
+}
+.jstNum {
+    color: #D036D0;
+}
+.jstNull {
+    color: gray;
+}
+.jstStr {
+    color: #2DB669;
+}
+.jstFold:after {
+    content: ' -';
+    cursor: pointer;
+}
+.jstExpand {
+    white-space: normal;
+}
+.jstExpand:after {
+    content: ' +';
+    cursor: pointer;
+}
+.jstFolded {
+    white-space: normal !important;
+}
+.jstHiddenBlock {
+    display: none;
+}

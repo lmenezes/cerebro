@@ -5,12 +5,12 @@
         <i class="fa fa-times-circle-o normal-action pull-right" data-dismiss="modal" ng-click='service.close()'></i>
       </div>
       <span class="modal-body" ng-show="service.text">{{service.text}}</span>
-      <pre class="modal-body" ng-show="service.info">{{service.info}}</pre>
+      <div class="modal-body" ng-bind-html="service.info"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click='service.close()'>
           Close
         </button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click='service.confirm()' ng-show="service.confirm">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click='service.confirm()' ng-show="service.needsConfirmation()">
           Confirm
         </button>
       </div>
