@@ -1,6 +1,5 @@
 'use strict';
-
-angular.module('cerebro', ['ngRoute']).config(['$routeProvider',
+angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
         when('/overview', {
@@ -11,8 +10,59 @@ angular.module('cerebro', ['ngRoute']).config(['$routeProvider',
           templateUrl: 'connect.html',
           controller: 'ConnectController'
         }).
+        when('/rest', {
+            templateUrl: 'rest.html',
+            controller: 'RestController'
+        }).
         otherwise({redirectTo: '/connect'});
   }]);
+
+function AceEditor(target) {
+    // ace editor
+    ace.config.set('basePath', '/');
+    this.editor = ace.edit(target);
+    this.editor.setFontSize('10px');
+    this.editor.setTheme('ace/theme/cerebro');
+    this.editor.getSession().setMode('ace/mode/json');
+    this.editor.setOptions({
+        fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
+        fontSize: '12px',
+        fontWeight: '400'
+    });
+
+    // validation error
+    this.error = null;
+
+    // sets value and moves cursor to beggining
+    this.setValue = function(value) {
+        this.editor.setValue(value, 1);
+        this.editor.gotoLine(0, 0, false);
+    };
+
+    this.getValue = function() {
+        return this.editor.getValue();
+    };
+
+    // formats the json content
+    this.format = function() {
+        var content = this.editor.getValue();
+        try {
+            if (isDefined(content) && content.trim().length > 0) {
+                this.error = null;
+                content = JSON.stringify(JSON.parse(content), undefined, 2);
+                this.editor.setValue(content, 0);
+                this.editor.gotoLine(0, 0, false);
+            }
+        } catch (error) {
+            this.error = error.toString();
+        }
+        return content;
+    };
+
+    this.hasContent = function() {
+        return this.editor.getValue().trim().length > 0;
+    };
+}
 
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   this.name = name;
@@ -258,6 +308,148 @@ function Paginator(page, pageSize, collection, filter) {
     this.getCollection = function() {
         return this.$collection;
     };
+
+}
+
+function Request(path, method, body) {
+
+    this.path = path;
+
+    this.method = method;
+
+    this.body = body;
+
+}
+
+function URLAutocomplete(mappings) {
+
+    var PATHS = [
+        // Suggest
+        '_suggest',
+        '{index}/_suggest',
+        // Multi Search
+        '_msearch',
+        '{index}/_msearch',
+        '{index}/{type}/_msearch',
+        '_msearch/template',
+        '{index}/_msearch/template',
+        '{index}/{type}/_msearch/template',
+        // Search
+        '_search',
+        '{index}/_search',
+        '{index}/{type}/_search',
+        '_search/template',
+        '{index}/_search/template',
+        '{index}/{type}/_search/template',
+        '_search/exists',
+        '{index}/_search/exists',
+        '{index}/{type}/_search/exists'
+    ];
+
+    var format = function(previousTokens, suggestedToken) {
+        if (previousTokens.length > 1) {
+            var prefix = previousTokens.slice(0, -1).join('/');
+            if (prefix.length > 0) {
+                return prefix + '/' + suggestedToken;
+            } else {
+                return suggestedToken;
+            }
+        } else {
+            return suggestedToken;
+        }
+    };
+
+    this.getAlternatives = function(path) {
+        var pathTokens = path.split('/');
+        var suggestedTokenIndex = pathTokens.length - 1;
+
+        /**
+         * Replaces the variables on suggestedPathTokens({index}, {type}...) for
+         * actual values extracted from pathTokens
+         * @param {Array} pathTokens tokens for the path to be suggested
+         * @param {Array} suggestedPathTokens tokens for the suggested path
+         * @returns {Array} a new array with the variables from suggestedPathTokens
+         * replaced by the actual values from pathTokens
+         */
+        var replaceVariables = function(pathTokens, suggestedPathTokens) {
+            var replaced = suggestedPathTokens.map(function(token, position) {
+                if (position < pathTokens.length - 1 && token.indexOf('{') === 0) {
+                    return pathTokens[position];
+                } else {
+                    return token;
+                }
+            });
+            return replaced;
+        };
+
+        /**
+         * Checks if a given path matches the definition and current state of
+         * the path to be autocompleted
+         *
+         * @param {Array} pathTokens tokens of path to be autocompleted
+         * @param {Array} suggestedPathTokens tokens of possible suggestion
+         * @returns {boolean} if suggestion is valid
+         */
+        var isValidSuggestion = function(pathTokens, suggestedPathTokens) {
+            var valid = true;
+            suggestedPathTokens.forEach(function(token, index) {
+                if (valid && index < pathTokens.length - 1) {
+                    switch (token) {
+                        case '{index}':
+                            valid = Object.keys(mappings).indexOf(pathTokens[index]) >= 0;
+                            break;
+                        case '{type}':
+                            valid = mappings[pathTokens[index - 1]]["types"].indexOf(pathTokens[index]) >= 0;
+                            break;
+                        default:
+                            valid = pathTokens[index] === token;
+                    }
+                }
+            });
+            return valid;
+        };
+
+        var alternatives = [];
+
+        var addIfNotPresent = function(collection, element) {
+            if (collection.indexOf(element) === -1) {
+                collection.push(element);
+            }
+        };
+
+        PATHS.forEach(function(suggestedPath) {
+            var suggestedPathTokens = suggestedPath.split('/');
+            if (suggestedPathTokens.length > suggestedTokenIndex &&
+                isValidSuggestion(pathTokens, suggestedPathTokens)) {
+                suggestedPathTokens = replaceVariables(
+                    pathTokens,
+                    suggestedPathTokens
+                );
+                var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
+                switch (suggestedToken) {
+                    case '{index}':
+                        Object.keys(mappings).forEach(function(index) {
+                            addIfNotPresent(alternatives, format(pathTokens, index));
+                        });
+                        break;
+                    case '{type}':
+                        var pathIndex = pathTokens[suggestedTokenIndex - 1];
+                        mappings[pathIndex]["types"].forEach(function(type) {
+                            addIfNotPresent(alternatives, format(pathTokens, type));
+                        });
+                        break;
+                    default:
+                        addIfNotPresent(alternatives, format(pathTokens, suggestedToken));
+                }
+            }
+        });
+
+        return alternatives.sort(function(a, b) {
+            return a.localeCompare(b);
+        });
+    };
+
+    return this;
 
 }
 
@@ -600,6 +792,55 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
 
   }]);
 
+angular.module('cerebro').controller('RestController', ['$scope', '$http', '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+    function ($scope, $http, $sce, DataService, AlertService, ModalService, AceEditorService) {
+
+        $scope.editor = AceEditorService.init('rest-client-editor');
+        $scope.editor.setValue("{}");
+        $scope.response = undefined;
+
+        $scope.mappings = undefined;
+
+        $scope.method = "POST";
+        $scope.path = "";
+        $scope.options = [];
+
+        var success = function(response) {
+            $scope.response = $sce.trustAsHtml(JSONTree.create(response));
+        };
+
+        var failure = function(response) {
+            $scope.response = $sce.trustAsHtml(JSONTree.create(response));
+        };
+
+        $scope.execute = function() {
+            var data = $scope.editor.getValue();
+            $scope.response = undefined;
+            DataService.execute($scope.method, $scope.path, data, success, failure);
+        };
+
+        $scope.initializeController = function() {
+            DataService.getClusterMapping(
+                function(response) {
+                    $scope.mappings = response;
+                    $scope.updateOptions($scope.path);
+                },
+                function(error) {
+                    AlertService.error('Error while loading cluster mappings', error);
+                }
+            );
+        };
+
+        $scope.updateOptions = function(text) {
+            if ($scope.mappings) {
+                var autocomplete = new URLAutocomplete($scope.mappings);
+                $scope.options = autocomplete.getAlternatives(text);
+                console.log($scope.options);
+            }
+        };
+
+    }]);
+
 angular.module('cerebro').directive('ngPagination', ['$document', function($document) {
 
   return {
@@ -674,6 +915,37 @@ angular.module('cerebro').filter('bytes', function() {
         return stringify(bytes);
     };
 
+});
+
+angular.module('cerebro').filter('startsWith', function() {
+
+    console.log("created!");
+
+    function strStartsWith(str, prefix) {
+        return (str + '').indexOf(prefix) === 0;
+    }
+
+    return function(elements, prefix) {
+        console.log("filtering...");
+        var filtered = [];
+        angular.forEach(elements, function(element) {
+            if (strStartsWith(element, prefix)) {
+                filtered.push(element);
+            }
+        });
+        console.log("filtered!!");
+        console.log(filtered);
+        return filtered;
+    };
+});
+
+angular.module('cerebro').factory('AceEditorService', function() {
+
+    this.init = function(name) {
+        return new AceEditor(name);
+    };
+
+    return this;
 });
 
 var Alert = function(message, response, level, _class, icon) {
@@ -866,6 +1138,15 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
   this.getShardStats = function(index, node, shard, success, error) {
     var data = {index: index, node: node, shard: shard};
     request('/apis/get_shard_stats', data, success, error);
+  };
+
+  this.getClusterMapping = function(success, error) {
+    request('/apis/get_cluster_mapping', {}, success, error);
+  };
+
+  this.execute = function(method, path, data, success, error) {
+    var requestData = {method: method, data: data, path: path};
+    request('/apis/rest', requestData, success, error);
   };
 
   var request = function(path, data, success, error) {

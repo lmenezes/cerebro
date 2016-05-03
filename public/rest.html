@@ -1,0 +1,62 @@
+<script type="text/ng-template" id="customTemplate.html">
+  <a>
+    <span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>
+  </a>
+</script>
+
+<script type="text/ng-template" id="customPopupTemplate.html">
+  <div class="custom-popup-wrapper"
+       ng-style="{top: position().top+'px', left: position().left+'px'}"
+       style="display: block;">
+    <ul class="dropdown-menu" role="listbox">
+      <li ng-repeat="match in matches track by $index" ng-class="{active: isActive($index) }"
+          ng-mouseenter="selectActive($index)" ng-click="selectMatch($index)" role="option" id="{{::match.id}}">
+        <div uib-typeahead-match index="$index" match="match" query="query" template-url="templateUrl"></div>
+      </li>
+    </ul>
+  </div>
+</script>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group row">
+      <div class="col-lg-10 typeahead-demo">
+        <input type="text"
+               ng-model="path"
+               class="form-control form-control-sm form-inverse"
+               placeholder="path (eg: indexName/_search)"
+               ng-change="updateOptions(path)"
+               typeahead-wait-ms="20"
+               uib-typeahead="url for url in options | startsWith:$viewValue | limitTo:10"
+               typeahead-popup-template-url="customPopupTemplate.html"
+               typeahead-template-url="customTemplate.html">
+      </div>
+      <div class="col-lg-2">
+        <select ng-model="method" class="form-control form-inverse">
+          <option value="GET">GET</option>
+          <option value="PUT">PUT</option>
+          <option value="POST" selected="selected">POST</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-lg-12">
+        <div id="rest-client-editor" class="ace-cerebro" style="height: 600px;"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-lg-12">
+        <button type="submit" class="btn btn-primary input-sm pull-right" ng-click="execute()">
+          <i class="fa fa-bolt"></i> send
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div style="border: 1px solid #55595c; min-height: 647px; overflow: auto; display: block;">
+      <div class="modal-body" ng-bind-html="response">
+      </div>
+    </div>
+  </div>
+</div>

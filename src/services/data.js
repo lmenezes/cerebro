@@ -106,6 +106,15 @@ angular.module('cerebro').factory('DataService', function ($rootScope, $timeout,
     request('/apis/get_shard_stats', data, success, error);
   };
 
+  this.getClusterMapping = function(success, error) {
+    request('/apis/get_cluster_mapping', {}, success, error);
+  };
+
+  this.execute = function(method, path, data, success, error) {
+    var requestData = {method: method, data: data, path: path};
+    request('/apis/rest', requestData, success, error);
+  };
+
   var request = function(path, data, success, error) {
     var config = {
       method: 'POST',

@@ -1,6 +1,5 @@
 'use strict';
-
-angular.module('cerebro', ['ngRoute']).config(['$routeProvider',
+angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
         when('/overview', {
@@ -10,6 +9,10 @@ angular.module('cerebro', ['ngRoute']).config(['$routeProvider',
         when('/connect', {
           templateUrl: 'connect.html',
           controller: 'ConnectController'
+        }).
+        when('/rest', {
+            templateUrl: 'rest.html',
+            controller: 'RestController'
         }).
         otherwise({redirectTo: '/connect'});
   }]);

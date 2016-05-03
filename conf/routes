@@ -22,6 +22,8 @@ POST       /apis/get_node_stats              @controllers.GetNodeStatsController
 POST       /apis/disable_shard_allocation    @controllers.DisableShardAllocationController.execute
 POST       /apis/enable_shard_allocation     @controllers.EnableShardAllocationController.execute
 POST       /apis/get_shard_stats             @controllers.GetShardStatsController.execute
+POST       /apis/rest                        @controllers.RestController.execute
+POST       /apis/get_cluster_mapping         @controllers.GetClusterMappingController.execute
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

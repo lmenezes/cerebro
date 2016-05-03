@@ -401,16 +401,16 @@ table.shard-map {
     white-space: pre-wrap;
 }
 .jstBool {
-    color: #2525CC;
+    color: #1CA8DD;
 }
 .jstNum {
-    color: #D036D0;
+    color: #9F85FF;
 }
 .jstNull {
-    color: gray;
+    color: #8B8F95;
 }
 .jstStr {
-    color: #2DB669;
+    color: #1AC98E;
 }
 .jstFold:after {
     content: ' -';
@@ -428,4 +428,59 @@ table.shard-map {
 }
 .jstHiddenBlock {
     display: none;
+}
+
+.ace-cerebro {
+    border: 1px solid #55595c;
+}
+
+.typeahead-demo .custom-popup-wrapper {
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.typeahead-demo .custom-popup-wrapper > .message {
+    border-bottom: 1px solid #ddd;
+    color: #868686;
+}
+
+.typeahead-demo .custom-popup-wrapper > .dropdown-menu {
+    position: static;
+    float: none;
+    display: block;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-left: 0px;
+    background: #373a3c !important;
+    border-left: 1px solid #55595c;
+    border-right: 1px solid #55595c;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    margin-top: 0px !important;
+}
+.dropdown-menu > li {
+    background: #434749 !important;
+    border-bottom: 1px solid #55595c;
+}
+
+.dropdown-menu > li > a > span {
+    background: #434749 !important;
+    font-size: 13px !important;
+    line-height: 30px !important;
+    color: #f0f0f0;
+    padding-left: 10px;
+}
+
+.dropdown-menu > .active {
+    background: #55595c !important;
+}
+
+.dropdown-menu > .active > a > span {
+    background: #55595c !important;
+}
+.dropdown-menu {
+    background: red !important;
 }

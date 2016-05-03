@@ -77,6 +77,11 @@ trait ElasticClient {
   def getIndexRecovery(index: String, host: String) =
     ElasticResponse(WS.url(s"$host/$index/_recovery?active_only=true&human=true").get())
 
+  def getClusterMapping(host: String) =
+    ElasticResponse(WS.url(s"$host/_mapping").get())
+
+  def executeRequest(method: String, path: String, data: Option[String], host: String) =
+    ElasticResponse(data.foldLeft(WS.url(s"$host/$path"))(_ withBody _).execute(method))
 
 }
 

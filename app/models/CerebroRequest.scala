@@ -13,6 +13,8 @@ class CerebroRequest(val host: String, body: JsValue) {
 
   def getArray(name: String) = (body \ name).asOpt[Array[String]].getOrElse(throw MissingRequiredParamException(name))
 
+  def getOpt(name: String) =
+    (body \ name).asOpt[String]
 }
 
 object CerebroRequest {
