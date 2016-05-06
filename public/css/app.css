@@ -1,6 +1,3 @@
-html, body {
-    height: 100%;
-}
 body {
     padding-top: 50px;
 }
@@ -8,29 +5,8 @@ body {
 .content {
     padding-top: 20px;
     padding-bottom: 10px;
-    font-size: 13px;
-    font-weight: 300;
     height: 100%;
     min-height: 100%;
-}
-
-.navbar-fixed-top {
-    border: 0;
-}
-
-.main {
-    padding: 20px;
-}
-
-@media (min-width: 768px) {
-    .main {
-        padding-right: 40px;
-        padding-left: 40px;
-    }
-}
-
-.main .page-header {
-    margin-top: 0;
 }
 
 /** Overview **/
@@ -109,7 +85,7 @@ table.shard-map {
     height: 22px;
     vertical-align: middle;
     text-align: center;
-    line-height: 16px;
+    line-height: 17px;
     margin-top: 2px;
     margin-bottom: 2px;
 }
@@ -193,17 +169,6 @@ table.shard-map {
     background-color: #1CA8DD;
 }
 
-/** Forms Inverse **/
-.form-inverse {
-    background-color: #434749 !important;
-    border-color: #4d5154 !important;
-    color: #fff !important;
-}
-.form-inverse:-webkit-input-placeholder { color: white; font-weight: 800; }
-.form-inverse:-moz-placeholder { color: white; }
-.form-inverse:-moz-placeholder { color: white; }
-.form-inverse:-ms-input-placeholder { color: white; }
-
 /** Nodes **/
 .node-badges {
     width: 20px;
@@ -270,18 +235,6 @@ table.shard-map {
 .node-labels {
     padding-top: 5px;
 }
-.dropdown-menu {
-    color: #fff !important;
-    background-color: #373a3c !important;
-    font-size: 12px !important;
-    font-weight: 300;
-}
-.dropdown-item {
-    color: #fff !important;
-}
-.dropdown-item:hover {
-    color: #373a3c !important;
-}
 
 .red {
     color: #E64759 !important;
@@ -342,25 +295,11 @@ table.shard-map {
     border: none !important;
 }
 .btn {
-    background: #434749 !important;
     border: 2px solid !important;
-    font-size: 13px !important;
-    opacity: 0.7 !important;
+    opacity: 0.7;
 }
 .btn:hover {
     opacity: 1 !important;
-}
-.btn-default {
-    color: #8B8F95 !important;
-    border-color: #8B8F95 !important;
-}
-.btn-default {
-    color: #8B8F95 !important;
-    border-color: #8B8F95 !important;
-}
-.btn-primary {
-    color: #1AC98E !important;
-    border-color: #1AC98E !important;
 }
 .nav-element {
     display: block;
@@ -375,10 +314,6 @@ table.shard-map {
     display: table-cell;
     vertical-align: middle;
     float: none;
-}
-
-.navbar-dark .navbar-nav .nav-link {
-    font-weight: 300 !important;
 }
 
 /* JSON TREE CSS */
@@ -441,9 +376,9 @@ table.shard-map {
     display: none;
 }
 
-.typeahead-demo .custom-popup-wrapper > .message {
-    border-bottom: 1px solid #ddd;
-    color: #868686;
+.typeahead > li > a {
+    border-bottom: 1px solid #55595c;
+
 }
 
 .typeahead-demo .custom-popup-wrapper > .dropdown-menu {
@@ -454,33 +389,9 @@ table.shard-map {
     border-radius: 0;
     box-shadow: none;
     margin-left: 0px;
-    background: #373a3c !important;
     border-left: 1px solid #55595c;
     border-right: 1px solid #55595c;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
     margin-top: 0px !important;
-}
-.dropdown-menu > li {
-    background: #434749 !important;
-    border-bottom: 1px solid #55595c;
-}
-
-.dropdown-menu > li > a > span {
-    background: #434749 !important;
-    font-size: 13px !important;
-    line-height: 30px !important;
-    color: #f0f0f0;
-    padding-left: 10px;
-}
-
-.dropdown-menu > .active {
-    background: #55595c !important;
-}
-
-.dropdown-menu > .active > a > span {
-    background: #55595c !important;
-}
-.dropdown-menu {
-    background: red !important;
 }

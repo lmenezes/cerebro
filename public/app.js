@@ -47,7 +47,7 @@ function AceEditor(target) {
     this.format = function() {
         var content = this.editor.getValue();
         try {
-            if (isDefined(content) && content.trim().length > 0) {
+            if (content && content.trim().length > 0) {
                 this.error = null;
                 content = JSON.stringify(JSON.parse(content), undefined, 2);
                 this.editor.setValue(content, 0);
@@ -889,10 +889,11 @@ angular.module('cerebro').directive('ngProgress',
         },
         template: function (elem, attrs) {
           return '<span class="detail">{{text}}</span>' +
-              '<progress class="progress progress-thin" value="{{value}}" max="{{max}}"' +
-              'ng-class="{\'progress-danger\': {{(value / max) > 0.75}}}">' +
+                  '<div class="progress progress-thin">' +
+              '<div class="progress-bar-info" style="width: {{value}}%"' +
+              'ng-class="{\'progress-bar-danger\': {{(value / max) > 0.75}}}">' +
               '{{value}}%' +
-              '</progress>'
+              '</div></div>'
         }
       };
     }

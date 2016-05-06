@@ -1,29 +1,22 @@
-<nav class="navbar navbar-dark navbar-fixed-top bg-inverse navbar-{{status}}" ng-controller="NavbarController">
-  <a class="navbar-brand" href="#"><i class="fa fa-cloud"></i> CEREBRO</a>
-
-  <div id="navbar">
-    <nav class="nav navbar-nav pull-xs-left" ng-show="host">
-      <a class="nav-item nav-link" href="#overview">overview</a>
-      <a class="nav-item nav-link" href="#rest">rest</a>
-    </nav>
-    <nav class="nav navbar-nav pull-xs-right">
-      <span class="nav-item nav-element">
-        <span class="title">
-          <a href="#connect" class="nav-item nav-link pull-right">
-            <i class="fa fa-plug pull-right"></i>
-          </a>
-        </span>
-      </span>
-    </nav>
-    <nav class="nav navbar-nav pull-xs-right">
-      <span class="nav-item nav-element">
+<nav class="navbar navbar-fixed-top navbar-{{status}}" ng-controller="NavbarController">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fa fa-cloud"></i> CEREBRO</a>
+    <div id="navbar">
+      <ul class="nav navbar-nav" ng-show="host">
+        <li><a class="nav-item nav-link" href="#overview"><i class="fa fa-sitemap"></i> overview</a></li>
+        <li><a class="nav-item nav-link" href="#rest"><i class="fa fa-edit"></i> rest</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="nav-item nav-link">
         <span ng-hide="host">
           <i>Not connected</i>
         </span>
         <span ng-show="host">
           {{host}}
         </span>
-      </span>
-    </nav>
+        </a></li>
+        <li><a href="#connect" class="nav-item nav-link"><i class="fa fa-plug"></i></a></li>
+      </ul>
+    </div>
   </div>
 </nav>

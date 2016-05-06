@@ -7,7 +7,7 @@ scalaVersion := "2.11.6"
 libraryDependencies ++= Seq(
   "org.webjars"       %% "webjars-play"  % "2.4.0-1",
   "org.webjars"       %  "angularjs"     % "1.5.0",
-  "org.webjars"       %  "bootstrap"     % "4.0.0-alpha.2",
+  "org.webjars"       %  "bootstrap"     % "3.3.6",
   "org.webjars"       %  "font-awesome"  % "4.5.0",
   "org.webjars.bower" %  "tether"        % "1.1.1",
   "org.elasticsearch" %  "elasticsearch" % "2.2.0",

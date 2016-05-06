@@ -4,7 +4,7 @@
     <div class="col-lg-5">
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-element">
-          <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm form-inverse" placeholder="filter indices by name or aliases">
+          <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm" placeholder="filter indices by name or aliases">
         </div>
         <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
           <input type="checkbox" ng-model="paginator.filter.closed">
@@ -19,7 +19,7 @@
     <div class="col-lg-5">
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-element">
-          <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm form-inverse"
+          <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm"
                  placeholder="filter nodes by name">
         </div>
       </div>
@@ -51,28 +51,28 @@
               <span class="title normal-action" type="button" id="dropcluster" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-caret-down fa-2x table-control"></i>
               </span>
-                <div class="dropdown-menu" aria-labelledby="dropcluster">
-                  <span class="dropdown-item" type="button" ng-click="closeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-folder"> </i> close selected
-                  </span>
-                  <span class="dropdown-item" type="button" ng-click="openIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-folder-open"> </i> open selected
-                  </span>
-                  <span class="dropdown-item" type="button" ng-click="optimizeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-wrench"> </i> optimize selected
-                  </span>
-                  <span class="dropdown-item" type="button" ng-click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-refresh"> </i> refresh selected
-                  </span>
-                  <span class="dropdown-item" type="button" ng-click="clearIndicesCache()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-circle-o"> </i> clear selected caches
-                  </span>
-                  <div class="dropdown-divider">
-                  </div>
-                  <span class="dropdown-item" type="button" ng-click="deleteIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-trash red"> </i> delete selected
-                  </span>
-                </div>
+                <ul class="dropdown-menu" aria-labelledby="dropcluster">
+                  <li ng-click="closeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-folder"> </i> close selected</a>
+                  </li>
+                  <li ng-click="openIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open selected</a>
+                  </li>
+                  <li ng-click="optimizeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-wrench"> </i> optimize selected</a>
+                  </li>
+                  <li ng-click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh selected</a>
+                  </li>
+                  <li ng-click="clearIndicesCache()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear selected caches</a>
+                  </li>
+                  <li class="divider" role="separator">
+                  </li>
+                  <li ng-click="deleteIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                    <a target="_self"><i class="fa fa-fw fa-trash red"> </i> delete selected</a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -83,36 +83,36 @@
               <span class="title normal-action" type="button" id="drop_{{index.name}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-caret-down pull-right"></i>{{index.name}}
               </span>
-              <div class="dropdown-menu" aria-labelledby="drop_{{index.name}}">
-                <span class="dropdown-item" type="button" ng-click="getIndexSettings(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-info-circle"> </i> show settings
-                </span>
-                <span class="dropdown-item" type="button" ng-click="getIndexMapping(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-code"> </i> show mappings
-                </span>
-                <span class="dropdown-item" type="button" ng-show="index.closed" ng-click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-folder-open"> </i> open index
-                </span>
-                <span class="dropdown-item" type="button" ng-hide="index.closed" ng-click="closeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-folder"> </i> close index
-                </span>
-                <span class="dropdown-item" type="button" ng-click="optimizeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-wrench"> </i> optimize index
-                </span>
-                <span class="dropdown-item" type="button" ng-click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-refresh"> </i> refresh index
-                </span>
-                <span class="dropdown-item" type="button" ng-click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <i class="fa fa-fw fa-circle-o"> </i> clear cache
-                </span>
+              <ul class="dropdown-menu" aria-labelledby="drop_{{index.name}}">
+                <li ng-click="getIndexSettings(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-info-circle"> </i> show settings</a>
+                </li>
+                <li ng-click="getIndexMapping(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-code"> </i> show mappings</a>
+                </li>
+                <li ng-show="index.closed" ng-click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open index</a>
+                </li>
+                <li ng-hide="index.closed" ng-click="closeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-folder"> </i> close index</a>
+                </li>
+                <li ng-click="optimizeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-wrench"> </i> optimize index</a>
+                </li>
+                <li ng-click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh index</a>
+                </li>
+                <li ng-click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear cache</a>
+                </li>
                 <!-- span class="dropdown-item" type="button">
                   <i class="fa fa-fw fa-cog"> </i> edit settings
                 </span TODO: implement -->
-                <div class="dropdown-divider"></div>
-                  <span class="dropdown-item" type="button" ng-click="deleteIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                    <i class="fa fa-fw fa-trash red"> </i> delete index
-                  </span>
-                </div>
+                <li class="divider"></li>
+                <li ng-click="deleteIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-trash red"> </i> delete index</a>
+                </li>
+              </ul>
               </div>
             <div class="subtitle">
           <span>

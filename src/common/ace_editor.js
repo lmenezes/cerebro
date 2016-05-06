@@ -28,7 +28,7 @@ function AceEditor(target) {
     this.format = function() {
         var content = this.editor.getValue();
         try {
-            if (isDefined(content) && content.trim().length > 0) {
+            if (content && content.trim().length > 0) {
                 this.error = null;
                 content = JSON.stringify(JSON.parse(content), undefined, 2);
                 this.editor.setValue(content, 0);

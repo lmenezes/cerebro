@@ -9,10 +9,11 @@ angular.module('cerebro').directive('ngProgress',
         },
         template: function (elem, attrs) {
           return '<span class="detail">{{text}}</span>' +
-              '<progress class="progress progress-thin" value="{{value}}" max="{{max}}"' +
-              'ng-class="{\'progress-danger\': {{(value / max) > 0.75}}}">' +
+                  '<div class="progress progress-thin">' +
+              '<div class="progress-bar-info" style="width: {{value}}%"' +
+              'ng-class="{\'progress-bar-danger\': {{(value / max) > 0.75}}}">' +
               '{{value}}%' +
-              '</progress>'
+              '</div></div>'
         }
       };
     }
