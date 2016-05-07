@@ -2,9 +2,9 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <i class="fa fa-times-circle-o normal-action pull-right" data-dismiss="modal" ng-click='service.close()'></i>
+        <i class="fa fa-times-circle-o pull-right normal-action" data-dismiss="modal"></i>
       </div>
-      <span class="modal-body" ng-show="service.text">{{service.text}}</span>
+      <div class="modal-body" ng-show="service.text">{{service.text}}</div>
       <div class="modal-body" ng-bind-html="service.info"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click='service.close()'>

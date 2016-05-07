@@ -1,17 +1,18 @@
-<div class="page-ctrl">
-  <span ng-show="page.previous" class="pgnt-btn normal-action bordered pull-left" ng-click="paginator.previousPage()">
-    <i class="fa fa-fw fa-angle-double-left"></i>
-  </span>
-    <span ng-hide="page.previous" class="pgnt-btn bordered pull-left">
-    <i class="fa fa-fw fa-angle-double-left inactive-action"></i>
-  </span>
-  <span ng-show="page.next" class="pgnt-btn normal-action bordered pull-right" ng-click="paginator.nextPage()">
-    <i class="fa fa-fw fa-angle-double-right"></i>
-  </span>
-  <span ng-hide="page.next" class="pgnt-btn bordered pull-right">
-    <i class="fa fa-fw fa-angle-double-right inactive-action"></i>
-  </span>
-  <span class="pgnt-info">
-    {{page.first | number:0}}-{{page.last | number:0}} of {{page.total | number:0}} {{label || ''}}
-  </span>
+<div class="row">
+  <div class="col-lg-12">
+
+    <nav class="pull-right">
+      <ul class="pager">
+        <li>
+          <span class="pager-text">{{page.first | number:0}}-{{page.last | number:0}} of {{page.total | number:0}}</span>
+        </li>
+        <li class="normal-action" ng-show="page.previous" ng-click="paginator.previousPage()"><a target="_self">&larr;</a></li>
+        <li class="disabled" ng-hide="page.previous"><a target="_self">&larr;</a></li>
+        <li class="normal-action" ng-show="page.next" ng-click="paginator.nextPage()"><a target="_self">&rarr;</a></li>
+        <li class="disabled" ng-hide="page.next"><a target="_self">&rarr;</a></li>
+      </ul>
+    </nav>
+
+  </div>
 </div>
+

@@ -888,7 +888,7 @@ angular.module('cerebro').directive('ngProgress',
           text: '=text'
         },
         template: function (elem, attrs) {
-          return '<span class="detail">{{text}}</span>' +
+          return '<span class="detail"><small>{{text}}</small></span>' +
                   '<div class="progress progress-thin">' +
               '<div class="progress-bar-info" style="width: {{value}}%"' +
               'ng-class="{\'progress-bar-danger\': {{(value / max) > 0.75}}}">' +
@@ -993,28 +993,28 @@ angular.module('cerebro').factory('AlertService', function() {
   // creates an error alert
   this.error = function(msg, resp, timeout) {
     timeout = timeout ? timeout : 7500;
-    var alert = new Alert(msg, resp, 'error', 'red', 'fa fa-warning');
+    var alert = new Alert(msg, resp, 'error', 'alert-danger', 'fa fa-warning');
     return this.addAlert(alert, timeout);
   };
 
   // creates an info alert
   this.info = function(msg, resp, timeout) {
     timeout = timeout ? timeout : 2500;
-    var alert = new Alert(msg, resp, 'info', 'blue', 'fa fa-info');
+    var alert = new Alert(msg, resp, 'info', 'alert-info', 'fa fa-info');
     return this.addAlert(alert, timeout);
   };
 
   // creates success alert
   this.success = function(msg, resp, timeout) {
     timeout = timeout ? timeout : 2500;
-    var alert = new Alert(msg, resp, 'success', 'green', 'fa fa-check');
+    var alert = new Alert(msg, resp, 'success', 'alert-success', 'fa fa-check');
     return this.addAlert(alert, timeout);
   };
 
   // creates a warn alert
   this.warn = function(msg, resp, timeout) {
     timeout = timeout ? timeout : 5000;
-    var alert = new Alert(msg, resp, 'warn', 'yellow', 'fa fa-info');
+    var alert = new Alert(msg, resp, 'warn', 'alert-warning', 'fa fa-info');
     return this.addAlert(alert, timeout);
   };
 

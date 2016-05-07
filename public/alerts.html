@@ -5,11 +5,11 @@
 		</span>
     <i ng-class="a.icon">&nbsp;</i>
     <a ng-class="a.class" data-toggle="collapse" data-parent="#alert_box_{{a.id}}" target="_self" href="#alert_details_{{a.id}}" ng-show="a.hasResponse()">
-      {{a.message}}
+      <span ng-class="a.class">{{a.message}}</span>
     </a>
     <span ng-show="!a.hasResponse()">{{a.message}}</span>
     <div ng-show="a.hasResponse()" id="alert_details_{{a.id}}" class="panel-collapse collapse">
-      <pre ng-class="a.class" class="alert response-pre">{{a.getResponse()}}</pre>
+      <pre class="alert">{{a.getResponse()}}</pre>
     </div>
   </div>
 </div>

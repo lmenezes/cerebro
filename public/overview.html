@@ -1,30 +1,27 @@
 <div ng-show="nodes">
   <div ng-include src="'stats.html'"></div>
   <div class="row">
-    <div class="col-lg-5">
+    <div class="col-lg-4">
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-element">
           <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm" placeholder="filter indices by name or aliases">
         </div>
         <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
-          <input type="checkbox" ng-model="paginator.filter.closed">
-          <i class="fa fa-fw fa-folder-o"> </i> closed ({{closed_indices}})
+          <input type="checkbox" ng-model="paginator.filter.closed"> closed ({{closed_indices}})
         </div>
         <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
-          <input type="checkbox" ng-model="paginator.filter.special">
-          <i class="fa fa-fw fa-asterisk"> </i> special ({{special_indices}})
+          <input type="checkbox" ng-model="paginator.filter.special"> .special ({{special_indices}})
         </div>
       </div>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-4">
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-element">
-          <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm"
-                 placeholder="filter nodes by name">
+          <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm" placeholder="filter nodes by name">
         </div>
       </div>
     </div>
-    <div class="col-lg-2">
+    <div class="col-lg-4 form-element">
       <ng-pagination page="page" paginator="paginator" label="'selected indices'"></ng-pagination>
     </div>
   </div>
@@ -32,7 +29,7 @@
   <table class="table table-bordered table-condensed table-rounded table-inverse shard-map">
     <thead>
       <tr>
-        <th>
+        <td>
           <div class="row">
             <div class="col-lg-3 col-md-6">
               <i class="fa fa-lock fa-2x table-control red normal-action" ng-click="enableShardAllocation()" ng-hide="shardAllocation"></i>
@@ -76,8 +73,8 @@
               </div>
             </div>
           </div>
-        </th>
-        <th ng-repeat="index in page.elements track by $index">
+        </td>
+        <td ng-repeat="index in page.elements track by $index">
           <div ng-show="index">
             <div class="dropdown">
               <span class="title normal-action" type="button" id="drop_{{index.name}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -121,25 +118,25 @@
             </div>
             <div class="detail">
         <span ng-hide="index.closed">
-          <span>shards: {{index.num_shards}} * {{index.num_replicas}} |</span>
-          <span>docs: {{index.doc_count | number}} |</span>
-          <span>size: {{index.size_in_bytes | bytes}}</span>
+          <span><small>shards: {{index.num_shards}} * {{index.num_replicas}} |</small></span>
+          <span><small>docs: {{index.doc_count | number}} |</small></span>
+          <span><small>size: {{index.size_in_bytes | bytes}}</small></span>
         </span>
               &nbsp;
             </div>
           </div>
-        </th>
+        </td>
       </tr>
     </thead>
     <tbody>
       <tr ng-show="unassigned_shards > 0">
         <td>
           <div class="subtitle">
-            <i class="fa fa-warning yellow"> </i> {{unassigned_shards}} unassigned shards
+            <i class="fa fa-warning alert-warning"> </i> {{unassigned_shards}} unassigned shards
           </div>
-          <div class="detail">
-            <span class="normal-action" ng-show="indices_filter.healthy" ng-click="indices_filter.healthy = false"><i>show only unhealthy indices</i></span>
-            <span class="normal-action" ng-hide="indices_filter.healthy" ng-click="indices_filter.healthy = true"><i>show all indices</i></span>
+          <div>
+            <span class="normal-action" ng-show="indices_filter.healthy" ng-click="indices_filter.healthy = false"><i><small>show only unhealthy indices</small></i></span>
+            <span class="normal-action" ng-hide="indices_filter.healthy" ng-click="indices_filter.healthy = true"><i><small>show all indices</small></i></span>
           </div>
         </td>
         <td ng-repeat="index in page.elements track by $index">
@@ -169,7 +166,7 @@
                     {{node.name}}
                   </span>
                 </div>
-                <div class="detail">{{node.host}}</div>
+                <div><small>{{node.host}}</small></div>
               </div>
             </div>
           </div>
