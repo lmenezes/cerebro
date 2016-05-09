@@ -1,10 +1,6 @@
 package models.overview
 
-import elastic.ElasticClient._
 import play.api.libs.json._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class ClusterOverview(clusterState: JsValue, nodesStats: JsValue, indicesStats: JsValue,
                       clusterSettings: JsValue, aliases: JsValue, clusterHealth: JsValue,
@@ -51,9 +47,12 @@ object Nodes {
       val client = (info \ "attributes" \ "client").asOpt[String].getOrElse("false").equals("true")
 
       val stats = (nodesStats \ "nodes" \ nodeId).as[JsObject]
-      val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l) // FIXME: 1.X
-    val diskFreeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0l) // FIXME: 1.X
-    val cpuPercent = (stats \ "process" \ "cpu" \ "percent").asOpt[JsNumber].getOrElse((stats \ "os" \ "user").as[JsNumber])
+      // FIXME: 1.X
+      val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)
+      // FIXME: 1.X
+      val diskFreeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0l)
+      // FIXME 1.X
+      val cpuPercent = (stats \ "os" \ "cpu" \ "user").asOpt[JsNumber].getOrElse((stats \ "process" \ "cpu" \ "percent").as[JsNumber])
       Json.obj(
         "id"             -> JsString(nodeId),
         "current_master" -> JsBoolean(nodeId.equals(currentMaster)),
