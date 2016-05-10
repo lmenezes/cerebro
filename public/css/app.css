@@ -72,7 +72,7 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .jstBracket { white-space: pre-wrap; }
 .jstBool { color: #1CA8DD; }
 .jstNum { color: #9F85FF; }
-.jstNull { color: #8B8F95; }
+.jstNull { color: #D0D0D0; }
 .jstStr { color: #1AC98E; }
 .jstFold:after { content: ' -'; cursor: pointer; }
 .jstExpand { white-space: normal; }
