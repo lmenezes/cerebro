@@ -47,15 +47,12 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .stat-value { font-size: 16px; }
 .stat-description { font-size: 12px;  font-weight: 300; }
 
-
 /** node cells **/
 .node-badges { width: 20px; display: inline-block; float: left; }
 .node-info { margin-left: 20px; }
 .node-labels { padding-top: 5px; }
 
 .normal-action { cursor: pointer; }
-.form-element { margin-bottom: 10px; }
-.inline-checkbox { margin-top: 6px; }
 .table-control { line-height: 50px !important; }
 
 /* Bootstrap tweaking **/
@@ -65,6 +62,8 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .pager { margin: 0px 0px !important; }
 .alerts { padding-top: 40px; position: fixed; padding-left: 50px; right: 25px; width: 50%; top: 30px; z-index: 1000000; }
 .alert-block { opacity: 0.90; }
+.radio, .checkbox { position: relative; display: block; margin-top: 7px; margin-bottom: 7px; }
+.radio+.radio, .checkbox+.checkbox { margin-top: 7px; }
 
 /* JSON TREE CSS */
 .jstValue { white-space: pre-wrap; font-size: 12px; font-weight: 400; font-family: Monaco, Menlo, Consolas, "Courier New", monospace; line-height: normal; display: block; }

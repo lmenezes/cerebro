@@ -3,25 +3,33 @@
   <div class="row">
     <div class="col-lg-4">
       <div class="row">
-        <div class="col-lg-6 col-sm-6 form-element">
+        <div class="col-lg-6 col-sm-6 form-group">
           <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm" placeholder="filter indices by name or aliases">
         </div>
-        <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
-          <input type="checkbox" ng-model="paginator.filter.closed"> closed ({{closed_indices}})
+        <div class="col-lg-3 col-sm-3 col-xs-6 form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="paginator.filter.closed"> closed ({{closed_indices}})
+            </label>
+          </div>
         </div>
-        <div class="col-lg-3 col-sm-3 col-xs-6 form-element inline-checkbox">
-          <input type="checkbox" ng-model="paginator.filter.special"> .special ({{special_indices}})
+        <div class="col-lg-3 col-sm-3 col-xs-6 form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="paginator.filter.special"> .special ({{special_indices}})
+            </label>
+          </div>
         </div>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="row">
-        <div class="col-lg-6 col-sm-6 form-element">
+        <div class="col-lg-6 col-sm-6 form-group">
           <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm" placeholder="filter nodes by name">
         </div>
       </div>
     </div>
-    <div class="col-lg-4 form-element">
+    <div class="col-lg-4 form-group">
       <ng-pagination page="page" paginator="paginator" label="'selected indices'"></ng-pagination>
     </div>
   </div>
