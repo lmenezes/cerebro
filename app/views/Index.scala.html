@@ -11,13 +11,8 @@
         <link rel="stylesheet" href='@routes.Assets.versioned("css/bootstrap.min.css")'>
         <link rel="stylesheet" href='@routes.Assets.versioned("css/app.css")'>
         <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/font-awesome.min.css"))'>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("tether.min.js"))'></script>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.js"))'></script>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))'></script>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular-route.min.js"))'></script>
-        <script src='@routes.Assets.versioned("app.js")'></script>
         <script src='@routes.Assets.versioned("lib.js")'></script>
+        <script src='@routes.Assets.versioned("app.js")'></script>
     </head>
     <body>
         <div ng-include src="'alerts.html'" ng-controller="AlertsController" class="alerts"></div>

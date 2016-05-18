@@ -24,7 +24,14 @@ module.exports = function(grunt) {
     concat: {
       vendorjs: {
         src: [
-            'src/lib/*/*.js'
+          'src/lib/jquery/*.js',
+          'src/lib/angularjs/angular.min.js',
+          'src/lib/angularjs/angular-animate.min.js',
+          'src/lib/angularjs/angular-route.min.js',
+          'src/lib/bootstrap/bootstrap.min.js',
+          'src/lib/jsontree/jsontree.min.js',
+          'src/lib/typeahead/typeahead.min.js',
+          'src/lib/ace/ace.min.js'
         ],
         dest: 'public/lib.js'
       },
