@@ -792,11 +792,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
 
   }]);
 
-angular.module('cerebro').controller('RestController', ['$scope', '$http', '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+angular.module('cerebro').controller('RestController', ['$scope', '$http', '$sce', 'DataService', 'AlertService',
+    'ModalService', 'AceEditorService',
     function ($scope, $http, $sce, DataService, AlertService, ModalService, AceEditorService) {
 
-        $scope.editor = AceEditorService.init('rest-client-editor');
-        $scope.editor.setValue("{}");
+        $scope.editor = undefined;
         $scope.response = undefined;
 
         $scope.mappings = undefined;
@@ -820,6 +820,8 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http', '$sce
         };
 
         $scope.initializeController = function() {
+            $scope.editor = AceEditorService.init('rest-client-editor');
+            $scope.editor.setValue("{}");
             DataService.getClusterMapping(
                 function(response) {
                     $scope.mappings = response;
@@ -833,12 +835,9 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http', '$sce
 
         $scope.updateOptions = function(text) {
             if ($scope.mappings) {
-                var autocomplete = new URLAutocomplete($scope.mappings);
-                $scope.options = autocomplete.getAlternatives(text);
-                console.log($scope.options);
+                $scope.options = new URLAutocomplete($scope.mappings).getAlternatives(text);
             }
         };
-
     }]);
 
 angular.module('cerebro').directive('ngPagination', ['$document', function($document) {
