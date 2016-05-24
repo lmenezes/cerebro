@@ -1,5 +1,5 @@
-angular.module('cerebro').controller('NavbarController', ['PageService', '$scope', '$http', 'DataService',
-  function (PageService, $scope, $http, DataService) {
+angular.module('cerebro').controller('NavbarController', ['$scope', '$http', 'PageService', 'DataService',
+  function ($scope, $http, PageService, DataService) {
 
     $scope.status = undefined;
     $scope.cluster_name = undefined;
