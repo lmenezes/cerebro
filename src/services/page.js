@@ -42,13 +42,13 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope', '
           var colors = {green: '#1AC98E', yellow: '#E4D836', red: '#E64759'};
           var color = clusterStatus ? colors[clusterStatus] : '#222426';
           var canvas = $document[0].createElement('canvas');
-          canvas.width = 16;
-          canvas.height = 16;
+          canvas.width = 32;
+          canvas.height = 34;
           var context = canvas.getContext('2d');
           context.drawImage(img, 0, 0);
           context.globalCompositeOperation = 'source-in';
           context.fillStyle = color;
-          context.fillRect(0, 0, 16, 16);
+          context.fillRect(0, 0, 32, 34);
           context.fill();
           link.type = 'image/png';
           link.href = canvas.toDataURL();

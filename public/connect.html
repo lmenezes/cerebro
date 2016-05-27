@@ -1,33 +1,35 @@
 <div class="row">
-  <div class="col-lg-offset-4 col-lg-4">
-    <div>
-      <h2><i class="fa fa-cloud"></i> Welcome to Cerebro</h2>
-    </div>
-    <div class="content">
-      <div>
-        <label>Known hosts</label>
-      </div>
-      <table class="table table-bordered table-condensed table-rounded shard-map">
-        <tr ng-repeat="host in hosts track by $index">
-          <td class="normal-action" ng-click="connect(host)">
-            <span>{{host}}</span>
-          </td>
-        </tr>
-      </table>
-      <div class="form-group row">
-        <div class="col-xs-12">
-          <label for="newHost">Connect to a new host</label>
-          <input id="newHost" type="text" ng-model="host" class="form-control form-control-sm" placeholder="example: http://localhost:9200">
+    <div class="col-lg-offset-4 col-lg-4">
+        <div>
+            <div class="text-center">
+                <img src="img/logo.png" height="160px">
+                <h4>Cerebro <small>v0.1.0</small></h4>
+            </div>
         </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-xs-12">
-        <span class="pull-left subtitle" ng-show="connecting">
-          <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting
-        </span>
-          <button type="button" class="btn btn-success pull-right" ng-click="connect(host)">Connect</button>
+        <div>
+            <label>Known hosts</label>
+            <table class="table table-bordered table-condensed table-rounded shard-map">
+                <tr ng-repeat="host in hosts track by $index">
+                    <td class="normal-action" ng-click="connect(host)">
+                        <span>{{host}}</span>
+                    </td>
+                </tr>
+            </table>
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    <label for="newHost">Connect to a new host</label>
+                    <input id="newHost" type="text" ng-model="host" class="form-control form-control-sm"
+                           placeholder="example: http://localhost:9200">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-12">
+                <span class="pull-left subtitle" ng-show="connecting">
+                    <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting
+                </span>
+                    <button type="button" class="btn btn-success pull-right" ng-click="connect(host)">Connect</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
