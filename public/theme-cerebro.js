@@ -12,7 +12,7 @@ define("ace/theme/cerebro",["require","exports","module","ace/lib/dom"],function
       '.ace-cerebro .ace_marker-layer .ace_active-line {background: #373a3c;}' +     // Active line
       '.ace-cerebro .ace_marker-layer .ace_selection {background: #55595c;}' +       // Selected text
       '.ace-cerebro .ace_print-margin {width: 1px;background: #55595c;}' +           // Right margin
-      '.ace-cerebro .ace_indent-guide {border-right: 1px dotted #55595c;}' +         // Indent guide
+      '.ace-cerebro .ace_indent-guide {background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y; opacity: 0.2}' +         // Indent guide
       '.ace-cerebro .ace_variable.ace_class {color: red;}' +                         // ????
       '.ace-cerebro .ace_constant.ace_buildin {color: #0086B3;}' +                   // ????
       '.ace-cerebro .ace_support.ace_function {color: #0086B3;}' +                   // ????
