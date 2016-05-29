@@ -561,12 +561,13 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
     $scope.indices = undefined;
     $scope.nodes = undefined;
     $scope.unassigned_shards = 0;
-    $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
-    $scope.nodes_filter = new NodeFilter('', true, false, false, 0);
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
     $scope.expandedView = false;
     $scope.shardAllocation = true;
+
+    $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
+    $scope.nodes_filter = new NodeFilter('', true, false, false, 0);
 
     $scope.getPageSize = function() {
       return Math.max(Math.round($window.innerWidth / 280), 1);
@@ -597,6 +598,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http', '
           } else {
             $scope.indices = undefined;
             $scope.nodes = undefined;
+            $scope.unassigned_shards = 0;
+            $scope.closed_indices = 0;
+            $scope.special_indices = 0;
+            $scope.shardAllocation = true;
           }
         }
     );
