@@ -1,9 +1,9 @@
 function Request(path, method, body) {
 
-    this.path = path;
+  this.path = path;
 
-    this.method = method;
+  this.method = method;
 
-    this.body = body;
+  this.body = body;
 
 }

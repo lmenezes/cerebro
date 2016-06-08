@@ -25,11 +25,11 @@ describe('RestController', function() {
         expect(this.scope.options).toEqual([]);
     });
 
-    describe('initializeController', function() {
+    describe('setup', function() {
         it('initializes Ace editor', function () {
             var fakeEditor = {setValue: function() {}};
             spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
-            this.scope.initializeController();
+            this.scope.setup();
             expect(this.AceEditorService.init).toHaveBeenCalledWith('rest-client-editor');
             expect(this.scope.editor).toEqual(fakeEditor);
         });
@@ -42,7 +42,7 @@ describe('RestController', function() {
             };
             spyOn(this.DataService, "getClusterMapping").andCallThrough();
             spyOn(this.scope, "updateOptions").andReturn();
-            this.scope.initializeController();
+            this.scope.setup();
             expect(this.DataService.getClusterMapping).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
             expect(this.scope.mappings).toEqual({"mappings":"mappingsValue"});
             expect(this.scope.updateOptions).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('RestController', function() {
             spyOn(this.DataService, "getClusterMapping").andCallThrough();
             spyOn(this.AlertService, "error").andReturn();
             spyOn(this.scope, "updateOptions").andReturn();
-            this.scope.initializeController();
+            this.scope.setup();
             expect(this.scope.updateOptions).not.toHaveBeenCalled();
             expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster mappings', 'some reason');
         });

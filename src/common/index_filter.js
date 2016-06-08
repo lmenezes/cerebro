@@ -25,34 +25,34 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
 
   this.clone = function() {
     return new IndexFilter(
-        this.name,
-        this.closed,
-        this.special,
-        this.healthy,
-        this.asc,
-        this.timestamp
+      this.name,
+      this.closed,
+      this.special,
+      this.healthy,
+      this.asc,
+      this.timestamp
     );
   };
 
   this.equals = function(other) {
     return (
-        other !== null &&
-        this.name === other.name &&
-        this.closed === other.closed &&
-        this.special === other.special &&
-        this.healthy === other.healthy &&
-        this.asc === other.asc &&
-        this.timestamp === other.timestamp
+      other !== null &&
+      this.name === other.name &&
+      this.closed === other.closed &&
+      this.special === other.special &&
+      this.healthy === other.healthy &&
+      this.asc === other.asc &&
+      this.timestamp === other.timestamp
     );
   };
 
   this.isBlank = function() {
     return (
-        !this.name &&
-        this.closed &&
-        this.special &&
-        this.healthy &&
-        this.asc
+      !this.name &&
+      this.closed &&
+      this.special &&
+      this.healthy &&
+      this.asc
     );
   };
 

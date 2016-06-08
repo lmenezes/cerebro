@@ -1,5 +1,5 @@
-angular.module('cerebro').controller('ModalController', ['$scope', 'ModalService',
-  function($scope, ModalService) {
+angular.module('cerebro').controller('ModalController', ['$scope',
+  'ModalService', function($scope, ModalService) {
 
     $scope.service = ModalService;
 

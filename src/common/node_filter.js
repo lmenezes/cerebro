@@ -15,12 +15,12 @@ function NodeFilter(name, data, master, client, timestamp) {
 
   this.equals = function(other) {
     return (
-        other !== null &&
-        this.name == other.name &&
-        this.data == other.data &&
-        this.master == other.master &&
-        this.client == other.client &&
-        this.timestamp == other.timestamp
+      other !== null &&
+      this.name == other.name &&
+      this.data == other.data &&
+      this.master == other.master &&
+      this.client == other.client &&
+      this.timestamp == other.timestamp
     );
   };
 
@@ -38,9 +38,9 @@ function NodeFilter(name, data, master, client, timestamp) {
 
   this.matchesType = function(node) {
     return (
-        node.data && this.data ||
-        node.master && this.master ||
-        node.client && this.client
+      node.data && this.data ||
+      node.master && this.master ||
+      node.client && this.client
     );
   };
 

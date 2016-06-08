@@ -1,16 +1,15 @@
-angular.module('cerebro').factory('ModalService', ['$sce', function ($sce) {
+angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
 
-  this.text = undefined;
-  this.info = undefined;
+  var confirmCallback;
 
-  var confirmCallback = undefined;
-
-  this.promptConfirmation = function (body, callback) {
+  this.promptConfirmation = function(body, callback) {
     this.text = body;
+    this.info = undefined;
     confirmCallback = callback;
   };
 
-  this.showInfo = function (info) {
+  this.showInfo = function(info) {
+    this.text = undefined;
     this.info = $sce.trustAsHtml(JSONTree.create(info));
   };
 

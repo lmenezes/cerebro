@@ -1,9 +1,9 @@
-angular.module('cerebro').factory('PageService', ['DataService', '$rootScope', '$document',
-  function (DataService, $rootScope, $document) {
+angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
+  '$document', function(DataService, $rootScope, $document) {
 
     var link = $document[0].querySelector('link[rel~=\'icon\']');
-    var clusterName = undefined;
-    var clusterStatus = undefined;
+    var clusterName;
+    var clusterStatus;
 
     if (link) {
       var faviconUrl = link.href;
@@ -12,18 +12,18 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope', '
     }
 
     $rootScope.$watch(
-        function () {
-          return DataService.getData();
-        },
-        function (data) {
-          if (data) {
-            setPageTitle(data.cluster_name);
-            setFavIconColor(data.status);
-          }
+      function() {
+        return DataService.getData();
+      },
+      function(data) {
+        if (data) {
+          setPageTitle(data.cluster_name);
+          setFavIconColor(data.status);
         }
+      }
     );
 
-    var setPageTitle = function (newClusterName) {
+    var setPageTitle = function(newClusterName) {
       if (clusterName !== newClusterName) {
         if (newClusterName) {
           clusterName = newClusterName;
@@ -36,7 +36,7 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope', '
     };
 
     var setFavIconColor = function(newClusterStatus) {
-      if (link && clusterStatus !== newClusterStatus) {
+      if (link) {
         clusterStatus = newClusterStatus;
         try {
           var colors = {green: '#1AC98E', yellow: '#E4D836', red: '#E64759'};

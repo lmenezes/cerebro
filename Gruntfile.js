@@ -51,7 +51,12 @@ module.exports = function(grunt) {
     jshint: {
       cerebro: {
         src: [
-
+          'src/common/*.js',
+          'src/controllers/*.js',
+          'src/directives/*.js',
+          'src/filters/*.js',
+          'src/services/*.js',
+          'src/stats/*.js',
         ]
       }
     },
@@ -60,6 +65,20 @@ module.exports = function(grunt) {
     },
     karma: {
       unit: {configFile: 'tests/karma.config.js', keepalive: true}
+    },
+    jscs: {
+      src: [
+        'src/common/*.js',
+        'src/controllers/*.js',
+        'src/directives/*.js',
+        'src/filters/*.js',
+        'src/services/*.js',
+        'src/stats/*.js',
+      ],
+      options: {
+        preset: 'google',
+        requireCamelCaseOrUpperCaseIdentifiers: "ignoreProperties"
+      }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -73,6 +92,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jscs");
   grunt.registerTask('dev', ['watch'])
   grunt.registerTask('build',
-      ['clean', 'copy', 'concat', 'qunit' ]);
+      ['clean', 'jshint', 'jscs', 'concat', 'copy', 'qunit' ]);
   grunt.registerTask('test', ['karma'])
 };
