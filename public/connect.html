@@ -26,15 +26,24 @@
       </div>
       <div class="form-group row">
         <div class="col-xs-12 text-right">
-          <small>Authentication</small>
-          <i class="fa fa-angle-down" data-toggle="collapse" data-target="#collapseAuth" ng-hide="showAuth" ng-click="showAuth = true"></i>
-          <i class="fa fa-angle-up" data-toggle="collapse" data-target="#collapseAuth" ng-show="showAuth" ng-click="showAuth = false"></i>
+          <span ng-hide="showAuth" ng-click="showAuth = true" data-toggle="collapse" data-target="#collapseAuth">
+            <small>Authentication</small>
+            <i class="fa fa-angle-down" ></i>
+          </span>
+          <span ng-show="showAuth" ng-click="showAuth = false" data-toggle="collapse" data-target="#collapseAuth">
+            <small>Authentication</small>
+            <i class="fa fa-angle-up"></i>
+          </span>
           <div class="collapse text-left" id="collapseAuth">
-            <label for="username">Username</label>
-            <input id="username" type="text" ng-model="username" class="form-control form-control-sm"
-                   placeholder="admin">
-            <label for="password">Password</label>
-            <input id="password" type="text" ng-model="password" class="form-control form-control-sm">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input id="username" type="text" ng-model="username" class="form-control form-control-sm"
+                     placeholder="admin">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input id="password" type="text" ng-model="password" class="form-control form-control-sm">
+            </div>
           </div>
         </div>
       </div>
