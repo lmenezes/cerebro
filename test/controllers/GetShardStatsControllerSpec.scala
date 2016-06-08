@@ -2,7 +2,7 @@ package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
 import exceptions.MissingRequiredParamException
-import models.CerebroRequest
+import models.{CerebroRequest, ElasticServer}
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
@@ -27,11 +27,11 @@ object GetShardStatsControllerSpec extends Specification with Mockito {
   def getShardStats = {
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> 1)
     val client = mock[ElasticClient]
-    client.getShardStats("someIndex", "somehost") returns Future.successful(ElasticResponse(200, expectedStats))
-    client.getIndexRecovery("someIndex", "somehost") returns Future.successful(ElasticResponse(200, expectedRecovery))
+    client.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
+    client.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
     val result = controller.processRequest(CerebroRequest(body), client)
-    there was one(client).getShardStats("someIndex", "somehost")
-    there was one(client).getIndexRecovery("someIndex", "somehost")
+    there was one(client).getShardStats("someIndex", ElasticServer("somehost", None))
+    there was one(client).getIndexRecovery("someIndex", ElasticServer("somehost", None))
     contentAsJson(result) mustEqual expectedShardStats
     status(result) mustEqual 200
   }

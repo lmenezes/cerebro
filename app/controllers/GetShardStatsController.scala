@@ -1,6 +1,6 @@
 package controllers
 
-import models.ShardStats
+import models.{ElasticServer, ShardStats}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -10,7 +10,7 @@ class GetShardStatsController extends BaseController {
     val index = request.get("index")
     val shard = request.getInt("shard")
     val node = request.get("node")
-    client.getShardStats(index, request.host).zip(client.getIndexRecovery(index, request.host)).map {
+    client.getShardStats(index, ElasticServer(request.host, request.authentication)).zip(client.getIndexRecovery(index, ElasticServer(request.host, request.authentication))).map {
       case (stats, recovery) =>
         Status(200)(ShardStats(index, node, shard, stats.body, recovery.body))
     }

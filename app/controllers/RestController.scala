@@ -1,5 +1,7 @@
 package controllers
 
+import models.ElasticServer
+
 class RestController extends ElasticActionController {
 
   def processElasticRequest = (request, client) => {
@@ -7,7 +9,7 @@ class RestController extends ElasticActionController {
       request.get("method"),
       request.get("path"),
       request.getOpt("data"),
-      request.host
+      ElasticServer(request.host, request.authentication)
     )
   }
 

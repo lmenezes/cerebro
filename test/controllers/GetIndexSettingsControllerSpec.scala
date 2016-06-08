@@ -1,8 +1,8 @@
 package controllers
 
-import elastic.{ElasticResponse, ElasticClient}
+import elastic.{ElasticClient, ElasticResponse}
 import exceptions.MissingRequiredParamException
-import models.CerebroRequest
+import models.{CerebroRequest, ElasticServer}
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
@@ -45,9 +45,9 @@ object GetIndexSettingsControllerSpec extends Specification with Mockito {
     )
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex")
     val client = mock[ElasticClient]
-    client.getIndexSettings("someIndex", "somehost") returns Future.successful(ElasticResponse(200, expectedResponse))
+    client.getIndexSettings("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).getIndexSettings("someIndex", "somehost")
+    there was one(client).getIndexSettings("someIndex", ElasticServer("somehost", None))
     response.body mustEqual expectedResponse
     response.status mustEqual 200
   }

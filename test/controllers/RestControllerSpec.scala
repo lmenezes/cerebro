@@ -2,7 +2,7 @@ package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
 import exceptions.MissingRequiredParamException
-import models.CerebroRequest
+import models.{CerebroRequest, ElasticServer}
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
@@ -38,9 +38,9 @@ object RestControllerSpec extends Specification with Mockito {
     )
     val body = Json.obj("host" -> "somehost", "method" -> "GET", "path" -> "/someesapi")
     val client = mock[ElasticClient]
-    client.executeRequest("GET", "/someesapi", None, "somehost") returns Future.successful(ElasticResponse(200, expectedResponse))
+    client.executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).executeRequest("GET", "/someesapi", None, "somehost")
+    there was one(client).executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None))
     response.body mustEqual expectedResponse
     response.status mustEqual 200
   }

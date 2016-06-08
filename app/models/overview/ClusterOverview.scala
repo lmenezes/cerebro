@@ -111,7 +111,7 @@ object Indices {
         "deleted_docs"        -> (stats \ "primaries" \ "docs" \ "deleted").asOpt[JsNumber].getOrElse(JsNumber(0)),
         "size_in_bytes"       -> (stats \ "primaries" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
         "total_size_in_bytes" -> (stats \ "total" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
-        "aliases"             -> JsArray((aliases \ index \ "aliases").as[JsObject].keys.map(JsString(_)).toSeq),
+        "aliases"             -> JsArray((aliases \ index \ "aliases").asOpt[JsObject].getOrElse(Json.obj()).keys.map(JsString(_)).toSeq), // 1.4 < does not return aliases obj
         "num_shards"          -> JsNumber(numShards),
         "num_replicas"        -> JsNumber(numReplicas),
         "shards"              -> JsObject(indexShards)

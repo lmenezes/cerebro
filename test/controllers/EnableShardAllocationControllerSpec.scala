@@ -1,7 +1,7 @@
 package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
-import models.CerebroRequest
+import models.{CerebroRequest, ElasticServer}
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
@@ -41,9 +41,9 @@ object EnableShardAllocationControllerSpec extends Specification with Mockito {
     )
     val body = Json.obj("host" -> "somehost")
     val client = mock[ElasticClient]
-    client.enableShardAllocation("somehost") returns Future.successful(ElasticResponse(200, expectedResponse))
+    client.enableShardAllocation(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).enableShardAllocation("somehost")
+    there was one(client).enableShardAllocation(ElasticServer("somehost", None))
     response.body mustEqual expectedResponse
     response.status mustEqual 200
   }
