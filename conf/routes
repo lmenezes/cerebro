@@ -29,6 +29,5 @@ GET        /apis/hosts                       @controllers.HostsController.index
 
 
 # Map the JS resource paths
-GET        /webjars/*file                    controllers.WebJarAssets.at(file)
 GET        /assets/*file                     controllers.Assets.at(path="/public", file)
 GET        /*file                            controllers.Assets.versioned(path="/public", file: Asset)
