@@ -72,8 +72,8 @@
                 <li ng-click="openIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open selected</a>
                 </li>
-                <li ng-click="optimizeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
-                  <a target="_self"><i class="fa fa-fw fa-wrench"> </i> optimize selected</a>
+                <li ng-click="forceMerges()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-wrench"> </i> force merge selected</a>
                 </li>
                 <li ng-click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh selected</a>
@@ -113,8 +113,8 @@
                   target="_self">
                 <a target="_self"><i class="fa fa-fw fa-folder"> </i> close index</a>
               </li>
-              <li ng-click="optimizeIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
-                <a target="_self"><i class="fa fa-fw fa-wrench"> </i> optimize index</a>
+              <li ng-click="forceMerge(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                <a target="_self"><i class="fa fa-fw fa-wrench"> </i> force merge</a>
               </li>
               <li ng-click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh index</a>

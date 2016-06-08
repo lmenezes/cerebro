@@ -11,7 +11,7 @@ POST       /main                             @controllers.Main.execute
 POST       /apis/overview                    @controllers.ClusterOverviewController.execute
 POST       /apis/close_indices               @controllers.CloseIndexController.execute
 POST       /apis/open_indices                @controllers.OpenIndexController.execute
-POST       /apis/optimize_indices            @controllers.OptimizeIndexController.execute
+POST       /apis/force_merge                 @controllers.ForceMergeController.execute
 POST       /apis/clear_indices_cache         @controllers.ClearIndexCacheController.execute
 POST       /apis/refresh_indices             @controllers.RefreshIndexController.execute
 POST       /apis/delete_indices              @controllers.DeleteIndexController.execute

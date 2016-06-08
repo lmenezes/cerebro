@@ -705,11 +705,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
-    $scope.optimizeIndex = function(index) {
+    $scope.forceMerge = function(index) {
       ModalService.promptConfirmation(
         'Optimize index ' + index + '?',
         function() {
-          DataService.optimizeIndex(index, success, error);
+          DataService.forceMerge(index, success, error);
         }
       );
     };
@@ -740,14 +740,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
-    $scope.optimizeIndices = function() {
+    $scope.forceMerges = function() {
       var indices = $scope.paginator.getResults().map(function(index) {
         return index.name;
       });
       ModalService.promptConfirmation(
         'Optimize all ' + indices.length + ' selected indices?',
         function() {
-          DataService.optimizeIndex(indices.join(','), success, error);
+          DataService.forceMerge(indices.join(','), success, error);
         }
       );
     };
@@ -1138,8 +1138,8 @@ angular.module('cerebro').factory('DataService',
       request('/apis/open_indices', {indices: index}, success, error);
     };
 
-    this.optimizeIndex = function(index, success, error) {
-      request('/apis/optimize_indices', {indices: index}, success, error);
+    this.forceMerge = function(index, success, error) {
+      request('/apis/force_merge', {indices: index}, success, error);
     };
 
     this.refreshIndex = function(index, success, error) {

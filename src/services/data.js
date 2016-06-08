@@ -82,8 +82,8 @@ angular.module('cerebro').factory('DataService',
       request('/apis/open_indices', {indices: index}, success, error);
     };
 
-    this.optimizeIndex = function(index, success, error) {
-      request('/apis/optimize_indices', {indices: index}, success, error);
+    this.forceMerge = function(index, success, error) {
+      request('/apis/force_merge', {indices: index}, success, error);
     };
 
     this.refreshIndex = function(index, success, error) {

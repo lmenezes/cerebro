@@ -137,11 +137,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
-    $scope.optimizeIndex = function(index) {
+    $scope.forceMerge = function(index) {
       ModalService.promptConfirmation(
         'Optimize index ' + index + '?',
         function() {
-          DataService.optimizeIndex(index, success, error);
+          DataService.forceMerge(index, success, error);
         }
       );
     };
@@ -172,14 +172,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
-    $scope.optimizeIndices = function() {
+    $scope.forceMerges = function() {
       var indices = $scope.paginator.getResults().map(function(index) {
         return index.name;
       });
       ModalService.promptConfirmation(
         'Optimize all ' + indices.length + ' selected indices?',
         function() {
-          DataService.optimizeIndex(indices.join(','), success, error);
+          DataService.forceMerge(indices.join(','), success, error);
         }
       );
     };

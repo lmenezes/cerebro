@@ -11,19 +11,19 @@ import play.api.test.FakeApplication
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object OptimizeIndexControllerSpec extends Specification with Mockito {
+object ForceMergeControllerSpec extends Specification with Mockito {
 
   def is =
     s2"""
-    OptimizeIndexController should                       ${step(play.api.Play.start(FakeApplication()))}
-      invoke optimizeIndex                               $optimizeIndex
+    ForceMergeController should                       ${step(play.api.Play.start(FakeApplication()))}
+      invoke forceMerge                                  $forceMerge
       should throw exception if indices param is missing $missingIndices
                                                          ${step(play.api.Play.stop(FakeApplication()))}
       """
 
-  val controller = new OptimizeIndexController
+  val controller = new ForceMergeController
 
-  def optimizeIndex = {
+  def forceMerge = {
     val expectedResponse = Json.parse(
       """
         |{
@@ -37,9 +37,9 @@ object OptimizeIndexControllerSpec extends Specification with Mockito {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     val client = mock[ElasticClient]
-    client.optimizeIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    client.forceMerge("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).optimizeIndex("a,b,c", ElasticServer("somehost", None))
+    there was one(client).forceMerge("a,b,c", ElasticServer("somehost", None))
     response.body mustEqual expectedResponse
     response.status mustEqual 200
   }

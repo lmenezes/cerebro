@@ -67,8 +67,8 @@ trait ElasticClient {
   }
 
 
-  def optimizeIndex(index: String, target: ElasticServer) = {
-    val path = s"/$index/_optimize"
+  def forceMerge(index: String, target: ElasticServer) = {
+    val path = s"/$index/_forcemerge"
     execute(s"${target.host}$path", "POST", None, target.authentication)
   }
 
