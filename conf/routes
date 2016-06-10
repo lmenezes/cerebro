@@ -24,6 +24,8 @@ POST       /apis/enable_shard_allocation     @controllers.EnableShardAllocationC
 POST       /apis/get_shard_stats             @controllers.GetShardStatsController.execute
 POST       /apis/rest                        @controllers.RestController.execute
 POST       /apis/get_cluster_mapping         @controllers.GetClusterMappingController.execute
+POST       /apis/get_aliases                 @controllers.GetAliasesController.execute
+POST       /apis/update_aliases              @controllers.UpdateAliasesController.execute
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

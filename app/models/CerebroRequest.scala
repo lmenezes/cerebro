@@ -1,7 +1,7 @@
 package models
 
 import exceptions.{MissingRequiredParamException, MissingTargetHostException}
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 
 class CerebroRequest(val host: String, val authentication: Option[ESAuth], body: JsValue) {
 
@@ -14,7 +14,10 @@ class CerebroRequest(val host: String, val authentication: Option[ESAuth], body:
   def getArray(name: String) = (body \ name).asOpt[Array[String]].getOrElse(throw MissingRequiredParamException(name))
 
   def getOpt(name: String) =
-    (body \ name).asOpt[String]
+    (body \ name).asOpt[JsValue]
+
+  def getOptArray(name: String): Option[JsArray] =
+    (body \ name).asOpt[JsArray]
 
 }
 

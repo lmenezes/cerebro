@@ -2,6 +2,7 @@ package elastic
 
 import models.{ESAuth, ElasticServer}
 import play.api.Play.current
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.libs.ws.{WS, WSAuthScheme}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -121,8 +122,19 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
-  def executeRequest(method: String, path: String, data: Option[String], target: ElasticServer) =
-    execute(s"${target.host}/$path", method, data, target.authentication)
+  def getAliases(target: ElasticServer) = {
+    val path = "/_aliases"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def updateAliases(changes: Seq[JsValue], target: ElasticServer) = {
+    val path = "/_aliases"
+    val body = Json.obj("actions" -> JsArray(changes))
+    execute(s"${target.host}$path", "POST", Some(body.toString), target.authentication)
+  }
+
+  def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
+    execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
 
   private def execute[T](url: String, method: String, body: Option[String] = None, authentication: Option[ESAuth] = None) = {
     val request = authentication.foldLeft(WS.url(url).withMethod(method)) {

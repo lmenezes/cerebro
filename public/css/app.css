@@ -57,7 +57,7 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .table-control { line-height: 50px !important; }
 
 /* Bootstrap tweaking **/
-.btn { border: 2px solid !important; opacity: 0.85; }
+.btn { border: 1px solid !important; opacity: 0.85; }
 .btn:hover { opacity: 1 !important; }
 .table-header { font-size: 15px; font-weight: 400; }
 .pager { margin: 0px 0px !important; }
@@ -104,3 +104,5 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 
 /** pagination **/
 .pager-text { border: none !important; }
+
+.info-text { color: #6F7579; }

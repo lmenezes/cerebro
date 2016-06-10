@@ -127,6 +127,14 @@ angular.module('cerebro').factory('DataService',
       request('/apis/get_cluster_mapping', {}, success, error);
     };
 
+    this.getAliases = function(success, error) {
+      request('/apis/get_aliases', {}, success, error);
+    };
+
+    this.updateAliases = function(changes, success, error) {
+      request('/apis/update_aliases', {changes: changes}, success, error);
+    };
+
     this.execute = function(method, path, data, success, error) {
       var requestData = {method: method, data: data, path: path};
       request('/apis/rest', requestData, success, error);

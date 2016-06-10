@@ -1,0 +1,111 @@
+<div class="row">
+  <div class="col-md-6">
+    <h4>current aliases</h4>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="row" ng-show="paginator.getCollection().length">
+          <div class="col-md-6 form-group">
+            <input type="text" ng-model="paginator.filter.alias" class="form-control" placeholder="filter by alias">
+          </div>
+          <div class="col-md-6 form-group">
+            <input type="text" ng-model="paginator.filter.index" class="form-control" placeholder="filter by index">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <ng-pagination page="page" paginator="paginator"></ng-pagination>
+      </div>
+      <div class="col-xs-12">
+        <table class="table">
+          <tr ng-repeat="alias in page.elements track by $index" ng-show="alias">
+            <td>
+              <i class="fa fa-tag"></i> {{alias.alias}} <span class="info-text"> assigned to index</span> {{alias.index}}
+              <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="removeIndexAlias(alias)" ng-hide="alias.removed"></i>
+              <i class="fa fa-trash alert-danger pull-right disabled" ng-show="alias.removed"></i>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h4>changes</h4>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="alias" ng-model="new_alias.alias">
+          </div>
+          <span class="info-text">assigned to index </span>
+          <div class="form-group">
+            <select class="form-control" ng-model="new_alias.index"
+                    ng-options="i.name as i.name for i in indices | orderBy:'name'">
+              <option value="">select index</option>
+            </select>
+          </div>
+            <span data-toggle="collapse" data-target="#collapseAliasFilter"
+                  ng-click="displayAliasFilter = !displayAliasFilter">
+            <i class="fa normal-action"
+               ng-class="{'fa-expand': !displayAliasFilter, 'fa-compress': displayAliasFilter}"></i>
+            </span>
+          <div class="form-group pull-right">
+            <button type="submit" class="btn btn-info" ng-click="addAlias()">
+              <i class="fa fa-plus normal-action alert-info"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-xs-12 collapse form-group" id="collapseAliasFilter">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="row">
+                <div class="col-xs-12 form-group">
+                  <label class="form-label">index routing</label>
+                  <input type="text" class="form-control" ng-model="new_alias.index_routing">
+                </div>
+                <div class="col-xs-12 form-group">
+                  <label class="form-label">search routing</label>
+                  <input type="text" class="form-control" ng-model="new_alias.search_routing">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <label class="form-label">filter</label>
+              <div id="alias-filter-editor" class="ace-cerebro" style="height: 225px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <table class="table">
+          <tr ng-repeat="change in changes track by $index" ng-show="change">
+            <td>
+          <span ng-show="change.add">
+            <i class="fa fa-tag alert-info"></i> <b>{{change.add.alias}}</b> <span
+            class="info-text"> assigned to index</span> <b>{{change.add.index}}</b>
+        </span>
+        <span ng-show="change.remove">
+          <i class="fa fa-tag alert-danger"></i> <b>{{change.remove.alias}}</b> <span
+          class="info-text"> unassigned from index</span> <b>{{change.remove.index}}</b>
+        </span>
+          <span class="pull-right">
+            <i class="fa fa-undo normal-action" ng-click="revertChange(change, $index)"></i>
+          </span>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-lg-12 text-right">
+        <div class="form-group">
+          <div class="btn-group">
+            <button type="submit" class="btn btn-success" ng-click="saveChanges()" ng-show="changes.length">
+              apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

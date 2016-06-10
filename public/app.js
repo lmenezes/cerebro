@@ -14,6 +14,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$ro
             templateUrl: 'rest.html',
             controller: 'RestController'
         }).
+        when('/aliases', {
+          templateUrl: 'aliases.html',
+          controller: 'AliasesController'
+        }).
         otherwise({redirectTo: '/connect'});
   }]);
 
@@ -30,9 +34,6 @@ function AceEditor(target) {
     fontWeight: '400'
   });
 
-  // validation error
-  this.error = null;
-
   // sets value and moves cursor to beggining
   this.setValue = function(value) {
     this.editor.setValue(value, 1);
@@ -40,28 +41,98 @@ function AceEditor(target) {
   };
 
   this.getValue = function() {
-    return this.editor.getValue();
+    var content = this.editor.getValue();
+    if (content.trim()) {
+      return JSON.parse(content);
+    }
   };
 
   // formats the json content
   this.format = function() {
-    var content = this.editor.getValue();
     try {
-      if (content && content.trim().length > 0) {
-        this.error = null;
-        content = JSON.stringify(JSON.parse(content), undefined, 2);
-        this.editor.setValue(content, 0);
-        this.editor.gotoLine(0, 0, false);
-      }
-    } catch (error) {
-      this.error = error.toString();
+      var content = this.editor.getValue();
+      this.editor.setValue(content, 0);
+      this.editor.gotoLine(0, 0, false);
+    } catch (error) { // nothing to do
     }
-    return content;
   };
 
-  this.hasContent = function() {
-    return this.editor.getValue().trim().length > 0;
+}
+
+function Alias(alias, index, filter, indexRouting, searchRouting) {
+  this.alias = alias ? alias.toLowerCase() : '';
+  this.index = index ? index.toLowerCase() : '';
+  this.filter = filter ? filter : '';
+  this.index_routing = indexRouting ? indexRouting : '';
+  this.search_routing = searchRouting ? searchRouting : '';
+
+  this.validate = function() {
+    if (!this.alias) {
+      throw 'Alias must have a non empty name';
+    }
+    if (!this.index) {
+      throw 'Alias must have a valid index name';
+    }
   };
+
+  var cleanInput = function(input) {
+    return input ? input.trim() : undefined;
+  };
+
+  this.toJson = function() {
+    return {
+      alias: this.alias,
+      index: this.index,
+      filter: this.filter,
+      index_routing: cleanInput(this.index_routing),
+      search_routing: cleanInput(this.search_routing)
+    };
+  };
+}
+
+function AliasFilter(index, alias) {
+
+  this.index = index;
+  this.alias = alias;
+
+  this.clone = function() {
+    return new AliasFilter(this.index, this.alias);
+  };
+
+  this.getSorting = function() {
+    return function(a, b) {
+      if (a.alias === b.alias) {
+        return a.index.localeCompare(b.index);
+      }
+      return a.alias.localeCompare(b.alias);
+    };
+  };
+
+  this.equals = function(other) {
+    return (other !== null &&
+    this.index == other.index &&
+    this.alias == other.alias);
+  };
+
+  this.isBlank = function() {
+    return !this.index && !this.alias;
+  };
+
+  this.matches = function(alias) {
+    if (this.isBlank()) {
+      return true;
+    } else {
+      var matches = true;
+      if (this.index) {
+        matches = alias.index.indexOf(this.index) != -1;
+      }
+      if (matches && this.alias) {
+        matches = alias.alias.indexOf(this.alias) != -1;
+      }
+      return matches;
+    }
+  };
+
 }
 
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
@@ -474,6 +545,104 @@ angular.module('cerebro').controller('AlertsController', ['$scope',
 
   }
 
+]);
+
+angular.module('cerebro').controller('AliasesController', ['$scope',
+  'AlertService', 'AceEditorService', 'DataService',
+  function($scope, AlertService, AceEditorService, DataService) {
+
+    $scope.editor = undefined;
+
+    $scope.paginator = new Paginator(1, 15, [], new AliasFilter('', ''));
+    $scope.page = $scope.paginator.getPage();
+
+    $scope.new_alias = new Alias('', '', '', '', '');
+    $scope.displayAliasFilter = false;
+
+    $scope.changes = [];
+
+    $scope.$watch(
+      function() {
+        return DataService.getData();
+      },
+      function(data) {
+        if (data && !$scope.indices) {
+          $scope.indices = data.indices;
+        }
+      },
+      true
+    );
+
+    $scope.$watch('paginator', function(filter, previous) {
+      $scope.page = $scope.paginator.getPage();
+    }, true);
+
+    $scope.initEditor = function() {
+      if (!$scope.editor) {
+        $scope.editor = AceEditorService.init('alias-filter-editor');
+      }
+    };
+
+    $scope.addAlias = function() {
+      try {
+        var alias = $scope.new_alias;
+        alias.filter = $scope.editor.getValue();
+        try {
+          alias.validate();
+          $scope.new_alias = new Alias('', '', '', '', '');
+          $scope.changes.push({add: alias.toJson()});
+        } catch (error) {
+          AlertService.error(error);
+        }
+      } catch (error) {
+        AlertService.error('Malformed filter', error);
+      }
+    };
+
+    $scope.removeIndexAlias = function(alias) {
+      alias.removed = true;
+      $scope.changes.push({remove: alias});
+    };
+
+    $scope.saveChanges = function() {
+      var success = function(body) {
+        $scope.changes = [];
+        $scope.loadAliases();
+        AlertService.success('Aliases successfully updated', body);
+      };
+      var error = function(body) {
+        AlertService.error('Error while updating aliases', body);
+      };
+      DataService.updateAliases($scope.changes, success, error);
+    };
+
+    $scope.loadAliases = function() {
+      DataService.getAliases(
+        function(aliases) {
+          $scope.paginator.setCollection(aliases);
+          $scope.page = $scope.paginator.getPage();
+        },
+        function(error) {
+          AlertService.error('Error while fetching aliases', error);
+        }
+      );
+    };
+
+    $scope.setup = function() {
+      if (DataService.getData()) {
+        $scope.indices = DataService.getData().indices;
+      }
+      $scope.loadAliases();
+      $scope.initEditor();
+    };
+
+    $scope.revertChange = function(change, position) {
+      if (change.remove) {
+        change.remove.removed = false;
+      }
+      $scope.changes.splice(position, 1);
+    };
+  }
 ]);
 
 angular.module('cerebro').controller('ConnectController', [
@@ -1181,6 +1350,14 @@ angular.module('cerebro').factory('DataService',
 
     this.getClusterMapping = function(success, error) {
       request('/apis/get_cluster_mapping', {}, success, error);
+    };
+
+    this.getAliases = function(success, error) {
+      request('/apis/get_aliases', {}, success, error);
+    };
+
+    this.updateAliases = function(changes, success, error) {
+      request('/apis/update_aliases', {changes: changes}, success, error);
     };
 
     this.execute = function(method, path, data, success, error) {

@@ -14,5 +14,9 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$ro
             templateUrl: 'rest.html',
             controller: 'RestController'
         }).
+        when('/aliases', {
+          templateUrl: 'aliases.html',
+          controller: 'AliasesController'
+        }).
         otherwise({redirectTo: '/connect'});
   }]);
