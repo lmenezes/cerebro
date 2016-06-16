@@ -6,33 +6,26 @@ angular.module('cerebro').controller('ConnectController', [
 
     $scope.connecting = false;
 
-    $scope.host = undefined;
+    $scope.setup = function() {
+      DataService.getHosts(
+        function(hosts) {
+          $scope.hosts = hosts;
+        },
+        function(error) {
+          AlertService.error('Error while fetching list of known hosts', error);
+        }
+      );
+    };
 
-    $scope.username = undefined;
-
-    $scope.password = undefined;
-
-    $scope.showAuth = false;
-
-    DataService.getHosts(
-      function(hosts) {
-        $scope.hosts = hosts;
-      },
-      function(error) {
-
-      }
-    );
-
-    $scope.connect = function(host) {
+    $scope.connect = function(host, username, password) {
       if (host) {
         $scope.connecting = true;
         DataService.setHost(
           host,
-          $scope.username,
-          $scope.password,
+          username,
+          password,
           function(response) {
             $location.path('/overview');
-            $scope.host = DataService.getHost();
           },
           function(response) {
             $scope.connecting = false;
