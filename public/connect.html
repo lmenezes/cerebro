@@ -12,8 +12,8 @@
       <h6>HOSTS</h6>
       <table class="table">
         <tr ng-repeat="host in hosts track by $index">
-          <td class="normal-action" ng-click="connect(host)">
-            <span>{{host}}</span>
+          <td class="normal-action" ng-click="connect(host.host, host.username, host.password)">
+            <span>{{host.host}}</span>
           </td>
         </tr>
       </table>
@@ -50,7 +50,7 @@
                 <span class="pull-left subtitle" ng-show="connecting">
                     <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting
                 </span>
-            <button type="submit" class="btn btn-success pull-right" ng-click="connect(host, username, password)">Connect</button>
+            <button type="submit" class="btn btn-success pull-right" ng-click="connect(host, username, password)" ng-disabled ="!host">Connect</button>
           </div>
         </div>
       </form>
