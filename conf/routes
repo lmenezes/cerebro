@@ -26,6 +26,8 @@ POST       /apis/rest                        @controllers.RestController.execute
 POST       /apis/get_cluster_mapping         @controllers.GetClusterMappingController.execute
 POST       /apis/get_aliases                 @controllers.GetAliasesController.execute
 POST       /apis/update_aliases              @controllers.UpdateAliasesController.execute
+POST       /apis/get_index_metadata          @controllers.GetIndexMetadataController.execute
+POST       /apis/create_index                @controllers.CreateIndexController.execute
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

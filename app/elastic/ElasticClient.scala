@@ -133,6 +133,16 @@ trait ElasticClient {
     execute(s"${target.host}$path", "POST", Some(body.toString), target.authentication)
   }
 
+  def getIndexMetadata(index: String, target: ElasticServer) = {
+    val path = s"/_cluster/state/metadata/$index?human=true"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def createIndex(index: String, metadata: JsValue, target: ElasticServer) = {
+    val path = s"/$index"
+    execute(s"${target.host}$path", "POST", Some(metadata.toString), target.authentication)
+  }
+
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
     execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
 

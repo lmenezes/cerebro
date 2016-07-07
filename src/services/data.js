@@ -140,6 +140,15 @@ angular.module('cerebro').factory('DataService',
       request('/apis/rest', requestData, success, error);
     };
 
+    this.getIndexMetadata = function(index, success, error) {
+      request('/apis/get_index_metadata', {index: index}, success, error);
+    };
+
+    this.createIndex = function(index, metadata, success, error) {
+      var data = {index: index, metadata: metadata};
+      request('/apis/create_index', data, success, error);
+    };
+
     var request = function(path, data, success, error) {
       var defaultData = {
         host: host,
