@@ -6,7 +6,7 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
     $scope.shards = '';
     $scope.replicas = '';
     $scope.name = '';
-    $scope.indices = [];
+    $scope.indices = undefined;
 
     $scope.setup = function() {
       if (!$scope.editor) {
@@ -30,11 +30,8 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
     );
 
     $scope.loadIndexMetadata = function(index) {
-      console.log('loading');
       DataService.getIndexMetadata(index,
         function(meta) {
-          console.log('loadded');
-          console.log(meta);
           var body = {settings: meta.settings, mappings: meta.mappings};
           $scope.editor.setValue(JSON.stringify(body, null, 2));
         },
@@ -47,7 +44,7 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
     $scope.createIndex = function() {
       if ($scope.name.trim()) {
         try {
-          var data = $scope.editor.getValue();
+          var data = $scope.editor.getValue() || {};
           if (Object.keys(data).length === 0) {
             data = {settings: {index: {}}};
             if ($scope.shards.trim()) {
@@ -67,7 +64,7 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
             }
           );
         } catch (error) {
-          AlertService.error('Malformed filter', error);
+          AlertService.error('Malformed settings', error);
         }
       } else {
         AlertService.error('You must specify a valid index name');
