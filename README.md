@@ -1,20 +1,32 @@
-cerebro
-=======================
+Cerebro
+------------
 
 cerebro is an open source(MIT License) elasticsearch web admin tool.
 
-Installation
-------------
-
-- Download from ...
+##Installation
+- Download from [https://github.com/lmenezes/cerebro/releases](https://github.com/lmenezes/cerebro/releases)
 - Extract files
-- Run bin/cerebro on unix, of bin/cerebro.bar on Windows
+- Run bin/cerebro(or bin/cerebro.bar if on Windows)
 - Access on http://localhost:9000
 
-Screenshots
-------------
-#### cluster overview
-![cluster overview](imgs/cluster_view.png)
+##Configuration
+You can further customize Cerebro by editing its conf/application.conf file.
 
-####REST Client
-![rest client](imgs/rest_client.png)
+###List of known hosts
+A list of predefined hosts can be defined for quicker access. If host is password protected, authentication should be also set.
+
+Example:
+
+```yaml
+hosts: [
+	{
+		host: http://localhost:9200
+	},
+	{
+    	host = "http://some-authenticated-host:9200",
+  		auth = {
+       		username = "username"
+			password = "secret-password"
+	}
+]
+```
