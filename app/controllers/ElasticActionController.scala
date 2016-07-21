@@ -8,8 +8,10 @@ import scala.concurrent.Future
 
 trait ElasticActionController extends BaseController {
 
-  final def processRequest = (request, client) => processElasticRequest(request, client).map {
-    response => Status(response.status)(response.body)
+  final def execute = process { (request, client) =>
+    processElasticRequest(request, client).map {
+      response => Status(response.status)(response.body)
+    }
   }
 
   def processElasticRequest: (CerebroRequest, ElasticClient) => Future[ElasticResponse]

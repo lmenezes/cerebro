@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class GetShardStatsController extends BaseController {
 
-  def processRequest = (request, client) => {
+  def execute = process { (request, client) =>
     val index = request.get("index")
     val shard = request.getInt("shard")
     val node = request.get("node")

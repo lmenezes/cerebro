@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class UpdateAliasesController extends BaseController {
 
-  def processRequest = (request, client) => {
+  def execute = process { (request, client) =>
     val changes = request.getOptArray("changes").getOrElse(JsArray()).value
     client.updateAliases(changes, ElasticServer(request.host, request.authentication)).map { aliases =>
       Status(aliases.status)(aliases.body)

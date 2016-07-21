@@ -1,13 +1,12 @@
 package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
-import exceptions.MissingRequiredParamException
-import models.{CerebroRequest, ElasticServer}
+import models.ElasticServer
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
-import play.api.test.FakeApplication
 import play.api.test.Helpers._
+import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
@@ -22,36 +21,50 @@ object GetShardStatsControllerSpec extends Specification with Mockito {
       throw exception if node param is missing     $missingNode
       """
 
-  val controller = new GetShardStatsController
-
   def getShardStats = {
+    val mockedElasticClient: ElasticClient = mock[ElasticClient]
+    mockedElasticClient.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
+    mockedElasticClient.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
+
+    val controller = new GetShardStatsController {
+      override val client = mockedElasticClient
+    }
+
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> 1)
-    val client = mock[ElasticClient]
-    client.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
-    client.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
-    val result = controller.processRequest(CerebroRequest(body), client)
-    there was one(client).getShardStats("someIndex", ElasticServer("somehost", None))
-    there was one(client).getIndexRecovery("someIndex", ElasticServer("somehost", None))
-    contentAsJson(result) mustEqual expectedShardStats
-    status(result) mustEqual 200
+    val result = controller.execute()(FakeRequest().withBody(body))
+    there was one(mockedElasticClient).getShardStats("someIndex", ElasticServer("somehost", None))
+    there was one(mockedElasticClient).getIndexRecovery("someIndex", ElasticServer("somehost", None))
+    (status(result) mustEqual 200) and (contentAsJson(result) mustEqual expectedShardStats)
   }
 
   def missingIndex = {
+    val controller = new GetShardStatsController {
+      override val client = mock[ElasticClient]
+    }
     val body = Json.obj("host" -> "somehost", "node" -> "someNode", "shard" -> 1)
-    val client = mock[ElasticClient]
-    controller.processRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val result = controller.execute()(FakeRequest().withBody(body))
+    val expected = Json.parse("{\"error\":\"Error\"}")
+    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
   }
 
   def missingNode = {
+    val controller = new GetShardStatsController {
+      override val client = mock[ElasticClient]
+    }
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "shard" -> 1)
-    val client = mock[ElasticClient]
-    controller.processRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val result = controller.execute(FakeRequest().withBody(body))
+    val expected = Json.parse("{\"error\":\"Error\"}")
+    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
   }
 
   def missingShard = {
+    val controller = new GetShardStatsController {
+      override val client = mock[ElasticClient]
+    }
     val body = Json.obj("host" -> "somehost", "node" -> "someNode", "index" -> "someIndex")
-    val client = mock[ElasticClient]
-    controller.processRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val result = controller.execute(FakeRequest().withBody(body))
+    val expected = Json.parse("{\"error\":\"Error\"}")
+    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
   }
 
   val expectedShardStats = Json.parse(

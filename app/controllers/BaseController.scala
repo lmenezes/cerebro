@@ -11,16 +11,18 @@ import scala.util.control.NonFatal
 
 trait BaseController extends Controller {
 
+  val client: ElasticClient = ElasticClient
+
   protected val logger = Logger("elastic")
 
-  final def execute = Action.async(parse.json) { request =>
+  type RequestProcessor = (CerebroRequest, ElasticClient) => Future[Result]
+
+  final def process(processor: RequestProcessor) = Action.async(parse.json) { request =>
     try {
-      processRequest(CerebroRequest(request.body), ElasticClient)
+      processor(CerebroRequest(request.body), client)
     } catch {
       case NonFatal(e) => Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
     }
   }
-
-  def processRequest: (CerebroRequest, ElasticClient) => Future[Result]
 
 }
