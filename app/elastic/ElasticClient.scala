@@ -143,6 +143,23 @@ trait ElasticClient {
     execute(s"${target.host}$path", "POST", Some(metadata.toString), target.authentication)
   }
 
+  def getIndices(target: ElasticServer) = {
+    val path = s"/_cat/indices?format=json"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer) = {
+    val path = s"/$index/_analyze"
+    val body = Json.obj("text" -> text, "field" -> field).toString()
+    execute(s"${target.host}$path", "GET", Some(body), target.authentication)
+  }
+
+  def analyzeTextByAnalyzer(index: String, analyzer: String, text: String, target: ElasticServer) = {
+    val path = s"/$index/_analyze"
+    val body = Json.obj("text" -> text, "analyzer" -> analyzer).toString()
+    execute(s"${target.host}$path", "GET", Some(body), target.authentication)
+  }
+
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
     execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
 

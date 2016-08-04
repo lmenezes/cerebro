@@ -149,6 +149,28 @@ angular.module('cerebro').factory('DataService',
       request('/apis/create_index', data, success, error);
     };
 
+    this.getOpenIndices = function(success, error) {
+      request('/analysis/indices', {}, success, error);
+    };
+
+    this.getIndexAnalyzers = function(index, success, error) {
+      request('/analysis/analyzers', {index: index}, success, error);
+    };
+
+    this.getIndexFields = function(index, success, error) {
+      request('/analysis/fields', {index: index}, success, error);
+    };
+
+    this.analyzeByField = function(index, field, text, success, error) {
+      var data = {index: index, field: field, text: text};
+      request('/analysis/analyze/field', data, success, error);
+    };
+
+    this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
+      var data = {index: index, analyzer: analyzer, text: text};
+      request('/analysis/analyze/analyzer', data, success, error);
+    };
+
     var request = function(path, data, success, error) {
       var defaultData = {
         host: host,

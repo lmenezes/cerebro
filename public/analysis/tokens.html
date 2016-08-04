@@ -1,0 +1,16 @@
+<table class="table" ng-show="tokens">
+  <thead>
+  <tr>
+    <th>token</th>
+    <th>position</th>
+    <th>start offset</th>
+    <th>end offset</th>
+  </tr>
+  </thead>
+  <tr ng-repeat="token in tokens track by $index">
+    <td>{{token.token}}</td>
+    <td>{{token.position}}</td>
+    <td>{{token.start_offset}}</td>
+    <td>{{token.end_offset}}</td>
+  </tr>
+</table>

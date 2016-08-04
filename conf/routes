@@ -28,6 +28,12 @@ POST       /apis/get_aliases                 @controllers.GetAliasesController.e
 POST       /apis/update_aliases              @controllers.UpdateAliasesController.execute
 POST       /apis/get_index_metadata          @controllers.GetIndexMetadataController.execute
 POST       /apis/create_index                @controllers.CreateIndexController.execute
+# Analysis module
+POST       /analysis/indices                 @controllers.AnalysisController.getIndices
+POST       /analysis/analyzers               @controllers.AnalysisController.getIndexAnalyzers
+POST       /analysis/fields                  @controllers.AnalysisController.getIndexFields
+POST       /analysis/analyze/analyzer        @controllers.AnalysisController.analyzeByAnalyzer
+POST       /analysis/analyze/field           @controllers.AnalysisController.analyzeByField
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

@@ -16,5 +16,8 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$ro
     }).when('/create', {
       templateUrl: 'create_index.html',
       controller: 'CreateIndexController'
+    }).when('/analysis', {
+      templateUrl: 'analysis/index.html',
+      controller: 'AnalysisController'
     }).otherwise({redirectTo: '/connect'});
   }]);
