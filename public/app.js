@@ -1686,6 +1686,30 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
 
   }]);
 
+angular.module('cerebro').factory('RefreshService',
+  function($rootScope, $timeout) {
+
+    var timestamp = new Date().getTime();
+
+    this.lastUpdate = function() {
+      return timestamp;
+    };
+
+    this.refresh = function() {
+      timestamp = Math.max(timestamp, new Date().getTime()) + 1;
+    };
+
+    var autoRefresh = function(instance) {
+      instance.refresh();
+      $timeout(autoRefresh, 1000);
+    };
+
+    autoRefresh(this);
+
+    return this;
+  }
+);
+
 angular.module('cerebro').controller('StatsController', ['$scope', '$http',
   'DataService', function($scope, $http, DataService) {
 
