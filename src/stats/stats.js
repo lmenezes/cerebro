@@ -1,5 +1,6 @@
 angular.module('cerebro').controller('StatsController', ['$scope', '$http',
-  'DataService', function($scope, $http, DataService) {
+  'DataService', 'RefreshService', function($scope, $http, DataService,
+                                            RefreshService) {
 
     $scope.number_of_nodes = undefined;
 
@@ -17,13 +18,12 @@ angular.module('cerebro').controller('StatsController', ['$scope', '$http',
     $scope.size_in_bytes = undefined;
 
     $scope.cluster_name = undefined;
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data) {
+    // $scope.$watch(
+    //   function() {
+    //     return RefreshService.lastUpdate();
+    //   },
+    //   function(data) {
+    //     if (data) {
           $scope.number_of_nodes = data.number_of_nodes;
           $scope.indices = data.indices.length;
           $scope.active_primary_shards = data.active_primary_shards;
@@ -39,8 +39,8 @@ angular.module('cerebro').controller('StatsController', ['$scope', '$http',
             $scope.relocating_shards +
             $scope.initializing_shards +
             $scope.unassigned_shards;
-        }
-      }
-    );
+    //     }
+    //   }
+    // );
 
   }]);

@@ -1,18 +1,18 @@
 <div class="row">
   <div class="col-xs-12">
-    <div class="stats" ng-controller="StatsController">
+    <div class="stats">
       <div class="row">
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{cluster_name}}
+            {{data.cluster_name}}
         </span>
       </span>
         </div>
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{number_of_nodes | number:0}}
+            {{data.number_of_nodes | number:0}}
         </span>
         <span>
           nodes
@@ -22,7 +22,7 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{indices | number:0}}
+            {{data.indices.length | number:0}}
         </span>
         <span>
           indices
@@ -32,7 +32,7 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{total_shards | number:0}}
+            {{data.active_shards + data.initializing_shards + data.relocating_shards + data.unassigned_shards | number:0}}
         </span>
         <span>
           shards
@@ -42,7 +42,7 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{docs_count | number:0}}
+            {{data.docs_count | number:0}}
         </span>
         <span>
           docs
@@ -52,7 +52,7 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{size_in_bytes | bytes}}
+            {{data.size_in_bytes | bytes}}
         </span>
       </span>
         </div>

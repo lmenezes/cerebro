@@ -1,6 +1,7 @@
 angular.module('cerebro').controller('CreateIndexController', ['$scope',
-  'AlertService', 'DataService', 'AceEditorService',
-  function($scope, AlertService, DataService, AceEditorService) {
+  'AlertService', 'DataService', 'AceEditorService', 'RefreshService',
+  function($scope, AlertService, DataService, AceEditorService,
+           RefreshService) {
 
     $scope.editor = undefined;
     $scope.shards = '';
@@ -12,22 +13,15 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
       if (!$scope.editor) {
         $scope.editor = AceEditorService.init('index-settings');
       }
-      if (DataService.getData()) {
-        $scope.indices = DataService.getData().indices;
-      }
-    };
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data && !$scope.indices) {
-          $scope.indices = data.indices;
+      DataService.getIndices(
+        function(indices) {
+          $scope.indices = indices;
+        },
+        function(error) {
+          AlertService.error('Error loading indices', error);
         }
-      },
-      true
-    );
+      );
+    };
 
     $scope.loadIndexMetadata = function(index) {
       DataService.getIndexMetadata(index,
@@ -56,7 +50,7 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
           }
           DataService.createIndex($scope.name, data,
             function(response) {
-              DataService.forceRefresh();
+              RefreshService.refresh();
               AlertService.success('Index successfully created');
             },
             function(error) {

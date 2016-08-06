@@ -1,7 +1,6 @@
-angular.module('cerebro').factory('DataService',
-  function($rootScope, $timeout, $http, $location) {
-
-    var data; // current data
+angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
+  '$http', '$location', 'RefreshService',
+  function($rootScope, $timeout, $http, $location, RefreshService) {
 
     var host;
 
@@ -18,60 +17,33 @@ angular.module('cerebro').factory('DataService',
 
     var baseUrl = buildBaseUrl();
 
-    var successfulRefresh = function(success) {
-      return function(response) {
-        data = response;
-        if (success) {
-          success(response);
-        }
-      };
-    };
-
-    var failedRefresh = function(error) {
-      return function(response) {
-        data = undefined;
-        if (error) {
-          error(response);
-        }
-      };
-    };
-
-    var refresh = function(success, error) {
-      if (host) {
-        request(
-          '/apis/overview',
-          {},
-          successfulRefresh(success),
-          failedRefresh(error)
-        );
-      } else {
-        $location.path('/connect');
-      }
-    };
-
-    var autoRefresh = function() {
-      refresh();
-      $timeout(autoRefresh, 3000);
-    };
-
-    this.getData = function() {
-      return data;
-    };
-
-    this.forceRefresh = function() {
-      refresh();
-    };
-
     this.getHost = function() {
       return host;
     };
 
     this.setHost = function(newHost, newUsername, newPassword, success, error) {
-      data = undefined;
       host = newHost;
       username = newUsername;
       password = newPassword;
-      refresh(success, error);
+      RefreshService.refresh();
+      success();
+    };
+
+    // Navbar
+    this.getNavbarData = function(success, error) {
+      request('/navbar', {}, success, error);
+    };
+    // Overview
+    this.getOverview = function(success, error) {
+      request('/overview', {}, success, error);
+    };
+    // Create index
+    this.getIndices = function(success, error) {
+      request('/create_index/indices', {}, success, error);
+    };
+    this.createIndex = function(index, metadata, success, error) {
+      var data = {index: index, metadata: metadata};
+      request('/create_index/create', data, success, error);
     };
 
     this.closeIndex = function(index, success, error) {
@@ -144,11 +116,6 @@ angular.module('cerebro').factory('DataService',
       request('/apis/get_index_metadata', {index: index}, success, error);
     };
 
-    this.createIndex = function(index, metadata, success, error) {
-      var data = {index: index, metadata: metadata};
-      request('/apis/create_index', data, success, error);
-    };
-
     this.getOpenIndices = function(success, error) {
       request('/analysis/indices', {}, success, error);
     };
@@ -172,17 +139,19 @@ angular.module('cerebro').factory('DataService',
     };
 
     var request = function(path, data, success, error) {
-      var defaultData = {
-        host: host,
-        username: username,
-        password: password
-      };
-      var config = {
-        method: 'POST',
-        url: baseUrl + path,
-        data: angular.merge(data, defaultData) // adds host to data
-      };
-      $http(config).success(success).error(error);
+      if (host) {
+        var defaultData = {
+          host: host,
+          username: username,
+          password: password
+        };
+        var config = {
+          method: 'POST',
+          url: baseUrl + path,
+          data: angular.merge(data, defaultData) // adds host to data
+        };
+        $http(config).success(success).error(error);
+      }
     };
 
     this.getHosts = function(success, error) {
@@ -197,8 +166,7 @@ angular.module('cerebro').factory('DataService',
       this.setHost($location.search().location);
     }
 
-    autoRefresh();
-
     return this;
 
-  });
+  }
+]);

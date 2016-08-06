@@ -8,7 +8,7 @@ GET        /                                 controllers.Application.index()
 
 #
 POST       /main                             @controllers.Main.execute
-POST       /apis/overview                    @controllers.ClusterOverviewController.execute
+
 POST       /apis/close_indices               @controllers.CloseIndexController.execute
 POST       /apis/open_indices                @controllers.OpenIndexController.execute
 POST       /apis/force_merge                 @controllers.ForceMergeController.execute
@@ -27,13 +27,19 @@ POST       /apis/get_cluster_mapping         @controllers.GetClusterMappingContr
 POST       /apis/get_aliases                 @controllers.GetAliasesController.execute
 POST       /apis/update_aliases              @controllers.UpdateAliasesController.execute
 POST       /apis/get_index_metadata          @controllers.GetIndexMetadataController.execute
-POST       /apis/create_index                @controllers.CreateIndexController.execute
+# Overview module
+POST       /overview                         @controllers.ClusterOverviewController.execute
+# Navbar module
+POST       /navbar                           @controllers.NavbarController.index
 # Analysis module
 POST       /analysis/indices                 @controllers.AnalysisController.getIndices
 POST       /analysis/analyzers               @controllers.AnalysisController.getIndexAnalyzers
 POST       /analysis/fields                  @controllers.AnalysisController.getIndexFields
 POST       /analysis/analyze/analyzer        @controllers.AnalysisController.analyzeByAnalyzer
 POST       /analysis/analyze/field           @controllers.AnalysisController.analyzeByField
+# Create index module
+POST       /create_index/create              @controllers.CreateIndexController.execute
+POST       /create_index/indices             @controllers.CreateIndexController.indices
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

@@ -13,7 +13,7 @@ angular.module('cerebro').factory('RefreshService',
 
     var autoRefresh = function(instance) {
       instance.refresh();
-      $timeout(autoRefresh, 1000);
+      $timeout(function() { autoRefresh(instance); }, 3000);
     };
 
     autoRefresh(this);

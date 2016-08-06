@@ -7,9 +7,10 @@ describe('CreateIndexController', function() {
         this.DataService = $injector.get('DataService');
         this.AlertService = $injector.get('AlertService');
         this.AceEditorService = $injector.get('AceEditorService');
+        this.RefreshService = $injector.get('RefreshService');
         this.createController = function() {
             return $controller('CreateIndexController',
-                {$scope: this.scope}, this.AlertService, this.DataService, this.AceEditorService);
+                {$scope: this.scope}, this.AlertService, this.DataService, this.AceEditorService, this.RefreshService);
         };
         this._controller = this.createController();
     }));
@@ -28,33 +29,16 @@ describe('CreateIndexController', function() {
         it('initializes editor and loads available indices', function () {
             var indices = ['index1', 'index2'];
             var editor = 'someFakeEditor';
-            spyOn(this.DataService, 'getData').andReturn({indices: indices});
+            this.DataService.getIndices = function(success, error) {
+                success(indices);
+            };
+            spyOn(this.DataService, 'getIndices').andCallThrough();
             spyOn(this.AceEditorService, 'init').andReturn(editor);
             this.scope.setup();
-            expect(this.DataService.getData).toHaveBeenCalled();
+            expect(this.DataService.getIndices).toHaveBeenCalled();
             expect(this.AceEditorService.init).toHaveBeenCalled();
             expect(this.scope.indices).toEqual(indices);
             expect(this.scope.editor).toEqual(editor);
-        });
-    });
-
-    describe('watch', function() {
-        it('loads indices if not loaded', function () {
-            var indices = ['index1', 'index2'];
-            spyOn(this.DataService, 'getData').andReturn({indices: indices});
-            this.scope.$digest();
-            expect(this.DataService.getData).toHaveBeenCalled();
-            expect(this.scope.indices).toEqual(indices);
-        });
-
-        it('do not reload indices', function () {
-            var indices = ['index1', 'index2'];
-            var old_indices = ['old', 'index'];
-            this.scope.indices = old_indices;
-            spyOn(this.DataService, 'getData').andReturn({indices: indices});
-            this.scope.$digest();
-            expect(this.DataService.getData).toHaveBeenCalled();
-            expect(this.scope.indices).toEqual(old_indices);
         });
     });
 
@@ -102,11 +86,11 @@ describe('CreateIndexController', function() {
                 success('success');
             };
             spyOn(this.DataService, 'createIndex').andCallThrough();
-            spyOn(this.DataService, 'forceRefresh').andReturn(true);
+            spyOn(this.RefreshService, 'refresh').andReturn(true);
             spyOn(this.AlertService, 'success').andReturn(true);
             this.scope.createIndex();
             expect(this.DataService.createIndex).toHaveBeenCalledWith('someIndex', {settings: {index: {}}}, jasmine.any(Function), jasmine.any(Function));
-            expect(this.DataService.forceRefresh).toHaveBeenCalled();
+            expect(this.RefreshService.refresh).toHaveBeenCalled();
             expect(this.AlertService.success).toHaveBeenCalledWith('Index successfully created');
         });
 
@@ -132,11 +116,11 @@ describe('CreateIndexController', function() {
                 success('success');
             };
             spyOn(this.DataService, 'createIndex').andCallThrough();
-            spyOn(this.DataService, 'forceRefresh').andReturn(true);
+            spyOn(this.RefreshService, 'refresh').andReturn(true);
             spyOn(this.AlertService, 'success').andReturn(true);
             this.scope.createIndex();
             expect(this.DataService.createIndex).toHaveBeenCalledWith('someIndex', {settings: {index: {number_of_shards: '18', number_of_replicas: '10'}}}, jasmine.any(Function), jasmine.any(Function));
-            expect(this.DataService.forceRefresh).toHaveBeenCalled();
+            expect(this.RefreshService.refresh).toHaveBeenCalled();
             expect(this.AlertService.success).toHaveBeenCalledWith('Index successfully created');
         });
 

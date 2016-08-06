@@ -1,6 +1,6 @@
 angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
-  'PageService', 'DataService',
-  function($scope, $http, PageService, DataService) {
+  'PageService', 'DataService', 'RefreshService',
+  function($scope, $http, PageService, DataService, RefreshService) {
 
     $scope.status = undefined;
     $scope.cluster_name = undefined;
@@ -8,20 +8,25 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
 
     $scope.$watch(
       function() {
-        return DataService.getData();
+        return RefreshService.lastUpdate();
       },
-      function(data) {
-        if (data) {
-          $scope.status = data.status;
-          $scope.cluster_name = data.cluster_name;
-          $scope.host = DataService.getHost();
-        } else {
-          $scope.status = undefined;
-          $scope.cluster_name = undefined;
-          $scope.host = undefined;
-        }
+      function() {
+        DataService.getNavbarData(
+          function(data) {
+            $scope.status = data.status;
+            $scope.cluster_name = data.cluster_name;
+            $scope.host = DataService.getHost();
+            PageService.setup($scope.cluster_name, $scope.status);
+          },
+          function(error) {
+            $scope.status = undefined;
+            $scope.cluster_name = undefined;
+            $scope.host = undefined;
+            PageService.setup();
+          }
+        );
       }
     );
 
-  }]
-);
+  }
+]);

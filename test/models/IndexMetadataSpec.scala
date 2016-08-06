@@ -45,7 +45,7 @@ object IndexMetadataSpec extends Specification {
         |}
       """.stripMargin
     )
-    IndexMetadata("index_name", data) mustEqual Json.obj(
+    IndexMetadata(data) mustEqual Json.obj(
       "mappings" -> Json.obj("some_mappings" -> Json.obj()),
       "settings" -> Json.obj("some_settings" -> Json.obj())
     )

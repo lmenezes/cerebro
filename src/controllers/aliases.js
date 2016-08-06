@@ -1,6 +1,7 @@
 angular.module('cerebro').controller('AliasesController', ['$scope',
-  'AlertService', 'AceEditorService', 'DataService',
-  function($scope, AlertService, AceEditorService, DataService) {
+  'AlertService', 'AceEditorService', 'DataService', 'RefreshService',
+  function($scope, AlertService, AceEditorService, DataService,
+           RefreshService) {
 
     $scope.editor = undefined;
 
@@ -11,18 +12,6 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
     $scope.displayAliasFilter = false;
 
     $scope.changes = [];
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data && !$scope.indices) {
-          $scope.indices = data.indices;
-        }
-      },
-      true
-    );
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
@@ -79,10 +68,19 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       );
     };
 
+    $scope.loadIndices = function() {
+      DataService.getIndices(
+        function(indices) {
+          $scope.indices = indices;
+        },
+        function(error) {
+          AlertService.error('Error loading indices', error);
+        }
+      );
+    };
+
     $scope.setup = function() {
-      if (DataService.getData()) {
-        $scope.indices = DataService.getData().indices;
-      }
+      $scope.loadIndices();
       $scope.loadAliases();
       $scope.initEditor();
     };

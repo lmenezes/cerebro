@@ -11,17 +11,10 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
       img.src = faviconUrl;
     }
 
-    $rootScope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data) {
-          setPageTitle(data.cluster_name);
-          setFavIconColor(data.status);
-        }
-      }
-    );
+    this.setup = function(newName, newStatus) {
+      setPageTitle(newName);
+      setFavIconColor(newStatus);
+    };
 
     var setPageTitle = function(newClusterName) {
       if (clusterName !== newClusterName) {

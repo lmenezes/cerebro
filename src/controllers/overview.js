@@ -1,6 +1,9 @@
 angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
-  '$window', 'DataService', 'AlertService', 'ModalService',
-  function($scope, $http, $window, DataService, AlertService, ModalService) {
+  '$window', 'DataService', 'AlertService', 'ModalService', 'RefreshService',
+  function($scope, $http, $window, DataService, AlertService, ModalService,
+           RefreshService) {
+
+    $scope.data = undefined;
 
     $scope.indices = undefined;
     $scope.nodes = undefined;
@@ -34,17 +37,28 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.$watch(
       function() {
-        return DataService.getData();
+        return RefreshService.lastUpdate();
       },
-      function(data) {
-        if (data) {
+      function() {
+        $scope.refresh();
+      },
+      true
+    );
+
+    $scope.refresh = function() {
+      DataService.getOverview(
+        function(data) {
+          $scope.data = data;
           $scope.setIndices(data.indices);
           $scope.setNodes(data.nodes);
           $scope.unassigned_shards = data.unassigned_shards;
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
-        } else {
+        },
+        function(error) {
+          AlertService.error('Error while loading data', error);
+          $scope.data = undefined;
           $scope.indices = undefined;
           $scope.nodes = undefined;
           $scope.unassigned_shards = 0;
@@ -52,12 +66,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.special_indices = 0;
           $scope.shardAllocation = true;
         }
-      }
-    );
+      );
+    };
 
     $scope.$watch('paginator', function() {
-      if (DataService.getData()) {
-        $scope.setIndices(DataService.getData().indices);
+      if ($scope.data) {
+        $scope.setIndices($scope.data.indices);
       }
     }, true);
 
@@ -67,8 +81,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.$watch('nodes_filter', function() {
-        if (DataService.getData()) {
-          $scope.setNodes(DataService.getData().nodes);
+        if ($scope.data) {
+          $scope.setNodes($scope.data.nodes);
         }
       },
       true);
@@ -80,7 +94,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     var success = function(data) {
-      DataService.forceRefresh();
+      RefreshService.refresh();
       AlertService.success('Operation successfully executed', data);
     };
 

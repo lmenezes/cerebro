@@ -31,13 +31,13 @@ describe('AliasesController', function() {
 
   describe('setup', function() {
     it('loads aliases and indices, and initializes ace editor', function () {
-      spyOn(this.DataService, 'getData').andReturn({indices: ['fake', 'indices']});
-      spyOn(this.scope, 'loadAliases').andReturn(true);
-      spyOn(this.scope, 'initEditor').andReturn(true);
+      spyOn(this.scope, 'loadIndices').andReturn();
+      spyOn(this.scope, 'loadAliases').andReturn();
+      spyOn(this.scope, 'initEditor').andReturn();
       this.scope.setup();
+      expect(this.scope.loadIndices).toHaveBeenCalled();
       expect(this.scope.loadAliases).toHaveBeenCalled();
       expect(this.scope.initEditor).toHaveBeenCalled();
-      expect(this.scope.indices).toEqual(['fake', 'indices']);
     });
   });
 
@@ -182,12 +182,11 @@ describe('AliasesController', function() {
   describe('load indices', function() {
     it('loads indices when data is available', function() {
       expect(this.scope.indices).toEqual(undefined);
-      spyOn(this.DataService, 'getData').andReturn(
-        {
-          indices: [8, 9, 1]
-        }
-      );
-      this.scope.$digest();
+      this.DataService.getIndices = function(success, error) {
+        success([8, 9, 1])
+      };
+      spyOn(this.DataService, 'getIndices').andCallThrough();
+      this.scope.loadIndices();
       expect(this.scope.indices).toEqual([8, 9, 1]);
     });
   });

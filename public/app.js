@@ -558,8 +558,9 @@ angular.module('cerebro').controller('AlertsController', ['$scope',
 ]);
 
 angular.module('cerebro').controller('AliasesController', ['$scope',
-  'AlertService', 'AceEditorService', 'DataService',
-  function($scope, AlertService, AceEditorService, DataService) {
+  'AlertService', 'AceEditorService', 'DataService', 'RefreshService',
+  function($scope, AlertService, AceEditorService, DataService,
+           RefreshService) {
 
     $scope.editor = undefined;
 
@@ -570,18 +571,6 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
     $scope.displayAliasFilter = false;
 
     $scope.changes = [];
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data && !$scope.indices) {
-          $scope.indices = data.indices;
-        }
-      },
-      true
-    );
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
@@ -638,10 +627,19 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       );
     };
 
+    $scope.loadIndices = function() {
+      DataService.getIndices(
+        function(indices) {
+          $scope.indices = indices;
+        },
+        function(error) {
+          AlertService.error('Error loading indices', error);
+        }
+      );
+    };
+
     $scope.setup = function() {
-      if (DataService.getData()) {
-        $scope.indices = DataService.getData().indices;
-      }
+      $scope.loadIndices();
       $scope.loadAliases();
       $scope.initEditor();
     };
@@ -697,7 +695,6 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           $scope.field_tokens = response;
         };
         var error = function(error) {
-          $scope.field_tokens = undefined;
           AlertService.error('Error analyzing text by field', error);
         };
         DataService.analyzeByField(index, field, text, success, error);
@@ -771,8 +768,9 @@ angular.module('cerebro').controller('ConnectController', [
   }]);
 
 angular.module('cerebro').controller('CreateIndexController', ['$scope',
-  'AlertService', 'DataService', 'AceEditorService',
-  function($scope, AlertService, DataService, AceEditorService) {
+  'AlertService', 'DataService', 'AceEditorService', 'RefreshService',
+  function($scope, AlertService, DataService, AceEditorService,
+           RefreshService) {
 
     $scope.editor = undefined;
     $scope.shards = '';
@@ -784,22 +782,15 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
       if (!$scope.editor) {
         $scope.editor = AceEditorService.init('index-settings');
       }
-      if (DataService.getData()) {
-        $scope.indices = DataService.getData().indices;
-      }
-    };
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data && !$scope.indices) {
-          $scope.indices = data.indices;
+      DataService.getIndices(
+        function(indices) {
+          $scope.indices = indices;
+        },
+        function(error) {
+          AlertService.error('Error loading indices', error);
         }
-      },
-      true
-    );
+      );
+    };
 
     $scope.loadIndexMetadata = function(index) {
       DataService.getIndexMetadata(index,
@@ -828,7 +819,7 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
           }
           DataService.createIndex($scope.name, data,
             function(response) {
-              DataService.forceRefresh();
+              RefreshService.refresh();
               AlertService.success('Index successfully created');
             },
             function(error) {
@@ -863,8 +854,8 @@ angular.module('cerebro').controller('ModalController', ['$scope',
 ]);
 
 angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
-  'PageService', 'DataService',
-  function($scope, $http, PageService, DataService) {
+  'PageService', 'DataService', 'RefreshService',
+  function($scope, $http, PageService, DataService, RefreshService) {
 
     $scope.status = undefined;
     $scope.cluster_name = undefined;
@@ -872,27 +863,35 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
 
     $scope.$watch(
       function() {
-        return DataService.getData();
+        return RefreshService.lastUpdate();
       },
-      function(data) {
-        if (data) {
-          $scope.status = data.status;
-          $scope.cluster_name = data.cluster_name;
-          $scope.host = DataService.getHost();
-        } else {
-          $scope.status = undefined;
-          $scope.cluster_name = undefined;
-          $scope.host = undefined;
-        }
+      function() {
+        DataService.getNavbarData(
+          function(data) {
+            $scope.status = data.status;
+            $scope.cluster_name = data.cluster_name;
+            $scope.host = DataService.getHost();
+            PageService.setup($scope.cluster_name, $scope.status);
+          },
+          function(error) {
+            $scope.status = undefined;
+            $scope.cluster_name = undefined;
+            $scope.host = undefined;
+            PageService.setup();
+          }
+        );
       }
     );
 
-  }]
-);
+  }
+]);
 
 angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
-  '$window', 'DataService', 'AlertService', 'ModalService',
-  function($scope, $http, $window, DataService, AlertService, ModalService) {
+  '$window', 'DataService', 'AlertService', 'ModalService', 'RefreshService',
+  function($scope, $http, $window, DataService, AlertService, ModalService,
+           RefreshService) {
+
+    $scope.data = undefined;
 
     $scope.indices = undefined;
     $scope.nodes = undefined;
@@ -926,17 +925,28 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.$watch(
       function() {
-        return DataService.getData();
+        return RefreshService.lastUpdate();
       },
-      function(data) {
-        if (data) {
+      function() {
+        $scope.refresh();
+      },
+      true
+    );
+
+    $scope.refresh = function() {
+      DataService.getOverview(
+        function(data) {
+          $scope.data = data;
           $scope.setIndices(data.indices);
           $scope.setNodes(data.nodes);
           $scope.unassigned_shards = data.unassigned_shards;
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
-        } else {
+        },
+        function(error) {
+          AlertService.error('Error while loading data', error);
+          $scope.data = undefined;
           $scope.indices = undefined;
           $scope.nodes = undefined;
           $scope.unassigned_shards = 0;
@@ -944,12 +954,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.special_indices = 0;
           $scope.shardAllocation = true;
         }
-      }
-    );
+      );
+    };
 
     $scope.$watch('paginator', function() {
-      if (DataService.getData()) {
-        $scope.setIndices(DataService.getData().indices);
+      if ($scope.data) {
+        $scope.setIndices($scope.data.indices);
       }
     }, true);
 
@@ -959,8 +969,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.$watch('nodes_filter', function() {
-        if (DataService.getData()) {
-          $scope.setNodes(DataService.getData().nodes);
+        if ($scope.data) {
+          $scope.setNodes($scope.data.nodes);
         }
       },
       true);
@@ -972,7 +982,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     var success = function(data) {
-      DataService.forceRefresh();
+      RefreshService.refresh();
       AlertService.success('Operation successfully executed', data);
     };
 
@@ -1378,10 +1388,9 @@ angular.module('cerebro').factory('AlertService', function() {
   return this;
 });
 
-angular.module('cerebro').factory('DataService',
-  function($rootScope, $timeout, $http, $location) {
-
-    var data; // current data
+angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
+  '$http', '$location', 'RefreshService',
+  function($rootScope, $timeout, $http, $location, RefreshService) {
 
     var host;
 
@@ -1398,60 +1407,33 @@ angular.module('cerebro').factory('DataService',
 
     var baseUrl = buildBaseUrl();
 
-    var successfulRefresh = function(success) {
-      return function(response) {
-        data = response;
-        if (success) {
-          success(response);
-        }
-      };
-    };
-
-    var failedRefresh = function(error) {
-      return function(response) {
-        data = undefined;
-        if (error) {
-          error(response);
-        }
-      };
-    };
-
-    var refresh = function(success, error) {
-      if (host) {
-        request(
-          '/apis/overview',
-          {},
-          successfulRefresh(success),
-          failedRefresh(error)
-        );
-      } else {
-        $location.path('/connect');
-      }
-    };
-
-    var autoRefresh = function() {
-      refresh();
-      $timeout(autoRefresh, 3000);
-    };
-
-    this.getData = function() {
-      return data;
-    };
-
-    this.forceRefresh = function() {
-      refresh();
-    };
-
     this.getHost = function() {
       return host;
     };
 
     this.setHost = function(newHost, newUsername, newPassword, success, error) {
-      data = undefined;
       host = newHost;
       username = newUsername;
       password = newPassword;
-      refresh(success, error);
+      RefreshService.refresh();
+      success();
+    };
+
+    // Navbar
+    this.getNavbarData = function(success, error) {
+      request('/navbar', {}, success, error);
+    };
+    // Overview
+    this.getOverview = function(success, error) {
+      request('/overview', {}, success, error);
+    };
+    // Create index
+    this.getIndices = function(success, error) {
+      request('/create_index/indices', {}, success, error);
+    };
+    this.createIndex = function(index, metadata, success, error) {
+      var data = {index: index, metadata: metadata};
+      request('/create_index/create', data, success, error);
     };
 
     this.closeIndex = function(index, success, error) {
@@ -1524,11 +1506,6 @@ angular.module('cerebro').factory('DataService',
       request('/apis/get_index_metadata', {index: index}, success, error);
     };
 
-    this.createIndex = function(index, metadata, success, error) {
-      var data = {index: index, metadata: metadata};
-      request('/apis/create_index', data, success, error);
-    };
-
     this.getOpenIndices = function(success, error) {
       request('/analysis/indices', {}, success, error);
     };
@@ -1552,17 +1529,19 @@ angular.module('cerebro').factory('DataService',
     };
 
     var request = function(path, data, success, error) {
-      var defaultData = {
-        host: host,
-        username: username,
-        password: password
-      };
-      var config = {
-        method: 'POST',
-        url: baseUrl + path,
-        data: angular.merge(data, defaultData) // adds host to data
-      };
-      $http(config).success(success).error(error);
+      if (host) {
+        var defaultData = {
+          host: host,
+          username: username,
+          password: password
+        };
+        var config = {
+          method: 'POST',
+          url: baseUrl + path,
+          data: angular.merge(data, defaultData) // adds host to data
+        };
+        $http(config).success(success).error(error);
+      }
     };
 
     this.getHosts = function(success, error) {
@@ -1577,11 +1556,10 @@ angular.module('cerebro').factory('DataService',
       this.setHost($location.search().location);
     }
 
-    autoRefresh();
-
     return this;
 
-  });
+  }
+]);
 
 angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
 
@@ -1635,17 +1613,10 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
       img.src = faviconUrl;
     }
 
-    $rootScope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data) {
-          setPageTitle(data.cluster_name);
-          setFavIconColor(data.status);
-        }
-      }
-    );
+    this.setup = function(newName, newStatus) {
+      setPageTitle(newName);
+      setFavIconColor(newStatus);
+    };
 
     var setPageTitle = function(newClusterName) {
       if (clusterName !== newClusterName) {
@@ -1701,7 +1672,7 @@ angular.module('cerebro').factory('RefreshService',
 
     var autoRefresh = function(instance) {
       instance.refresh();
-      $timeout(autoRefresh, 1000);
+      $timeout(function() { autoRefresh(instance); }, 3000);
     };
 
     autoRefresh(this);
@@ -1711,7 +1682,8 @@ angular.module('cerebro').factory('RefreshService',
 );
 
 angular.module('cerebro').controller('StatsController', ['$scope', '$http',
-  'DataService', function($scope, $http, DataService) {
+  'DataService', 'RefreshService', function($scope, $http, DataService,
+                                            RefreshService) {
 
     $scope.number_of_nodes = undefined;
 
@@ -1729,30 +1701,29 @@ angular.module('cerebro').controller('StatsController', ['$scope', '$http',
     $scope.size_in_bytes = undefined;
 
     $scope.cluster_name = undefined;
-
-    $scope.$watch(
-      function() {
-        return DataService.getData();
-      },
-      function(data) {
-        if (data) {
-          $scope.number_of_nodes = data.number_of_nodes;
-          $scope.indices = data.indices.length;
-          $scope.active_primary_shards = data.active_primary_shards;
-          $scope.active_shards = data.active_shards;
-          $scope.relocating_shards = data.relocating_shards;
-          $scope.initializing_shards = data.initializing_shards;
-          $scope.unassigned_shards = data.unassigned_shards;
-          $scope.docs_count = data.docs_count;
-          $scope.size_in_bytes = data.size_in_bytes;
-          $scope.cluster_name = data.cluster_name;
-
-          $scope.total_shards = $scope.active_shards +
-            $scope.relocating_shards +
-            $scope.initializing_shards +
-            $scope.unassigned_shards;
-        }
-      }
-    );
+    // $scope.$watch(
+    //   function() {
+    //     return RefreshService.lastUpdate();
+    //   },
+    //   function(data) {
+    //     if (data) {
+    //       $scope.number_of_nodes = data.number_of_nodes;
+    //       $scope.indices = data.indices.length;
+    //       $scope.active_primary_shards = data.active_primary_shards;
+    //       $scope.active_shards = data.active_shards;
+    //       $scope.relocating_shards = data.relocating_shards;
+    //       $scope.initializing_shards = data.initializing_shards;
+    //       $scope.unassigned_shards = data.unassigned_shards;
+    //       $scope.docs_count = data.docs_count;
+    //       $scope.size_in_bytes = data.size_in_bytes;
+    //       $scope.cluster_name = data.cluster_name;
+    //
+    //       $scope.total_shards = $scope.active_shards +
+    //         $scope.relocating_shards +
+    //         $scope.initializing_shards +
+    //         $scope.unassigned_shards;
+    //     }
+    //   }
+    // );
 
   }]);
