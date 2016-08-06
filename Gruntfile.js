@@ -3,7 +3,10 @@ module.exports = function(grunt) {
   grunt.initConfig({
     clean: {
       dist: {
-        src: ['_site/dist']
+        src: [
+          'public/css',
+          'public/js'
+        ]
       }
     },
     watch: {
@@ -32,10 +35,13 @@ module.exports = function(grunt) {
           'src/assets/libs/typeahead/typeahead.min.js',
           'src/assets/libs/ace/ace.min.js'
         ],
-        dest: 'public/lib.js'
+        dest: 'public/js/lib.js'
       },
       vendorcss: {
-        src: [],
+        src: [
+          'src/assets/css/bootstrap.min.css',
+          'src/assets/css/font-awesome.min.css'
+        ],
         dest: 'public/css/lib.css'
       },
       appjs: {
@@ -45,7 +51,13 @@ module.exports = function(grunt) {
           'src/app/shared/*.js',
           'src/app/shared/*/*.js'
         ],
-        dest: 'public/app.js'
+        dest: 'public/js/app.js'
+      },
+      appcss: {
+        src: [
+          'src/app/css/app.css'
+        ],
+        dest: 'public/css/app.css'
       },
     },
     jshint: {
