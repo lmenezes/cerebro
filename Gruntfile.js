@@ -8,7 +8,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['src/**/*.*', 'src/*.*'],
+        files: ['src/app/*/*.*', 'src/app/*/*/*.*', 'src/app/*.*'],
         tasks: ['build'],
         options: {
           spawn: false
@@ -17,33 +17,33 @@ module.exports = function(grunt) {
     },
     copy: {
       main: {
-        files: [
-        ]
+        files: []
       }
     },
     concat: {
       vendorjs: {
         src: [
-          'src/lib/jquery/*.js',
-          'src/lib/angularjs/angular.min.js',
-          'src/lib/angularjs/angular-animate.min.js',
-          'src/lib/angularjs/angular-route.min.js',
-          'src/lib/bootstrap/bootstrap.min.js',
-          'src/lib/jsontree/jsontree.min.js',
-          'src/lib/typeahead/typeahead.min.js',
-          'src/lib/ace/ace.min.js'
+          'src/assets/libs/jquery/*.js',
+          'src/assets/libs/angularjs/angular.min.js',
+          'src/assets/libs/angularjs/angular-animate.min.js',
+          'src/assets/libs/angularjs/angular-route.min.js',
+          'src/assets/libs/bootstrap/bootstrap.min.js',
+          'src/assets/libs/jsontree/jsontree.min.js',
+          'src/assets/libs/typeahead/typeahead.min.js',
+          'src/assets/libs/ace/ace.min.js'
         ],
         dest: 'public/lib.js'
       },
       vendorcss: {
-        src: [
-        ],
+        src: [],
         dest: 'public/css/lib.css'
       },
       appjs: {
         src: [
-          'src/main.js',
-          'src/*/*.js'
+          'src/app/app.routes.js',
+          'src/app/components/*/*.js',
+          'src/app/shared/*.js',
+          'src/app/shared/*/*.js'
         ],
         dest: 'public/app.js'
       },
@@ -51,12 +51,9 @@ module.exports = function(grunt) {
     jshint: {
       cerebro: {
         src: [
-          'src/common/*.js',
-          'src/controllers/*.js',
-          'src/directives/*.js',
-          'src/filters/*.js',
-          'src/services/*.js',
-          'src/stats/*.js',
+          'src/app/components/*/*.js',
+          'src/app/shared/*.js',
+          'src/app/shared/*/*.js'
         ]
       }
     },
@@ -68,12 +65,10 @@ module.exports = function(grunt) {
     },
     jscs: {
       src: [
-        'src/common/*.js',
-        'src/controllers/*.js',
-        'src/directives/*.js',
-        'src/filters/*.js',
-        'src/services/*.js',
-        'src/stats/*.js',
+        'src/app/app.routes.js',
+        'src/app/components/*/*.js',
+        'src/app/shared/*.js',
+        'src/app/shared/*/*.js'
       ],
       options: {
         preset: 'google',
@@ -92,6 +87,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jscs");
   grunt.registerTask('dev', ['watch'])
   grunt.registerTask('build',
-      ['clean', 'jshint', 'jscs', 'concat', 'copy', 'qunit' ]);
+    ['clean', 'jshint', 'jscs', 'concat', 'copy', 'qunit']);
   grunt.registerTask('test', ['karma'])
 };

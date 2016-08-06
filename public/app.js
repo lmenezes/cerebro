@@ -1,539 +1,38 @@
 'use strict';
-angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap']).config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.when('/overview', {
-      templateUrl: 'overview.html',
-      controller: 'OverviewController'
-    }).when('/connect', {
-      templateUrl: 'connect.html',
-      controller: 'ConnectController'
-    }).when('/rest', {
-      templateUrl: 'rest.html',
-      controller: 'RestController'
-    }).when('/aliases', {
-      templateUrl: 'aliases.html',
-      controller: 'AliasesController'
-    }).when('/create', {
-      templateUrl: 'create_index.html',
-      controller: 'CreateIndexController'
-    }).when('/analysis', {
-      templateUrl: 'analysis/index.html',
-      controller: 'AnalysisController'
-    }).otherwise({redirectTo: '/connect'});
-  }]);
-
-angular.module('cerebro').directive('analysisTokens', function() {
-  return {
-    scope: {
-      tokens: '=tokens'
-    },
-    templateUrl: 'analysis/tokens.html'
-  };
-});
-
-function AceEditor(target) {
-  // ace editor
-  ace.config.set('basePath', '/');
-  this.editor = ace.edit(target);
-  this.editor.setFontSize('10px');
-  this.editor.setTheme('ace/theme/cerebro');
-  this.editor.getSession().setMode('ace/mode/json');
-  this.editor.setOptions({
-    fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
-    fontSize: '12px',
-    fontWeight: '400'
-  });
-
-  // sets value and moves cursor to beggining
-  this.setValue = function(value) {
-    this.editor.setValue(value, 1);
-    this.editor.gotoLine(0, 0, false);
-  };
-
-  this.getValue = function() {
-    var content = this.editor.getValue();
-    if (content.trim()) {
-      return JSON.parse(content);
-    }
-  };
-
-  // formats the json content
-  this.format = function() {
-    try {
-      var content = this.editor.getValue();
-      this.editor.setValue(content, 0);
-      this.editor.gotoLine(0, 0, false);
-    } catch (error) { // nothing to do
-    }
-  };
-
-}
-
-function Alias(alias, index, filter, indexRouting, searchRouting) {
-  this.alias = alias ? alias.toLowerCase() : '';
-  this.index = index ? index.toLowerCase() : '';
-  this.filter = filter ? filter : '';
-  this.index_routing = indexRouting ? indexRouting : '';
-  this.search_routing = searchRouting ? searchRouting : '';
-
-  this.validate = function() {
-    if (!this.alias) {
-      throw 'Alias must have a non empty name';
-    }
-    if (!this.index) {
-      throw 'Alias must have a valid index name';
-    }
-  };
-
-  var cleanInput = function(input) {
-    return input ? input.trim() : undefined;
-  };
-
-  this.toJson = function() {
-    return {
-      alias: this.alias,
-      index: this.index,
-      filter: this.filter,
-      index_routing: cleanInput(this.index_routing),
-      search_routing: cleanInput(this.search_routing)
-    };
-  };
-}
-
-function AliasFilter(index, alias) {
-
-  this.index = index;
-  this.alias = alias;
-
-  this.clone = function() {
-    return new AliasFilter(this.index, this.alias);
-  };
-
-  this.getSorting = function() {
-    return function(a, b) {
-      if (a.alias === b.alias) {
-        return a.index.localeCompare(b.index);
-      }
-      return a.alias.localeCompare(b.alias);
-    };
-  };
-
-  this.equals = function(other) {
-    return (other !== null &&
-    this.index == other.index &&
-    this.alias == other.alias);
-  };
-
-  this.isBlank = function() {
-    return !this.index && !this.alias;
-  };
-
-  this.matches = function(alias) {
-    if (this.isBlank()) {
-      return true;
-    } else {
-      var matches = true;
-      if (this.index) {
-        matches = alias.index.indexOf(this.index) != -1;
-      }
-      if (matches && this.alias) {
-        matches = alias.alias.indexOf(this.alias) != -1;
-      }
-      return matches;
-    }
-  };
-
-}
-
-function IndexFilter(name, closed, special, healthy, asc, timestamp) {
-  this.name = name;
-  this.closed = closed;
-  this.special = special;
-  this.healthy = healthy;
-  this.sort = 'name';
-  this.asc = asc;
-  this.timestamp = timestamp;
-
-  this.getSorting = function() {
-    var asc = this.asc;
-    switch (this.sort) {
-      case 'name':
-        return function(a, b) {
-          if (asc) {
-            return a.name.localeCompare(b.name);
-          } else {
-            return b.name.localeCompare(a.name);
+angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
+  .config(['$routeProvider',
+    function($routeProvider) {
+      $routeProvider
+        .when('/overview', {
+          templateUrl: 'overview.html',
+          controller: 'OverviewController'
+        })
+        .when('/connect', {
+          templateUrl: 'connect.html',
+          controller: 'ConnectController'
+        })
+        .when('/rest', {
+          templateUrl: 'rest.html',
+          controller: 'RestController'
+        })
+        .when('/aliases', {
+          templateUrl: 'aliases.html',
+          controller: 'AliasesController'
+        })
+        .when('/create', {
+          templateUrl: 'create_index.html',
+          controller: 'CreateIndexController'
+        })
+        .when('/analysis', {
+          templateUrl: 'analysis/index.html',
+          controller: 'AnalysisController'
+        })
+        .otherwise({
+            redirectTo: '/connect'
           }
-        };
-      default:
-        return undefined;
-    }
-  };
-
-  this.clone = function() {
-    return new IndexFilter(
-      this.name,
-      this.closed,
-      this.special,
-      this.healthy,
-      this.asc,
-      this.timestamp
-    );
-  };
-
-  this.equals = function(other) {
-    return (
-      other !== null &&
-      this.name === other.name &&
-      this.closed === other.closed &&
-      this.special === other.special &&
-      this.healthy === other.healthy &&
-      this.asc === other.asc &&
-      this.timestamp === other.timestamp
-    );
-  };
-
-  this.isBlank = function() {
-    return (
-      !this.name &&
-      this.closed &&
-      this.special &&
-      this.healthy &&
-      this.asc
-    );
-  };
-
-  this.matches = function(index) {
-    var matches = true;
-    if (!this.special && index.special) {
-      matches = false;
-    }
-    if (!this.closed && index.closed) {
-      matches = false;
-    }
-    // Hide healthy == show unhealthy only
-    if (!this.healthy && !index.unhealthy) {
-      matches = false;
-    }
-    if (matches && this.name) {
-      try {
-        var regExp = new RegExp(this.name.trim(), 'i');
-        matches = regExp.test(index.name);
-        if (!matches && index.aliases) {
-          for (var idx = 0; idx < index.aliases.length; idx++) {
-            if ((matches = regExp.test(index.aliases[idx]))) {
-              break;
-            }
-          }
-        }
-      }
-      catch (err) { // if not valid regexp, still try normal matching
-        matches = index.name.indexOf(this.name.toLowerCase()) != -1;
-        if (!matches) {
-          for (var idx = 0; idx < index.aliases.length; idx++) {
-            var alias = index.aliases[idx].toLowerCase();
-            matches = true;
-            if ((matches = (alias.indexOf(this.name.toLowerCase()) != -1))) {
-              break;
-            }
-          }
-        }
-      }
-    }
-    return matches;
-  };
-
-}
-
-function NodeFilter(name, data, master, client, timestamp) {
-  this.name = name;
-  this.data = data;
-  this.master = master;
-  this.client = client;
-  this.timestamp = timestamp;
-
-  this.clone = function() {
-    return new NodeFilter(this.name, this.data, this.master, this.client);
-  };
-
-  this.getSorting = function() {
-    return undefined;
-  };
-
-  this.equals = function(other) {
-    return (
-      other !== null &&
-      this.name == other.name &&
-      this.data == other.data &&
-      this.master == other.master &&
-      this.client == other.client &&
-      this.timestamp == other.timestamp
-    );
-  };
-
-  this.isBlank = function() {
-    return !this.name && (this.data && this.master && this.client);
-  };
-
-  this.matches = function(node) {
-    if (this.isBlank()) {
-      return true;
-    } else {
-      return this.matchesName(node.name) && this.matchesType(node);
-    }
-  };
-
-  this.matchesType = function(node) {
-    return (
-      node.data && this.data ||
-      node.master && this.master ||
-      node.client && this.client
-    );
-  };
-
-  this.matchesName = function(name) {
-    if (this.name) {
-      return name.toLowerCase().indexOf(this.name.toLowerCase()) != -1;
-    } else {
-      return true;
-    }
-  };
-
-}
-
-function Page(elements, total, first, last, next, previous) {
-  this.elements = elements;
-  this.total = total;
-  this.first = first;
-  this.last = last;
-  this.next = next;
-  this.previous = previous;
-}
-
-function Paginator(page, pageSize, collection, filter) {
-
-  this.filter = filter;
-
-  this.page = page;
-
-  this.pageSize = pageSize;
-
-  this.$collection = collection ? collection : [];
-
-  this.nextPage = function() {
-    this.page += 1;
-  };
-
-  this.previousPage = function() {
-    this.page -= 1;
-  };
-
-  this.setPageSize = function(newSize) {
-    this.pageSize = newSize;
-  };
-
-  this.getPageSize = function() {
-    return this.pageSize;
-  };
-
-  this.getCurrentPage = function() {
-    return this.page;
-  };
-
-  this.getPage = function() {
-    var results = this.getResults();
-    var total = results.length;
-
-    var first = total > 0 ? ((this.page - 1) * this.pageSize) + 1 : 0;
-    while (total < first) {
-      this.previousPage();
-      first = (this.page - 1) * this.pageSize + 1;
-    }
-    var lastPage = this.page * this.pageSize > total;
-    var last = lastPage ? total : this.page * this.pageSize;
-
-    var elements = total > 0 ? results.slice(first - 1, last) : [];
-
-    var next = this.pageSize * this.page < total;
-    var previous = this.page > 1;
-    while (elements.length < this.pageSize) {
-      elements.push(null);
-    }
-    return new Page(elements, total, first, last, next, previous);
-  };
-
-  this.setCollection = function(collection) {
-    if (this.filter.getSorting()) {
-      this.$collection = collection.sort(this.filter.getSorting());
-    } else {
-      this.$collection = collection;
-    }
-  };
-
-  this.getResults = function() {
-    var filter = this.filter;
-    var collection = this.$collection;
-    if (filter.isBlank()) {
-      return collection;
-    } else {
-      var filtered = [];
-      collection.forEach(function(item) {
-        if (filter.matches(item)) {
-          filtered.push(item);
-        }
-      });
-      return filtered;
-    }
-  };
-
-  this.getCollection = function() {
-    return this.$collection;
-  };
-
-}
-
-function Request(path, method, body) {
-
-  this.path = path;
-
-  this.method = method;
-
-  this.body = body;
-
-}
-
-function URLAutocomplete(mappings) {
-
-  var PATHS = [
-    // Suggest
-    '_suggest',
-    '{index}/_suggest',
-    // Multi Search
-    '_msearch',
-    '{index}/_msearch',
-    '{index}/{type}/_msearch',
-    '_msearch/template',
-    '{index}/_msearch/template',
-    '{index}/{type}/_msearch/template',
-    // Search
-    '_search',
-    '{index}/_search',
-    '{index}/{type}/_search',
-    '_search/template',
-    '{index}/_search/template',
-    '{index}/{type}/_search/template',
-    '_search/exists',
-    '{index}/_search/exists',
-    '{index}/{type}/_search/exists'
-  ];
-
-  var format = function(previousTokens, suggestedToken) {
-    if (previousTokens.length > 1) {
-      var prefix = previousTokens.slice(0, -1).join('/');
-      if (prefix.length > 0) {
-        return prefix + '/' + suggestedToken;
-      } else {
-        return suggestedToken;
-      }
-    } else {
-      return suggestedToken;
-    }
-  };
-
-  this.getAlternatives = function(path) {
-    var pathTokens = path.split('/');
-    var suggestedTokenIndex = pathTokens.length - 1;
-
-    /**
-     * Replaces the variables on suggestedPathTokens({index}, {type}...) for
-     * actual values extracted from pathTokens
-     * @param {Array} pathTokens tokens for the path to be suggested
-     * @param {Array} suggestedPathTokens tokens for the suggested path
-     * @returns {Array} a new array with the variables from suggestedPathTokens
-     * replaced by the actual values from pathTokens
-     */
-    var replaceVariables = function(pathTokens, suggestedPathTokens) {
-      var replaced = suggestedPathTokens.map(function(token, position) {
-        if (position < pathTokens.length - 1 && token.indexOf('{') === 0) {
-          return pathTokens[position];
-        } else {
-          return token;
-        }
-      });
-      return replaced;
-    };
-
-    /**
-     * Checks if a given path matches the definition and current state of
-     * the path to be autocompleted
-     *
-     * @param {Array} pathTokens tokens of path to be autocompleted
-     * @param {Array} suggestedPathTokens tokens of possible suggestion
-     * @returns {boolean} if suggestion is valid
-     */
-    var isValidSuggestion = function(pathTokens, suggestedPathTokens) {
-      var valid = true;
-      suggestedPathTokens.forEach(function(token, index) {
-        if (valid && index < pathTokens.length - 1) {
-          switch (token) {
-            case '{index}':
-              valid = Object.keys(mappings).indexOf(pathTokens[index]) >= 0;
-              break;
-            case '{type}':
-              var types = mappings[pathTokens[index - 1]].types;
-              valid = types.indexOf(pathTokens[index]) >= 0;
-              break;
-            default:
-              valid = pathTokens[index] === token;
-          }
-        }
-      });
-      return valid;
-    };
-
-    var alternatives = [];
-
-    var addIfNotPresent = function(collection, element) {
-      if (collection.indexOf(element) === -1) {
-        collection.push(element);
-      }
-    };
-
-    PATHS.forEach(function(suggestedPath) {
-      var suggestedPathTokens = suggestedPath.split('/');
-      if (suggestedPathTokens.length > suggestedTokenIndex &&
-        isValidSuggestion(pathTokens, suggestedPathTokens)) {
-        suggestedPathTokens = replaceVariables(
-          pathTokens,
-          suggestedPathTokens
         );
-        var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
-        switch (suggestedToken) {
-          case '{index}':
-            Object.keys(mappings).forEach(function(index) {
-              addIfNotPresent(alternatives, format(pathTokens, index));
-            });
-            break;
-          case '{type}':
-            var pathIndex = pathTokens[suggestedTokenIndex - 1];
-            mappings[pathIndex].types.forEach(function(type) {
-              addIfNotPresent(alternatives, format(pathTokens, type));
-            });
-            break;
-          default:
-            addIfNotPresent(alternatives, format(pathTokens, suggestedToken));
-        }
-      }
-    });
-
-    return alternatives.sort(function(a, b) {
-      return a.localeCompare(b);
-    });
-  };
-
-  return this;
-
-}
+    }
+  ]);
 
 angular.module('cerebro').controller('AlertsController', ['$scope',
   'AlertService', function($scope, AlertService) {
@@ -727,6 +226,15 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
 
   }
 ]);
+
+angular.module('cerebro').directive('analysisTokens', function() {
+  return {
+    scope: {
+      tokens: '=tokens'
+    },
+    templateUrl: 'analysis/tokens.html'
+  };
+});
 
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'DataService', 'AlertService',
@@ -1199,6 +707,304 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
   }]
 );
 
+function AceEditor(target) {
+  // ace editor
+  ace.config.set('basePath', '/');
+  this.editor = ace.edit(target);
+  this.editor.setFontSize('10px');
+  this.editor.setTheme('ace/theme/cerebro');
+  this.editor.getSession().setMode('ace/mode/json');
+  this.editor.setOptions({
+    fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
+    fontSize: '12px',
+    fontWeight: '400'
+  });
+
+  // sets value and moves cursor to beggining
+  this.setValue = function(value) {
+    this.editor.setValue(value, 1);
+    this.editor.gotoLine(0, 0, false);
+  };
+
+  this.getValue = function() {
+    var content = this.editor.getValue();
+    if (content.trim()) {
+      return JSON.parse(content);
+    }
+  };
+
+  // formats the json content
+  this.format = function() {
+    try {
+      var content = this.editor.getValue();
+      this.editor.setValue(content, 0);
+      this.editor.gotoLine(0, 0, false);
+    } catch (error) { // nothing to do
+    }
+  };
+
+}
+
+function Alias(alias, index, filter, indexRouting, searchRouting) {
+  this.alias = alias ? alias.toLowerCase() : '';
+  this.index = index ? index.toLowerCase() : '';
+  this.filter = filter ? filter : '';
+  this.index_routing = indexRouting ? indexRouting : '';
+  this.search_routing = searchRouting ? searchRouting : '';
+
+  this.validate = function() {
+    if (!this.alias) {
+      throw 'Alias must have a non empty name';
+    }
+    if (!this.index) {
+      throw 'Alias must have a valid index name';
+    }
+  };
+
+  var cleanInput = function(input) {
+    return input ? input.trim() : undefined;
+  };
+
+  this.toJson = function() {
+    return {
+      alias: this.alias,
+      index: this.index,
+      filter: this.filter,
+      index_routing: cleanInput(this.index_routing),
+      search_routing: cleanInput(this.search_routing)
+    };
+  };
+}
+
+function AliasFilter(index, alias) {
+
+  this.index = index;
+  this.alias = alias;
+
+  this.clone = function() {
+    return new AliasFilter(this.index, this.alias);
+  };
+
+  this.getSorting = function() {
+    return function(a, b) {
+      if (a.alias === b.alias) {
+        return a.index.localeCompare(b.index);
+      }
+      return a.alias.localeCompare(b.alias);
+    };
+  };
+
+  this.equals = function(other) {
+    return (other !== null &&
+    this.index == other.index &&
+    this.alias == other.alias);
+  };
+
+  this.isBlank = function() {
+    return !this.index && !this.alias;
+  };
+
+  this.matches = function(alias) {
+    if (this.isBlank()) {
+      return true;
+    } else {
+      var matches = true;
+      if (this.index) {
+        matches = alias.index.indexOf(this.index) != -1;
+      }
+      if (matches && this.alias) {
+        matches = alias.alias.indexOf(this.alias) != -1;
+      }
+      return matches;
+    }
+  };
+
+}
+
+angular.module('cerebro').filter('bytes', function() {
+
+  var UNITS = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+  function stringify(bytes) {
+    if (bytes > 0) {
+      var e = Math.floor(Math.log(bytes) / Math.log(1024));
+      return (bytes / Math.pow(1024, e)).toFixed(2) + UNITS[e];
+    } else {
+      return 0 + UNITS[0];
+    }
+  }
+
+  return function(bytes) {
+    return stringify(bytes);
+  };
+
+});
+
+function IndexFilter(name, closed, special, healthy, asc, timestamp) {
+  this.name = name;
+  this.closed = closed;
+  this.special = special;
+  this.healthy = healthy;
+  this.sort = 'name';
+  this.asc = asc;
+  this.timestamp = timestamp;
+
+  this.getSorting = function() {
+    var asc = this.asc;
+    switch (this.sort) {
+      case 'name':
+        return function(a, b) {
+          if (asc) {
+            return a.name.localeCompare(b.name);
+          } else {
+            return b.name.localeCompare(a.name);
+          }
+        };
+      default:
+        return undefined;
+    }
+  };
+
+  this.clone = function() {
+    return new IndexFilter(
+      this.name,
+      this.closed,
+      this.special,
+      this.healthy,
+      this.asc,
+      this.timestamp
+    );
+  };
+
+  this.equals = function(other) {
+    return (
+      other !== null &&
+      this.name === other.name &&
+      this.closed === other.closed &&
+      this.special === other.special &&
+      this.healthy === other.healthy &&
+      this.asc === other.asc &&
+      this.timestamp === other.timestamp
+    );
+  };
+
+  this.isBlank = function() {
+    return (
+      !this.name &&
+      this.closed &&
+      this.special &&
+      this.healthy &&
+      this.asc
+    );
+  };
+
+  this.matches = function(index) {
+    var matches = true;
+    if (!this.special && index.special) {
+      matches = false;
+    }
+    if (!this.closed && index.closed) {
+      matches = false;
+    }
+    // Hide healthy == show unhealthy only
+    if (!this.healthy && !index.unhealthy) {
+      matches = false;
+    }
+    if (matches && this.name) {
+      try {
+        var regExp = new RegExp(this.name.trim(), 'i');
+        matches = regExp.test(index.name);
+        if (!matches && index.aliases) {
+          for (var idx = 0; idx < index.aliases.length; idx++) {
+            if ((matches = regExp.test(index.aliases[idx]))) {
+              break;
+            }
+          }
+        }
+      }
+      catch (err) { // if not valid regexp, still try normal matching
+        matches = index.name.indexOf(this.name.toLowerCase()) != -1;
+        if (!matches) {
+          for (var idx = 0; idx < index.aliases.length; idx++) {
+            var alias = index.aliases[idx].toLowerCase();
+            matches = true;
+            if ((matches = (alias.indexOf(this.name.toLowerCase()) != -1))) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return matches;
+  };
+
+}
+
+function NodeFilter(name, data, master, client, timestamp) {
+  this.name = name;
+  this.data = data;
+  this.master = master;
+  this.client = client;
+  this.timestamp = timestamp;
+
+  this.clone = function() {
+    return new NodeFilter(this.name, this.data, this.master, this.client);
+  };
+
+  this.getSorting = function() {
+    return undefined;
+  };
+
+  this.equals = function(other) {
+    return (
+      other !== null &&
+      this.name == other.name &&
+      this.data == other.data &&
+      this.master == other.master &&
+      this.client == other.client &&
+      this.timestamp == other.timestamp
+    );
+  };
+
+  this.isBlank = function() {
+    return !this.name && (this.data && this.master && this.client);
+  };
+
+  this.matches = function(node) {
+    if (this.isBlank()) {
+      return true;
+    } else {
+      return this.matchesName(node.name) && this.matchesType(node);
+    }
+  };
+
+  this.matchesType = function(node) {
+    return (
+      node.data && this.data ||
+      node.master && this.master ||
+      node.client && this.client
+    );
+  };
+
+  this.matchesName = function(name) {
+    if (this.name) {
+      return name.toLowerCase().indexOf(this.name.toLowerCase()) != -1;
+    } else {
+      return true;
+    }
+  };
+
+}
+
+function Page(elements, total, first, last, next, previous) {
+  this.elements = elements;
+  this.total = total;
+  this.first = first;
+  this.last = last;
+  this.next = next;
+  this.previous = previous;
+}
+
 angular.module('cerebro').directive('ngPagination', ['$document',
   function($document) {
 
@@ -1238,6 +1044,88 @@ angular.module('cerebro').directive('ngPagination', ['$document',
   }]
 );
 
+function Paginator(page, pageSize, collection, filter) {
+
+  this.filter = filter;
+
+  this.page = page;
+
+  this.pageSize = pageSize;
+
+  this.$collection = collection ? collection : [];
+
+  this.nextPage = function() {
+    this.page += 1;
+  };
+
+  this.previousPage = function() {
+    this.page -= 1;
+  };
+
+  this.setPageSize = function(newSize) {
+    this.pageSize = newSize;
+  };
+
+  this.getPageSize = function() {
+    return this.pageSize;
+  };
+
+  this.getCurrentPage = function() {
+    return this.page;
+  };
+
+  this.getPage = function() {
+    var results = this.getResults();
+    var total = results.length;
+
+    var first = total > 0 ? ((this.page - 1) * this.pageSize) + 1 : 0;
+    while (total < first) {
+      this.previousPage();
+      first = (this.page - 1) * this.pageSize + 1;
+    }
+    var lastPage = this.page * this.pageSize > total;
+    var last = lastPage ? total : this.page * this.pageSize;
+
+    var elements = total > 0 ? results.slice(first - 1, last) : [];
+
+    var next = this.pageSize * this.page < total;
+    var previous = this.page > 1;
+    while (elements.length < this.pageSize) {
+      elements.push(null);
+    }
+    return new Page(elements, total, first, last, next, previous);
+  };
+
+  this.setCollection = function(collection) {
+    if (this.filter.getSorting()) {
+      this.$collection = collection.sort(this.filter.getSorting());
+    } else {
+      this.$collection = collection;
+    }
+  };
+
+  this.getResults = function() {
+    var filter = this.filter;
+    var collection = this.$collection;
+    if (filter.isBlank()) {
+      return collection;
+    } else {
+      var filtered = [];
+      collection.forEach(function(item) {
+        if (filter.matches(item)) {
+          filtered.push(item);
+        }
+      });
+      return filtered;
+    }
+  };
+
+  this.getCollection = function() {
+    return this.$collection;
+  };
+
+}
+
 angular.module('cerebro').directive('ngProgress',
   function() {
 
@@ -1259,24 +1147,15 @@ angular.module('cerebro').directive('ngProgress',
   }
 );
 
-angular.module('cerebro').filter('bytes', function() {
+function Request(path, method, body) {
 
-  var UNITS = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  this.path = path;
 
-  function stringify(bytes) {
-    if (bytes > 0) {
-      var e = Math.floor(Math.log(bytes) / Math.log(1024));
-      return (bytes / Math.pow(1024, e)).toFixed(2) + UNITS[e];
-    } else {
-      return 0 + UNITS[0];
-    }
-  }
+  this.method = method;
 
-  return function(bytes) {
-    return stringify(bytes);
-  };
+  this.body = body;
 
-});
+}
 
 angular.module('cerebro').filter('startsWith', function() {
 
@@ -1294,6 +1173,139 @@ angular.module('cerebro').filter('startsWith', function() {
     return filtered;
   };
 });
+
+function URLAutocomplete(mappings) {
+
+  var PATHS = [
+    // Suggest
+    '_suggest',
+    '{index}/_suggest',
+    // Multi Search
+    '_msearch',
+    '{index}/_msearch',
+    '{index}/{type}/_msearch',
+    '_msearch/template',
+    '{index}/_msearch/template',
+    '{index}/{type}/_msearch/template',
+    // Search
+    '_search',
+    '{index}/_search',
+    '{index}/{type}/_search',
+    '_search/template',
+    '{index}/_search/template',
+    '{index}/{type}/_search/template',
+    '_search/exists',
+    '{index}/_search/exists',
+    '{index}/{type}/_search/exists'
+  ];
+
+  var format = function(previousTokens, suggestedToken) {
+    if (previousTokens.length > 1) {
+      var prefix = previousTokens.slice(0, -1).join('/');
+      if (prefix.length > 0) {
+        return prefix + '/' + suggestedToken;
+      } else {
+        return suggestedToken;
+      }
+    } else {
+      return suggestedToken;
+    }
+  };
+
+  this.getAlternatives = function(path) {
+    var pathTokens = path.split('/');
+    var suggestedTokenIndex = pathTokens.length - 1;
+
+    /**
+     * Replaces the variables on suggestedPathTokens({index}, {type}...) for
+     * actual values extracted from pathTokens
+     * @param {Array} pathTokens tokens for the path to be suggested
+     * @param {Array} suggestedPathTokens tokens for the suggested path
+     * @returns {Array} a new array with the variables from suggestedPathTokens
+     * replaced by the actual values from pathTokens
+     */
+    var replaceVariables = function(pathTokens, suggestedPathTokens) {
+      var replaced = suggestedPathTokens.map(function(token, position) {
+        if (position < pathTokens.length - 1 && token.indexOf('{') === 0) {
+          return pathTokens[position];
+        } else {
+          return token;
+        }
+      });
+      return replaced;
+    };
+
+    /**
+     * Checks if a given path matches the definition and current state of
+     * the path to be autocompleted
+     *
+     * @param {Array} pathTokens tokens of path to be autocompleted
+     * @param {Array} suggestedPathTokens tokens of possible suggestion
+     * @returns {boolean} if suggestion is valid
+     */
+    var isValidSuggestion = function(pathTokens, suggestedPathTokens) {
+      var valid = true;
+      suggestedPathTokens.forEach(function(token, index) {
+        if (valid && index < pathTokens.length - 1) {
+          switch (token) {
+            case '{index}':
+              valid = Object.keys(mappings).indexOf(pathTokens[index]) >= 0;
+              break;
+            case '{type}':
+              var types = mappings[pathTokens[index - 1]].types;
+              valid = types.indexOf(pathTokens[index]) >= 0;
+              break;
+            default:
+              valid = pathTokens[index] === token;
+          }
+        }
+      });
+      return valid;
+    };
+
+    var alternatives = [];
+
+    var addIfNotPresent = function(collection, element) {
+      if (collection.indexOf(element) === -1) {
+        collection.push(element);
+      }
+    };
+
+    PATHS.forEach(function(suggestedPath) {
+      var suggestedPathTokens = suggestedPath.split('/');
+      if (suggestedPathTokens.length > suggestedTokenIndex &&
+        isValidSuggestion(pathTokens, suggestedPathTokens)) {
+        suggestedPathTokens = replaceVariables(
+          pathTokens,
+          suggestedPathTokens
+        );
+        var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
+        switch (suggestedToken) {
+          case '{index}':
+            Object.keys(mappings).forEach(function(index) {
+              addIfNotPresent(alternatives, format(pathTokens, index));
+            });
+            break;
+          case '{type}':
+            var pathIndex = pathTokens[suggestedTokenIndex - 1];
+            mappings[pathIndex].types.forEach(function(type) {
+              addIfNotPresent(alternatives, format(pathTokens, type));
+            });
+            break;
+          default:
+            addIfNotPresent(alternatives, format(pathTokens, suggestedToken));
+        }
+      }
+    });
+
+    return alternatives.sort(function(a, b) {
+      return a.localeCompare(b);
+    });
+  };
+
+  return this;
+
+}
 
 angular.module('cerebro').factory('AceEditorService', function() {
 
@@ -1680,50 +1692,3 @@ angular.module('cerebro').factory('RefreshService',
     return this;
   }
 );
-
-angular.module('cerebro').controller('StatsController', ['$scope', '$http',
-  'DataService', 'RefreshService', function($scope, $http, DataService,
-                                            RefreshService) {
-
-    $scope.number_of_nodes = undefined;
-
-    $scope.indices = undefined;
-
-    $scope.active_primary_shards = undefined;
-    $scope.active_shards = undefined;
-    $scope.relocating_shards = undefined;
-    $scope.initializing_shards = undefined;
-    $scope.unassigned_shards = undefined;
-    $scope.total_shards = undefined;
-
-    $scope.docs_count = undefined;
-
-    $scope.size_in_bytes = undefined;
-
-    $scope.cluster_name = undefined;
-    // $scope.$watch(
-    //   function() {
-    //     return RefreshService.lastUpdate();
-    //   },
-    //   function(data) {
-    //     if (data) {
-    //       $scope.number_of_nodes = data.number_of_nodes;
-    //       $scope.indices = data.indices.length;
-    //       $scope.active_primary_shards = data.active_primary_shards;
-    //       $scope.active_shards = data.active_shards;
-    //       $scope.relocating_shards = data.relocating_shards;
-    //       $scope.initializing_shards = data.initializing_shards;
-    //       $scope.unassigned_shards = data.unassigned_shards;
-    //       $scope.docs_count = data.docs_count;
-    //       $scope.size_in_bytes = data.size_in_bytes;
-    //       $scope.cluster_name = data.cluster_name;
-    //
-    //       $scope.total_shards = $scope.active_shards +
-    //         $scope.relocating_shards +
-    //         $scope.initializing_shards +
-    //         $scope.unassigned_shards;
-    //     }
-    //   }
-    // );
-
-  }]);
