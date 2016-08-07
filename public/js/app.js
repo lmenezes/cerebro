@@ -1401,8 +1401,9 @@ angular.module('cerebro').factory('AlertService', function() {
 });
 
 angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
-  '$http', '$location', 'RefreshService',
-  function($rootScope, $timeout, $http, $location, RefreshService) {
+  '$http', '$location', 'RefreshService', 'AlertService',
+  function($rootScope, $timeout, $http, $location, RefreshService,
+           AlertService) {
 
     var host;
 
@@ -1554,6 +1555,8 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
           data: angular.merge(data, defaultData) // adds host to data
         };
         $http(config).success(success).error(error);
+      } else {
+        $location.path('/connect');
       }
     };
 
