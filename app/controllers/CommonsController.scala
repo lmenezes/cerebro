@@ -12,4 +12,22 @@ class CommonsController extends BaseController {
     }
   }
 
+  def getIndexSettings = process { (request, client) =>
+    client.getIndexSettings(request.get("index"), ElasticServer(request.host, request.authentication)) map { response =>
+      Status(response.status)(response.body)
+    }
+  }
+
+  def getIndexMappings = process { (request, client) =>
+    client.getIndexMapping(request.get("index"), ElasticServer(request.host, request.authentication)) map { response =>
+      Status(response.status)(response.body)
+    }
+  }
+
+  def getNodeStats = process { (request, client) =>
+    client.nodeStats(request.get("node"), ElasticServer(request.host, request.authentication)).map { response =>
+      Status(response.status)(response.body)
+    }
+  }
+
 }

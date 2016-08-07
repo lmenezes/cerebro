@@ -1,50 +1,49 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
-
 # Home page
-GET        /                                 controllers.Application.index()
+GET         /                                         controllers.Application.index()
 
-#
-POST       /main                             @controllers.Main.execute
+# Aliases module
+POST        /aliases/get_aliases                      @controllers.AliasesController.getAliases
+POST        /aliases/update_aliases                   @controllers.AliasesController.updateAliases
 
-POST       /apis/close_indices               @controllers.CloseIndexController.execute
-POST       /apis/open_indices                @controllers.OpenIndexController.execute
-POST       /apis/force_merge                 @controllers.ForceMergeController.execute
-POST       /apis/clear_indices_cache         @controllers.ClearIndexCacheController.execute
-POST       /apis/refresh_indices             @controllers.RefreshIndexController.execute
-POST       /apis/delete_indices              @controllers.DeleteIndexController.execute
-POST       /apis/get_index_settings          @controllers.GetIndexSettingsController.execute
-POST       /apis/get_index_mapping           @controllers.GetIndexMappingController.execute
-POST       /apis/update_cluster_settings     @controllers.PutClusterSettings.execute
-POST       /apis/get_node_stats              @controllers.GetNodeStatsController.execute
-POST       /apis/disable_shard_allocation    @controllers.DisableShardAllocationController.execute
-POST       /apis/enable_shard_allocation     @controllers.EnableShardAllocationController.execute
-POST       /apis/get_shard_stats             @controllers.GetShardStatsController.execute
-POST       /apis/rest                        @controllers.RestController.execute
-POST       /apis/get_cluster_mapping         @controllers.GetClusterMappingController.execute
-POST       /apis/get_aliases                 @controllers.GetAliasesController.execute
-POST       /apis/update_aliases              @controllers.UpdateAliasesController.execute
-POST       /apis/get_index_metadata          @controllers.GetIndexMetadataController.execute
+# Rest module
+POST        /rest/request                             @controllers.RestController.request
+POST        /rest/get_cluster_mapping                 @controllers.RestController.getClusterMapping
+
 # Overview module
-POST       /overview                         @controllers.ClusterOverviewController.execute
+POST        /overview                                 @controllers.ClusterOverviewController.index
+POST        /overview/disable_shard_allocation        @controllers.ClusterOverviewController.disableShardAllocation
+POST        /overview/enable_shard_allocation         @controllers.ClusterOverviewController.enableShardAllocation
+POST        /overview/close_indices                   @controllers.ClusterOverviewController.closeIndices
+POST        /overview/open_indices                    @controllers.ClusterOverviewController.openIndices
+POST        /overview/force_merge                     @controllers.ClusterOverviewController.forceMerge
+POST        /overview/clear_indices_cache             @controllers.ClusterOverviewController.clearIndexCache
+POST        /overview/refresh_indices                 @controllers.ClusterOverviewController.refreshIndex
+POST        /overview/delete_indices                  @controllers.ClusterOverviewController.deleteIndex
+POST        /overview/get_shard_stats                 @controllers.ClusterOverviewController.getShardStats
+
 # Navbar module
-POST       /navbar                           @controllers.NavbarController.index
+POST        /navbar                                   @controllers.NavbarController.index
+
 # Analysis module
-POST       /analysis/indices                 @controllers.AnalysisController.getIndices
-POST       /analysis/analyzers               @controllers.AnalysisController.getIndexAnalyzers
-POST       /analysis/fields                  @controllers.AnalysisController.getIndexFields
-POST       /analysis/analyze/analyzer        @controllers.AnalysisController.analyzeByAnalyzer
-POST       /analysis/analyze/field           @controllers.AnalysisController.analyzeByField
-# Create index module
-POST       /create_index/create              @controllers.CreateIndexController.execute
+POST        /analysis/indices                         @controllers.AnalysisController.getIndices
+POST        /analysis/analyzers                       @controllers.AnalysisController.getIndexAnalyzers
+POST        /analysis/fields                          @controllers.AnalysisController.getIndexFields
+POST        /analysis/analyze/analyzer                @controllers.AnalysisController.analyzeByAnalyzer
+POST        /analysis/analyze/field                   @controllers.AnalysisController.analyzeByField
+
 # Commons
-POST       /commons/indices                  @controllers.CommonsController.indices
+POST        /commons/indices                          @controllers.CommonsController.indices
+POST        /commons/get_index_settings               @controllers.CommonsController.getIndexSettings
+POST        /commons/get_index_mapping                @controllers.CommonsController.getIndexMappings
+POST        /commons/get_node_stats                   @controllers.CommonsController.getNodeStats
 
-GET        /apis/hosts                       @controllers.HostsController.index
+# Create index module
+POST        /create_index/get_index_metadata          @controllers.CreateIndexController.getIndexMetadata
+POST        /create_index/create                      @controllers.CreateIndexController.execute
 
+# Connect module
+GET         /connect/hosts                            @controllers.ConnectController.index
 
 # Map the JS resource paths
-GET        /public/*file                     controllers.Assets.at(path="/public", file)
-GET        /*file                            controllers.Assets.versioned(path="/public", file: Asset)
+GET         /public/*file                             controllers.Assets.at(path="/public", file)
+GET         /*file                                    controllers.Assets.versioned(path="/public", file: Asset)

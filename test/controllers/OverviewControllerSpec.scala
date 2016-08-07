@@ -1,6 +1,7 @@
 package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
+import exceptions.MissingRequiredParamException
 import models.ElasticServer
 import org.specs2.Specification
 import org.specs2.mock.Mockito
@@ -10,61 +11,316 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object GetShardStatsControllerSpec extends Specification with Mockito {
+object OverviewControllerSpec extends Specification with Mockito {
 
   def is =
     s2"""
-    GetShardStatsControllerSpec should             ${step(play.api.Play.start(FakeApplication()))}
-      invoke getShardStats and getIndexRecovery    $getShardStats
-      throw exception if index param is missing    $missingIndex
-      throw exception if shard param is missing    $missingShard
-      throw exception if node param is missing     $missingNode
+    OverviewController should                            ${step(play.api.Play.start(FakeApplication()))}
+      should correctly delete index                      $deleteIndex
+      should validate existence of index parameter       $missingIndicesToDelete
+
+      should correctly refresh index                     $refreshIndex
+      should validate existence of index parameter       $missingIndicesToRefresh
+
+      should correctly clear index cache                 $clearIndexCache
+      should validate existence of index parameter       $missingIndicesToClearCache
+
+      should correctly force index merge                 $forceMerge
+      should validate existence of index parameter       $missingIndicesToForceMerge
+
+      should correctly open indices                      $openIndices
+      should validate existence of index parameter       $missingIndicesToOpenIndices
+
+      should correctly close indices                     $closeIndices
+      should validate existence of index parameter       $missingIndicesToCloseIndices
+
+      should correctly retrieve shard stats              $shardStats
+      should validate existence of index parameter       $missingIndexToFetchShardStats
+      should validate existence of shard parameter       $missingShardToFetchShardStats
+      should validate existence of node parameter        $missingNodeToFetchShardStats
+
+      should correctly clear index cache                 $enableShardAllocation
+      should correctly clear index cache                 $disableShardAllocation
+                                                         ${step(play.api.Play.stop(FakeApplication()))}
       """
 
-  def getShardStats = {
-    val mockedElasticClient: ElasticClient = mock[ElasticClient]
-    mockedElasticClient.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
-    mockedElasticClient.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
-
-    val controller = new GetShardStatsController {
-      override val client = mockedElasticClient
+  def deleteIndex = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "acknowledged": true
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.deleteIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
     }
+    val result = controller.deleteIndex()(FakeRequest().withBody(body))
+    there was one(mockedClient).deleteIndex("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
 
+  def missingIndicesToDelete = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.deleteIndex()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def refreshIndex = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "_shards": {
+        |    "total": 10,
+        |    "successful": 5,
+        |    "failed": 0
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.refreshIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.refreshIndex()(FakeRequest().withBody(body))
+    there was one(mockedClient).refreshIndex("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def missingIndicesToRefresh = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.refreshIndex()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def clearIndexCache = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "_shards": {
+        |    "total": 10,
+        |    "successful": 5,
+        |    "failed": 0
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.clearIndexCache("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.clearIndexCache()(FakeRequest().withBody(body))
+    there was one(mockedClient).clearIndexCache("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def missingIndicesToClearCache = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.clearIndexCache()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def forceMerge = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "_shards": {
+        |    "total": 10,
+        |    "successful": 5,
+        |    "failed": 0
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.forceMerge("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.forceMerge()(FakeRequest().withBody(body))
+    there was one(mockedClient).forceMerge("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def missingIndicesToForceMerge = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.forceMerge()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def openIndices = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "acknowledged": true
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.openIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.openIndices()(FakeRequest().withBody(body))
+    there was one(mockedClient).openIndex("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def missingIndicesToOpenIndices = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.openIndices()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def closeIndices = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "acknowledged": true
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.closeIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.closeIndices()(FakeRequest().withBody(body))
+    there was one(mockedClient).closeIndex("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def missingIndicesToCloseIndices = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.closeIndices()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter indices") and
+      (status(response) mustEqual 400)
+  }
+
+  def shardStats = {
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> 1)
-    val result = controller.execute()(FakeRequest().withBody(body))
-    there was one(mockedElasticClient).getShardStats("someIndex", ElasticServer("somehost", None))
-    there was one(mockedElasticClient).getIndexRecovery("someIndex", ElasticServer("somehost", None))
-    (status(result) mustEqual 200) and (contentAsJson(result) mustEqual expectedShardStats)
+    val mockedClient = mock[ElasticClient]
+    mockedClient.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
+    mockedClient.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.getShardStats()(FakeRequest().withBody(body))
+    there was one(mockedClient).getShardStats("a,b,c", ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedShardStats and
+      (status(result) mustEqual 200)
   }
 
-  def missingIndex = {
-    val controller = new GetShardStatsController {
-      override val client = mock[ElasticClient]
-    }
-    val body = Json.obj("host" -> "somehost", "node" -> "someNode", "shard" -> 1)
-    val result = controller.execute()(FakeRequest().withBody(body))
-    val expected = Json.parse("{\"error\":\"Error\"}")
-    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
+  def missingIndexToFetchShardStats = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.getShardStats()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter index") and
+      (status(response) mustEqual 400)
   }
 
-  def missingNode = {
-    val controller = new GetShardStatsController {
-      override val client = mock[ElasticClient]
-    }
-    val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "shard" -> 1)
-    val result = controller.execute(FakeRequest().withBody(body))
-    val expected = Json.parse("{\"error\":\"Error\"}")
-    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
+  def missingShardToFetchShardStats = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost", "index" -> "foo")
+    val response = controller.getShardStats()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter shard") and
+      (status(response) mustEqual 400)
   }
 
-  def missingShard = {
-    val controller = new GetShardStatsController {
-      override val client = mock[ElasticClient]
+  def missingNodeToFetchShardStats = {
+    val controller = new ClusterOverviewController
+    val body = Json.obj("host" -> "somehost", "index" -> "foo", "shard" -> 1)
+    val response = controller.getShardStats()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter node") and
+      (status(response) mustEqual 400)
+  }
+
+
+  def enableShardAllocation = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "acknowledged": true,
+        |  "persistent": {},
+        |  "transient": {
+        |    "cluster": {
+        |      "routing": {
+        |        "allocation": {
+        |          "enable": "all"
+        |        }
+        |      }
+        |    }
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.enableShardAllocation(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
     }
-    val body = Json.obj("host" -> "somehost", "node" -> "someNode", "index" -> "someIndex")
-    val result = controller.execute(FakeRequest().withBody(body))
-    val expected = Json.parse("{\"error\":\"Error\"}")
-    (status(result) mustEqual 500) and (contentAsJson(result) mustEqual expected)
+    val result = controller.enableShardAllocation()(FakeRequest().withBody(body))
+    there was one(mockedClient).enableShardAllocation(ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
+  }
+
+  def disableShardAllocation = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "acknowledged": true,
+        |  "persistent": {},
+        |  "transient": {
+        |    "cluster": {
+        |      "routing": {
+        |        "allocation": {
+        |          "enable": "none"
+        |        }
+        |      }
+        |    }
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.disableShardAllocation(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new ClusterOverviewController {
+      override val client: ElasticClient = mockedClient
+    }
+    val result = controller.disableShardAllocation()(FakeRequest().withBody(body))
+    there was one(mockedClient).disableShardAllocation(ElasticServer("somehost", None))
+    contentAsJson(result) mustEqual expectedResponse and
+      (status(result) mustEqual 200)
   }
 
   val expectedShardStats = Json.parse(
@@ -1199,5 +1455,4 @@ object GetShardStatsControllerSpec extends Specification with Mockito {
   )
 
   val expectedRecovery = Json.obj()
-
 }

@@ -6,22 +6,118 @@ import models.{CerebroRequest, ElasticServer}
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
-import play.api.test.FakeApplication
+import play.api.test.Helpers._
+import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object GetNodeStatsControllerSpec extends Specification with Mockito {
+class CommonsControllerSpec extends Specification with Mockito {
 
   def is =
     s2"""
-    GetNodeStatsController should                      ${step(play.api.Play.start(FakeApplication()))}
-      invoke nodeStats                                 $getNodeStats
-      should throw exception if node param is missing  $missingNode
-                                                       ${step(play.api.Play.stop(FakeApplication()))}
+    CommonsController should                            ${step(play.api.Play.start(FakeApplication()))}
+      return indices                                    $indices
+
+      return index mapping                              $getIndexMapping
+      validate index parameter for get mapping          $missingIndexGetIndexMapping
+
+      return index settings                             $getIndexSettings
+      validate index parameter for index settings       $missingIndexGetIndexSettings
+
+      return node stats                                 $getNodeStats
+      validate node parameter                           $missingNode
+
+                                                        ${step(play.api.Play.stop(FakeApplication()))}
       """
 
-  val controller = new GetNodeStatsController
+  def indices = {
+    val mockedClient = mock[ElasticClient]
+    val expectedResponse = Json.parse(
+      """
+        |[
+        |  {"health":"green","status":"open","index":"index1","pri":"10","rep":"0","docs.count":"4330","docs.deleted":"10","store.size":"4.1mb","pri.store.size":"4.1mb"},
+        |  {"health":"green","status":"closed","index":"index2","pri":"10","rep":"0","docs.count":"1497203","docs.deleted":"5048","store.size":"860.9mb","pri.store.size":"860.9mb"}
+        |]
+      """.stripMargin
+    )
+    mockedClient.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new CommonsController {
+      override val client: ElasticClient = mockedClient
+    }
+    val response = controller.indices()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
+    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("index1", "index2"))
+  }
+
+  def getIndexMapping = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "someIndex": {
+        |    "mappings": {}
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "index" -> "someIndex")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.getIndexMapping("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new CommonsController {
+      override val client: ElasticClient = mockedClient
+    }
+    val response = controller.getIndexMappings()(FakeRequest().withBody(body))
+    there was one(mockedClient).getIndexMapping("someIndex", ElasticServer("somehost", None))
+    contentAsJson(response) mustEqual expectedResponse and
+      (status(response) mustEqual 200)
+  }
+
+  def missingIndexGetIndexMapping = {
+    val controller = new CommonsController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.getIndexMappings()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter index") and
+      (status(response) mustEqual 400)
+  }
+
+  def getIndexSettings = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "someIndex": {
+        |    "settings": {
+        |      "index": {
+        |        "creation_date": "1459675569309",
+        |        "number_of_shards": "5",
+        |        "number_of_replicas": "1",
+        |        "uuid": "6sN-tL30Sfyz_tW0iVqVPQ",
+        |        "version": {
+        |          "created": "2030099"
+        |        }
+        |      }
+        |    }
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "index" -> "someIndex")
+    val mockedClient = mock[ElasticClient]
+    mockedClient.getIndexSettings("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new CommonsController {
+      override val client: ElasticClient = mockedClient
+    }
+    val response = controller.getIndexSettings()(FakeRequest().withBody(body))
+    there was one(mockedClient).getIndexSettings("someIndex", ElasticServer("somehost", None))
+    contentAsJson(response) mustEqual expectedResponse and
+      (status(response) mustEqual 200)
+  }
+
+  def missingIndexGetIndexSettings = {
+    val controller = new CommonsController
+    val body = Json.obj("host" -> "somehost")
+    val response = controller.getIndexSettings()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter index") and
+      (status(response) mustEqual 400)
+  }
 
   def getNodeStats = {
     val expectedResponse = Json.parse(
@@ -452,18 +548,23 @@ object GetNodeStatsControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     val body = Json.obj("host" -> "somehost", "node" -> "someNode")
-    val client = mock[ElasticClient]
-    client.nodeStats("someNode", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).nodeStats("someNode", ElasticServer("somehost", None))
-    response.body mustEqual expectedResponse
-    response.status mustEqual 200
+    val mockedClient = mock[ElasticClient]
+    mockedClient.nodeStats("someNode", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new CommonsController {
+      override val client: ElasticClient = mockedClient
+    }
+    val response = controller.getNodeStats()(FakeRequest().withBody(body))
+    there was one(mockedClient).nodeStats("someNode", ElasticServer("somehost", None))
+    contentAsJson(response) mustEqual expectedResponse and
+      (status(response) mustEqual 200)
   }
 
   def missingNode = {
     val body = Json.obj("host" -> "somehost")
-    val client = mock[ElasticClient]
-    controller.processElasticRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val controller = new CommonsController
+    val response = controller.getNodeStats()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter node") and
+      (status(response) mustEqual 400)
   }
 
 }

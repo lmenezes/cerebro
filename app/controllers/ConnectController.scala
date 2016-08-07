@@ -5,7 +5,7 @@ import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, Controller}
 
 
-class HostsController extends Controller {
+class ConnectController extends Controller {
 
   def index = Action {
     request => {

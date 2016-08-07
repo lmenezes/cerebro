@@ -2,14 +2,14 @@ package controllers
 
 import elastic.{ElasticClient, ElasticResponse}
 import exceptions.MissingRequiredParamException
-import models.{CerebroRequest, ElasticServer}
+import models.ElasticServer
 import org.specs2.Specification
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
-import play.api.test.FakeApplication
+import play.api.test.Helpers._
+import play.api.test.{FakeApplication, FakeRequest}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 object RestControllerSpec extends Specification with Mockito {
 
@@ -21,8 +21,6 @@ object RestControllerSpec extends Specification with Mockito {
       should throw exception if path param is missing   $missingPath
                                                          ${step(play.api.Play.stop(FakeApplication()))}
       """
-
-  val controller = new RestController
 
   def executeRequest = {
     val expectedResponse = Json.parse(
@@ -37,24 +35,32 @@ object RestControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     val body = Json.obj("host" -> "somehost", "method" -> "GET", "path" -> "/someesapi")
-    val client = mock[ElasticClient]
-    client.executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = Await.result(controller.processElasticRequest(CerebroRequest(body), client), Duration("1s"))
-    there was one(client).executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None))
-    response.body mustEqual expectedResponse
-    response.status mustEqual 200
+    val mockedClient = mock[ElasticClient]
+    mockedClient.executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val controller = new RestController {
+      override val client: ElasticClient = mockedClient
+    }
+    val response = controller.request()(FakeRequest().withBody(body))
+    there was one(mockedClient).executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None))
+    contentAsJson(response) mustEqual expectedResponse and
+      (status(response) mustEqual 200)
   }
 
   def missingPath = {
     val body = Json.obj("host" -> "somehost", "method" -> "GET")
-    val client = mock[ElasticClient]
-    controller.processElasticRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val controller = new RestController
+    val response = controller.request()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter path") and
+      (status(response) mustEqual 400)
+
   }
 
   def missingMethod = {
     val body = Json.obj("host" -> "somehost", "path" -> "GET")
-    val client = mock[ElasticClient]
-    controller.processElasticRequest(CerebroRequest(body), client) must throwA[MissingRequiredParamException]
+    val controller = new RestController
+    val response = controller.request()(FakeRequest().withBody(body))
+    contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter method") and
+      (status(response) mustEqual 400)
   }
 
 }

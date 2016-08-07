@@ -1,6 +1,7 @@
 package controllers
 
 import elastic.ElasticClient
+import exceptions.MissingRequiredParamException
 import models.CerebroRequest
 import play.api.Logger
 import play.api.libs.json.Json
@@ -21,7 +22,10 @@ trait BaseController extends Controller {
     try {
       processor(CerebroRequest(request.body), client)
     } catch {
-      case NonFatal(e) => Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
+      case e: MissingRequiredParamException =>
+        Future.successful(Status(400)(Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
+      case NonFatal(e) =>
+        Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
     }
   }
 
