@@ -38,12 +38,13 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request('/overview', {}, success, error);
     };
     // Create index
-    this.getIndices = function(success, error) {
-      request('/create_index/indices', {}, success, error);
-    };
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};
       request('/create_index/create', data, success, error);
+    };
+    // Commons
+    this.getIndices = function(success, error) {
+      request('/commons/indices', {}, success, error);
     };
 
     this.closeIndex = function(index, success, error) {

@@ -39,7 +39,8 @@ POST       /analysis/analyze/analyzer        @controllers.AnalysisController.ana
 POST       /analysis/analyze/field           @controllers.AnalysisController.analyzeByField
 # Create index module
 POST       /create_index/create              @controllers.CreateIndexController.execute
-POST       /create_index/indices             @controllers.CreateIndexController.indices
+# Commons
+POST       /commons/indices                  @controllers.CommonsController.indices
 
 GET        /apis/hosts                       @controllers.HostsController.index
 

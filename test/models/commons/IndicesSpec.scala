@@ -1,4 +1,4 @@
-package models.createindex
+package models.commons
 
 import org.specs2.Specification
 import play.api.libs.json.Json

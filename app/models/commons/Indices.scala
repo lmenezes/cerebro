@@ -1,4 +1,4 @@
-package models.createindex
+package models.commons
 
 import play.api.libs.json.{JsArray, JsString, JsValue}
 
