@@ -46,58 +46,27 @@ describe('ConnectController', function() {
 
   describe('connect', function() {
     it('connects to valid host', function() {
-      this.DataService.setHost = function(host, username, password, success, error) {
-        success();
-      };
-      spyOn(this.DataService, "setHost").andCallThrough();
+      spyOn(this.DataService, "setHost").andReturn();
       spyOn(this.$location, 'path').andReturn(true);
       this.scope.connect('http://localhost:9200');
       expect(this.DataService.setHost).toHaveBeenCalledWith(
-        'http://localhost:9200',
-        undefined,
-        undefined,
-        jasmine.any(Function),
-        jasmine.any(Function)
+        'http://localhost:9200', undefined, undefined
       );
       expect(this.$location.path).toHaveBeenCalledWith('/overview');
       expect(this.scope.connecting).toEqual(true);
     });
 
     it('connects to valid host passing username/password', function() {
-      this.DataService.setHost = function(host, username, password, success, error) {
-        success();
-      };
-      spyOn(this.DataService, "setHost").andCallThrough();
+      spyOn(this.DataService, "setHost").andReturn();
       spyOn(this.$location, 'path').andReturn(true);
       this.scope.connect('http://localhost:9200', 'admin', '1234');
       expect(this.DataService.setHost).toHaveBeenCalledWith(
         'http://localhost:9200',
         'admin',
-        '1234',
-        jasmine.any(Function),
-        jasmine.any(Function)
+        '1234'
       );
       expect(this.$location.path).toHaveBeenCalledWith('/overview');
     });
-
-    it('fails attempting to connect', function() {
-      this.DataService.setHost = function(host, username, password, success, error) {
-        error();
-      };
-      spyOn(this.DataService, "setHost").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn();
-      this.scope.connect('http://localhost:9200', 'admin', '1234');
-      expect(this.DataService.setHost).toHaveBeenCalledWith(
-        'http://localhost:9200',
-        'admin',
-        '1234',
-        jasmine.any(Function),
-        jasmine.any(Function)
-      );
-      expect(this.scope.connecting).toEqual(false);
-      expect(this.AlertService.error).toHaveBeenCalledWith('Error connecting to http://localhost:9200', undefined);
-    });
-
   })
 
 });

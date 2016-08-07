@@ -20,18 +20,8 @@ angular.module('cerebro').controller('ConnectController', [
     $scope.connect = function(host, username, password) {
       if (host) {
         $scope.connecting = true;
-        DataService.setHost(
-          host,
-          username,
-          password,
-          function(response) {
-            $location.path('/overview');
-          },
-          function(response) {
-            $scope.connecting = false;
-            AlertService.error('Error connecting to ' + host, response);
-          }
-        );
+        DataService.setHost(host, username, password);
+        $location.path('/overview');
       }
     };
 

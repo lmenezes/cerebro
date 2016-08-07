@@ -258,18 +258,8 @@ angular.module('cerebro').controller('ConnectController', [
     $scope.connect = function(host, username, password) {
       if (host) {
         $scope.connecting = true;
-        DataService.setHost(
-          host,
-          username,
-          password,
-          function(response) {
-            $location.path('/overview');
-          },
-          function(response) {
-            $scope.connecting = false;
-            AlertService.error('Error connecting to ' + host, response);
-          }
-        );
+        DataService.setHost(host, username, password);
+        $location.path('/overview');
       }
     };
 
@@ -1424,13 +1414,17 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       return host;
     };
 
-    this.setHost = function(newHost, newUsername, newPassword, success, error) {
+    this.setHost = function(newHost, newUsername, newPassword) {
       host = newHost;
       username = newUsername;
       password = newPassword;
+      $location.search('host', newHost);
       RefreshService.refresh();
-      success();
     };
+
+    if ($location.search().host) {
+      this.setHost($location.search().host);
+    }
 
     // Navbar
     this.getNavbarData = function(success, error) {
@@ -1567,10 +1561,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       };
       $http(config).success(success).error(error);
     };
-
-    if ($location.search().location) {
-      this.setHost($location.search().location);
-    }
 
     return this;
 
