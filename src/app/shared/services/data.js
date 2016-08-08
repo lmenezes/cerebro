@@ -98,6 +98,10 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request('/commons/indices', {}, success, error);
     };
 
+    this.getNodes = function(success, error) {
+      request('/commons/nodes', {}, success, error);
+    };
+
     this.getIndexSettings = function(index, success, error) {
       request('/commons/get_index_settings', {index: index}, success, error);
     };

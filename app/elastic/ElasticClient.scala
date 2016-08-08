@@ -148,6 +148,11 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def getNodes(target: ElasticServer) = {
+    val path = s"/_cat/nodes?format=json"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
   def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer) = {
     val path = s"/$index/_analyze"
     val body = Json.obj("text" -> text, "field" -> field).toString()

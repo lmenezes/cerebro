@@ -33,6 +33,7 @@ POST        /analysis/analyze/field                   @controllers.AnalysisContr
 
 # Commons
 POST        /commons/indices                          @controllers.CommonsController.indices
+POST        /commons/nodes                            @controllers.CommonsController.nodes
 POST        /commons/get_index_settings               @controllers.CommonsController.getIndexSettings
 POST        /commons/get_index_mapping                @controllers.CommonsController.getIndexMappings
 POST        /commons/get_node_stats                   @controllers.CommonsController.getNodeStats
