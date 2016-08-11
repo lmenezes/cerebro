@@ -167,6 +167,12 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request('/rest/request', requestData, success, error);
     };
 
+    // ---------- External API ----------
+
+    this.send = function(path, data, success, error) {
+      request(path, data, success, error);
+    };
+
     // ---------- Internal ----------
 
     var request = function(path, data, success, error) {
