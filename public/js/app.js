@@ -27,6 +27,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'analysis/index.html',
           controller: 'AnalysisController'
         })
+        .when('/templates', {
+          templateUrl: 'templates/index.html',
+          controller: 'TemplatesController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
@@ -696,6 +700,157 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     };
   }]
 );
+
+angular.module('cerebro').controller('TemplatesController', ['$scope',
+  'AlertService', 'AceEditorService', 'TemplatesDataService', 'ModalService',
+  function($scope, AlertService, AceEditorService, TemplatesDataService,
+           ModalService) {
+
+    var TemplateBase = JSON.stringify(
+      {
+        template: 'template pattern(e.g.: index_name_*)',
+        settings: {},
+        mappings: {},
+        aliases: {}
+      },
+      undefined,
+      2
+    );
+
+    $scope.editor = undefined;
+
+    $scope.paginator = new Paginator(1, 10, [],
+      new IndexTemplateFilter('', ''));
+
+    $scope.$watch('paginator', function(filter, previous) {
+      $scope.page = $scope.paginator.getPage();
+    }, true);
+
+    $scope.initEditor = function() {
+      if (!$scope.editor) {
+        $scope.editor = AceEditorService.init('template-body-editor');
+        $scope.editor.setValue(TemplateBase);
+      }
+    };
+
+    $scope.loadTemplates = function() {
+      TemplatesDataService.getTemplates(
+        function(templates) {
+          $scope.paginator.setCollection(templates);
+          $scope.page = $scope.paginator.getPage();
+        },
+        function(error) {
+          AlertService.error('Error while loading templates', error);
+        }
+      );
+    };
+
+    $scope.create = function(name) {
+      try {
+        var template = $scope.editor.getValue();
+        try {
+          var success = function(response) {
+            AlertService.info('Template successfully created');
+            $scope.loadTemplates();
+          };
+          var errorCallback = function(response) {
+            AlertService.error('Error creating template', response);
+          };
+          TemplatesDataService.create(name, template, success, errorCallback);
+        } catch (error) {
+          console.log(error);
+          AlertService.error(error);
+        }
+      } catch (error) {
+        AlertService.error('Malformed template', error);
+      }
+    };
+
+    $scope.delete = function(name) {
+      var success = function(response) {
+        AlertService.info('Template successfully deleted');
+        $scope.loadTemplates();
+      };
+      var errorCallback = function(response) {
+        AlertService.error('Error deleting template', response);
+      };
+      ModalService.promptConfirmation(
+        'Delete template ' + name + '?',
+        function() {
+          TemplatesDataService.delete(name, success, errorCallback);
+        }
+      );
+    };
+
+    $scope.setup = function() {
+      $scope.loadTemplates();
+      $scope.initEditor();
+    };
+  }
+]);
+
+angular.module('cerebro').factory('TemplatesDataService', ['DataService',
+  function(DataService) {
+
+    this.getTemplates = function(success, error) {
+      DataService.send('/templates', {}, success, error);
+    };
+
+    this.delete = function(name, success, error) {
+      DataService.send('/templates/delete', {name: name}, success, error);
+    };
+
+    this.create = function(name, template, success, error) {
+      var data = {name: name, template: template};
+      DataService.send('/templates/create', data, success, error);
+    };
+
+    return this;
+
+  }
+]);
+
+function IndexTemplateFilter(name, pattern) {
+
+  this.name = name;
+  this.pattern = pattern;
+
+  this.clone = function() {
+    return new IndexTemplateFilter(name, pattern);
+  };
+
+  this.getSorting = function() {
+    return function(a, b) {
+      return a.name.localeCompare(b.name);
+    };
+  };
+
+  this.equals = function(other) {
+    return (other !== null &&
+    this.name === other.name &&
+    this.pattern === other.pattern);
+  };
+
+  this.isBlank = function() {
+    return !this.name && !this.pattern;
+  };
+
+  this.matches = function(template) {
+    if (this.isBlank()) {
+      return true;
+    } else {
+      var matches = true;
+      if (this.name) {
+        matches = template.name.indexOf(this.name) != -1;
+      }
+      if (matches && this.pattern) {
+        matches = template.template.template.indexOf(this.pattern) != -1;
+      }
+      return matches;
+    }
+  };
+
+}
 
 function AceEditor(target) {
   // ace editor
@@ -1448,7 +1603,6 @@ angular.module('cerebro').factory('ClusterChangesService', [
         return RefreshService.lastUpdate();
       },
       function() {
-        console.log('rpocessing!');
         process();
       },
       true

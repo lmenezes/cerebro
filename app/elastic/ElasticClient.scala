@@ -148,6 +148,21 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def getTemplates(target: ElasticServer) = {
+    val path = s"/_template"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def createTemplate(name: String, template: JsValue, target: ElasticServer) = {
+    val path = s"/_template/$name"
+    execute(s"${target.host}$path", "PUT", Some(template.toString), target.authentication)
+  }
+
+  def deleteTemplate(name: String, target: ElasticServer) = {
+    val path = s"/_template/$name"
+    execute(s"${target.host}$path", "DELETE", None, target.authentication)
+  }
+
   def getNodes(target: ElasticServer) = {
     val path = s"/_cat/nodes?format=json"
     execute(s"${target.host}$path", "GET", None, target.authentication)

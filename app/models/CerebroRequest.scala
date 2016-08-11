@@ -13,6 +13,9 @@ class CerebroRequest(val host: String, val authentication: Option[ESAuth], body:
 
   def getArray(name: String) = (body \ name).asOpt[Array[String]].getOrElse(throw MissingRequiredParamException(name))
 
+  def getObj(name: String) =
+    (body \ name).asOpt[JsObject].getOrElse(throw MissingRequiredParamException(name))
+
   def getOpt(name: String) =
     (body \ name).asOpt[JsValue]
 

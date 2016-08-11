@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col-md-6">
+    <h4>existing templates</h4>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="row" ng-show="paginator.getCollection().length">
+          <div class="col-md-6 form-group">
+            <input type="text" ng-model="paginator.filter.name" class="form-control" placeholder="template name">
+          </div>
+          <div class="col-md-6 form-group">
+            <input type="text" ng-model="paginator.filter.pattern" class="form-control"
+                   placeholder="template pattern">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <ng-pagination page="page" paginator="paginator"></ng-pagination>
+      </div>
+      <div class="col-xs-12">
+        <table class="table">
+          <tr ng-repeat="template in page.elements track by $index" ng-show="template">
+            <td>
+              <i class="fa fa-book"></i> {{template.name}} <span class="info-text"> with pattern</span>
+              {{template.template.template}}
+              <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="delete(template.name)"
+                 ng-hide="template.removed" data-toggle="modal" href="#confirm_dialog" target="_self"></i>
+              <i class="fa fa-trash alert-danger pull-right disabled" ng-show="template.removed"></i>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h4>create new template</h4>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="form-group">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="name" ng-model="name">
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12">
+        <div class="form-group">
+          <div id="template-body-editor" class="ace-cerebro" style="height: 600px"></div>
+        </div>
+      </div>
+      <div class="col-xs-12 text-right">
+        <button type="submit" class="btn btn-info" ng-click="create(name)">
+          <i class="fa fa-file-o normal-action alert-info"> </i> create
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

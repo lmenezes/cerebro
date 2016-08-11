@@ -42,6 +42,11 @@ POST        /commons/get_node_stats                   @controllers.CommonsContro
 POST        /create_index/get_index_metadata          @controllers.CreateIndexController.getIndexMetadata
 POST        /create_index/create                      @controllers.CreateIndexController.execute
 
+# Index templates module
+POST        /templates                                @controllers.TemplatesController.templates
+POST        /templates/delete                         @controllers.TemplatesController.delete
+POST        /templates/create                         @controllers.TemplatesController.create
+
 # Connect module
 GET         /connect/hosts                            @controllers.ConnectController.index
 

@@ -27,6 +27,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'analysis/index.html',
           controller: 'AnalysisController'
         })
+        .when('/templates', {
+          templateUrl: 'templates/index.html',
+          controller: 'TemplatesController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
