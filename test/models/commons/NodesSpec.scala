@@ -17,25 +17,25 @@ object NodesSpec extends Specification {
       """
         |[
         |  {
-        |    host: "12.8.17.5",
-        |    ip: "12.8.17.5",
-        |    heap.percent: "8",
-        |    ram.percent: "95",
-        |    load: "0.19",
-        |    node.role: "d",
-        |    master: "*",
-        |    name: "Node 1"
+        |    "host": "12.8.17.5",
+        |    "ip": "12.8.17.5",
+        |    "heap.percent": "8",
+        |    "ram.percent": "95",
+        |    "load": "0.19",
+        |    "node.role": "d",
+        |    "master": "*",
+        |    "name": "Node 1"
         |  },
         |  {
-        |    host: "12.8.17.7",
-        |    ip: "12.8.17.7",
-        |    heap.percent: "8",
-        |    ram.percent: "95",
-        |    load: "0.19",
-        |    node.role: "d",
-        |    master: "*",
-        |    name: "Node 2"
-        |  },
+        |    "host": "12.8.17.7",
+        |    "ip": "12.8.17.7",
+        |    "heap.percent": "8",
+        |    "ram.percent": "95",
+        |    "load": "0.19",
+        |    "node.role": "d",
+        |    "master": "*",
+        |    "name": "Node 2"
+        |  }
         |]
       """.stripMargin
     )
