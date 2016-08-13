@@ -17,7 +17,7 @@ class TemplatesController extends BaseController {
   def delete = process { (request, client) =>
     val name = request.get("name")
     client.deleteTemplate(name, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Templates(response.body))
+      Status(response.status)(response.body)
     }
   }
 
@@ -25,7 +25,7 @@ class TemplatesController extends BaseController {
     val name = request.get("name")
     val template = request.getObj("template")
     client.createTemplate(name, template, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Templates(response.body))
+      Status(response.status)(response.body)
     }
   }
 

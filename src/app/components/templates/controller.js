@@ -45,20 +45,17 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
     $scope.create = function(name) {
       try {
         var template = $scope.editor.getValue();
-        try {
-          var success = function(response) {
-            AlertService.info('Template successfully created');
-            $scope.loadTemplates();
-          };
-          var errorCallback = function(response) {
-            AlertService.error('Error creating template', response);
-          };
-          TemplatesDataService.create(name, template, success, errorCallback);
-        } catch (error) {
-          console.log(error);
-          AlertService.error(error);
-        }
-      } catch (error) {
+        var success = function(response) {
+          AlertService.info('Template successfully created');
+          $scope.loadTemplates();
+        };
+        var errorCallback = function(response) {
+          AlertService.error('Error creating template', response);
+        };
+        TemplatesDataService.create(name, template, success, errorCallback);
+      }
+      catch
+        (error) {
         AlertService.error('Malformed template', error);
       }
     };
