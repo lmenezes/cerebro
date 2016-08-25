@@ -180,6 +180,16 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", Some(body), target.authentication)
   }
 
+  def getClusterSettings(target: ElasticServer) = {
+    val path = s"/_cluster/settings?flat_settings=true"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def saveClusterSettings(settings: JsValue, target: ElasticServer) = {
+    val path = s"/_cluster/settings"
+    execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
+  }
+
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
     execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
 

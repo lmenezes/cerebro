@@ -1,0 +1,22 @@
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>zen discovery</h4>
+  </div>
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'discovery.zen.minimum_master_nodes'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'discovery.zen.publish_timeout'"/>
+
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">discovery.zen.no_master_block</label>
+      <select ng-model="settings['discovery.zen.no_master_block']"
+              ng-change="set('discovery.zen.no_master_block')"
+              class="form-control">
+        <option value="all">all</option>
+        <option value="write">write (default)</option>
+      </select>
+    </div>
+  </div>
+</div>

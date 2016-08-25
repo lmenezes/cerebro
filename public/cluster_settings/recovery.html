@@ -1,0 +1,27 @@
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>indices recovery</h4>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.concurrent_streams'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.concurrent_small_file_streams'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.file_chunk_size'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.translog_ops'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.translog_size'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.compress'"/> <!-- TODO: boolean -->
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.recovery.max_bytes_per_sec'"/>
+
+</div>

@@ -47,6 +47,10 @@ POST        /templates                                @controllers.TemplatesCont
 POST        /templates/delete                         @controllers.TemplatesController.delete
 POST        /templates/create                         @controllers.TemplatesController.create
 
+# Cluster settings module
+POST        /cluster_settings                         @controllers.ClusterSettingsController.getSettings
+POST        /cluster_settings/save                    @controllers.ClusterSettingsController.save
+
 # Connect module
 GET         /connect/hosts                            @controllers.ConnectController.index
 

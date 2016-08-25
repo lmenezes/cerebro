@@ -1,0 +1,119 @@
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>shard allocation settings</h4>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">cluster.routing.allocation.enable</label>
+      <select ng-model="settings['cluster.routing.allocation.enable']"
+              ng-change="set('cluster.routing.allocation.enable')"
+              class="form-control">
+        <option value="all">all</option>
+        <option value="primaries">primaries</option>
+        <option value="new_primaries">new primaries</option>
+        <option value="none">none</option>
+      </select>
+    </div>
+  </div>
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.node_concurrent_recoveries'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.node_initial_primaries_recoveries'"/>
+</div>
+
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>disk based shard allocation</h4>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">cluster.routing.allocation.disk.threshold_enabled</label>
+      <select ng-model="settings['cluster.routing.allocation.disk.threshold_enabled']"
+              ng-change="set('cluster.routing.allocation.disk.threshold_enabled')"
+              class="form-control">
+        <option value="true">true (default)</option>
+        <option value="false">false</option>
+      </select>
+    </div>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.disk.watermark.low'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.disk.watermark.high'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.info.update.interval'"/>
+
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">cluster.routing.allocation.disk.include_relocations</label>
+      <select ng-model="settings['cluster.routing.allocation.disk.include_relocations']"
+              ng-change="set('cluster.routing.allocation.disk.include_relocations')"
+              class="form-control">
+        <option value="true">true (default)</option>
+        <option value="false">false</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>shard rebalance settings</h4>
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">cluster.routing.rebalance.enable</label>
+      <select ng-model="settings['cluster.routing.rebalance.enable']"
+              ng-change="set('cluster.routing.rebalance.enable')"
+              class="form-control">
+        <option value="all">all</option>
+        <option value="primaries">primaries</option>
+        <option value="new_primaries">new primaries</option>
+        <option value="none">none</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="form-group">
+      <label class="form-label">cluster.routing.allocation.allow_rebalance</label>
+      <select ng-model="settings['cluster.routing.allocation.allow_rebalance']"
+              ng-change="set('cluster.routing.allocation.allow_rebalance')"
+              class="form-control">
+        <option value="always">always</option>
+        <option value="indices_primaries_active">indices primaries active</option>
+        <option value="indices_all_active">indices all active (default)</option>
+      </select>
+    </div>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.cluster_concurrent_rebalance'"/>
+</div>
+
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>shard balancing heuristics</h4>
+  </div>
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.balance.shard'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.balance.index'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.balance.threshold'"/>
+</div>
+
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>shard allocation awareness</h4>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'cluster.routing.allocation.awareness.attributes'"/>
+</div>

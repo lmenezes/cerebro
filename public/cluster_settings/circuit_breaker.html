@@ -1,0 +1,21 @@
+<div class="row form-group">
+  <div class="col-xs-12">
+    <h4>circuit breaker</h4>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.breaker.total.limit'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.breaker.fielddata.limit'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.breaker.fielddata.overhead'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.breaker.request.limit'"/>
+
+  <cluster-setting settings="settings" set="set(property)"
+                   property="'indices.breaker.request.overhead'"/>
+
+</div>
