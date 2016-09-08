@@ -27,9 +27,11 @@ function AceEditor(target) {
   // formats the json content
   this.format = function() {
     try {
-      var content = this.editor.getValue();
-      this.editor.setValue(content, 0);
-      this.editor.gotoLine(0, 0, false);
+      var content = this.getValue();
+      if (content) {
+        this.editor.setValue(JSON.stringify(content, undefined, 2), 0);
+        this.editor.gotoLine(0, 0, false);
+      }
     } catch (error) { // nothing to do
     }
   };
