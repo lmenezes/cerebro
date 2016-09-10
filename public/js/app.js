@@ -7,6 +7,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'overview.html',
           controller: 'OverviewController'
         })
+        .when('/nodes', {
+          templateUrl: 'nodes.html',
+          controller: 'NodesController'
+        })
         .when('/connect', {
           templateUrl: 'connect.html',
           controller: 'ConnectController'
@@ -499,6 +503,67 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
 
   }
 ]);
+
+angular.module('cerebro').controller('NodesController', ['$scope', '$http',
+  'DataService', 'AlertService', 'ModalService', 'RefreshService',
+  function($scope, $http, DataService, AlertService, ModalService,
+           RefreshService) {
+
+    $scope.data = undefined;
+    $scope.nodes = undefined;
+
+    $scope.nodes_filter = new NodeFilter('', true, true, true, 0);
+
+    $scope.$watch(
+      function() {
+        return RefreshService.lastUpdate();
+      },
+      function() {
+        $scope.refresh();
+      },
+      true
+    );
+
+    $scope.refresh = function() {
+      DataService.getOverview(
+        function(data) {
+          $scope.data = data;
+          $scope.setNodes(data.nodes);
+        },
+        function(error) {
+          AlertService.error('Error while loading data', error);
+          $scope.nodes = undefined;
+          $scope.data = undefined;
+        }
+      );
+    };
+
+    $scope.$watch('nodes_filter', function() {
+        if ($scope.data) {
+          $scope.setNodes($scope.data.nodes);
+        }
+      },
+      true);
+
+    $scope.setNodes = function(nodes) {
+      $scope.nodes = nodes.filter(function(node) {
+        return $scope.nodes_filter.matches(node);
+      });
+    };
+
+    var displayInfo = function(info) {
+      ModalService.showInfo(info);
+    };
+
+    var error = function(data) {
+      AlertService.error('Operation failed', data);
+    };
+
+    $scope.nodeStats = function(node) {
+      DataService.nodeStats(node, displayInfo, error);
+    };
+
+  }]);
 
 angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
   '$window', 'DataService', 'AlertService', 'ModalService', 'RefreshService',
@@ -1426,6 +1491,40 @@ angular.module('cerebro').filter('startsWith', function() {
     });
     return filtered;
   };
+});
+
+angular.module('cerebro').filter('timeInterval', function() {
+
+  var UNITS = ['yr', 'mo', 'd', 'h', 'min'];
+
+  var UNIT_MEASURE = {
+    yr: 31536000000,
+    mo: 2678400000,
+    wk: 604800000,
+    d: 86400000,
+    h: 3600000,
+    min: 60000
+  };
+
+  function stringify(seconds) {
+
+    var result = 'less than a minute';
+
+    for (var idx = 0; idx < UNITS.length; idx++) {
+      var amount = Math.floor(seconds / UNIT_MEASURE[UNITS[idx]]);
+      if (amount) {
+        result = amount + UNITS[idx] + '.';
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  return function(seconds) {
+    return stringify(seconds);
+  };
+
 });
 
 function URLAutocomplete(mappings) {

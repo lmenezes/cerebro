@@ -59,8 +59,10 @@ object Nodes {
         "name"           -> (info \ "name").as[JsString],
         "host"           -> (info \ "host").as[JsString],
         "ip"             -> (info \ "ip").as[JsString],
+        "transport_address" -> (info \ "transport_address").as[JsString],
         "es_version"     -> (info \ "version").as[JsString],
         "jvm_version"    -> (info \ "jvm" \ "version").as[JsString],
+        "uptime_in_millis"     -> (stats \ "jvm" \ "uptime_in_millis").as[JsNumber],
         "load_average"         -> JsNumber(BigDecimal((stats \ "os" \ "load_average").asOpt[Int].getOrElse(0))),// FIXME: 1.X
         "available_processors" -> (info \ "os" \ "available_processors").as[JsNumber],
         "cpu_percent"    -> cpuPercent,
