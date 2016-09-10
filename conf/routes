@@ -31,6 +31,9 @@ POST        /analysis/fields                          @controllers.AnalysisContr
 POST        /analysis/analyze/analyzer                @controllers.AnalysisController.analyzeByAnalyzer
 POST        /analysis/analyze/field                   @controllers.AnalysisController.analyzeByField
 
+# Cluster Changes Controller
+POST        /cluster_changes                          @controllers.ClusterChangesController.get
+
 # Commons
 POST        /commons/indices                          @controllers.CommonsController.indices
 POST        /commons/nodes                            @controllers.CommonsController.nodes

@@ -147,6 +147,11 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request('/aliases/update_aliases', {changes: changes}, success, error);
     };
 
+    // ---------- Cluster State Changes ----------
+    this.clusterChanges = function(success, error) {
+      request('/cluster_changes', {}, success, error);
+    };
+
     // ---------- Connect ----------
     this.getHosts = function(success, error) {
       var config = {

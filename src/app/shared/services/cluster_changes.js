@@ -2,39 +2,48 @@ angular.module('cerebro').factory('ClusterChangesService', [
   '$rootScope', 'AlertService', 'RefreshService', 'DataService',
   function($rootScope, AlertService, RefreshService, DataService) {
 
-    var indices;
-    var nodes;
+    var current = {
+      indices: undefined,
+      noeds: undefined,
+      clusterName: undefined
+    };
+
+    var processNodeChanges = function(nodes) {
+      var joined = difference(nodes, current.nodes);
+      var left = difference(current.nodes, nodes);
+      if (joined.length > 0) {
+        info(joined, ' nodes joined the cluster');
+      }
+      if (left.length > 0) {
+        warn(left, ' nodes left the cluster');
+      }
+      current.nodes = nodes;
+    };
+
+    var processIndicesChanges = function(indices) {
+      var created = difference(indices, current.indices);
+      var deleted = difference(current.indices, indices);
+      if (created.length > 0) {
+        info(created, ' indices created');
+      }
+      if (deleted.length > 0) {
+        warn(deleted, ' indices deleted');
+      }
+      current.indices = indices;
+    };
 
     var process = function() {
-      var successIndices = function(currentIndices) {
-        if (indices) {
-          var created = difference(currentIndices, indices);
-          var deleted = difference(indices, currentIndices);
-          if (created.length > 0) {
-            info(created, ' indices created');
-          }
-          if (deleted.length > 0) {
-            warn(deleted, ' indices deleted');
-          }
+      var success = function(data) {
+        if (current.clusterName === data.cluster_name) {
+          processNodeChanges(data.nodes);
+          processIndicesChanges(data.indices);
+        } else {
+          current.clusterName = data.cluster_name;
+          current.indices = data.indices;
+          current.nodes = data.nodes;
         }
-        indices = currentIndices;
       };
-      DataService.getIndices(successIndices, angular.noop);
-
-      var successNodes = function(currentNodes) {
-        if (nodes) {
-          var joined = difference(currentNodes, nodes);
-          var left = difference(nodes, currentNodes);
-          if (joined.length > 0) {
-            info(joined, ' nodes joined the cluster');
-          }
-          if (left.length > 0) {
-            warn(left, ' nodes left the cluster');
-          }
-        }
-        nodes = currentNodes;
-      };
-      DataService.getNodes(successNodes, angular.noop);
+      DataService.clusterChanges(success, angular.noop);
     };
 
     var difference = function(set1, set2) {
@@ -52,12 +61,8 @@ angular.module('cerebro').factory('ClusterChangesService', [
     };
 
     $rootScope.$watch(
-      function() {
-        return RefreshService.lastUpdate();
-      },
-      function() {
-        process();
-      },
+      function() { return RefreshService.lastUpdate(); },
+      function() { process(); },
       true
     );
 

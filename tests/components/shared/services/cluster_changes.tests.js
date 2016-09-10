@@ -20,19 +20,14 @@ describe("ClusterChangesService", function() {
   it("should not alert changes when data is loaded for the first time", function() {
     var indices = ['1', '2', '3'];
     var nodes = ['4', '5', '6'];
-    this.DataService.getIndices = function(success, error) {
-      success(indices);
+    this.DataService.clusterChanges = function(success, error) {
+      success({cluster_name: 'es', indices: indices, nodes: nodes});
     };
-    this.DataService.getNodes = function(success, error) {
-      success(nodes);
-    };
-    spyOn(this.DataService, 'getIndices').andCallThrough();
-    spyOn(this.DataService, 'getNodes').andCallThrough();
+    spyOn(this.DataService, 'clusterChanges').andCallThrough();
     spyOn(this.AlertService, 'warn').andReturn();
     spyOn(this.AlertService, 'info').andReturn();
     this.$rootScope.$digest();
-    expect(this.DataService.getIndices).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-    expect(this.DataService.getNodes).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+    expect(this.DataService.clusterChanges).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     expect(this.AlertService.warn).not.toHaveBeenCalled();
     expect(this.AlertService.info).not.toHaveBeenCalled();
   });
@@ -44,14 +39,10 @@ describe("ClusterChangesService", function() {
     this.RefreshService.lastUpdate = function() {
       return lastUpdate;
     };
-    this.DataService.getIndices = function(success, error) {
-      success(indices);
+    this.DataService.clusterChanges = function(success, error) {
+      success({cluster_name: 'es', indices: indices, nodes: nodes});
     };
-    this.DataService.getNodes = function(success, error) {
-      success(nodes);
-    };
-    spyOn(this.DataService, 'getIndices').andCallThrough();
-    spyOn(this.DataService, 'getNodes').andCallThrough();
+    spyOn(this.DataService, 'clusterChanges').andCallThrough();
     spyOn(this.AlertService, 'warn').andReturn();
     spyOn(this.AlertService, 'info').andReturn();
     this.$rootScope.$digest(); // will store initial data
@@ -59,12 +50,38 @@ describe("ClusterChangesService", function() {
     nodes = ['node2']; // changes list of nodes
     lastUpdate = 2; // force a refresh
     this.$rootScope.$digest();
-    expect(this.DataService.getIndices).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-    expect(this.DataService.getNodes).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+    expect(this.DataService.clusterChanges).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     expect(this.AlertService.warn).toHaveBeenCalledWith('1 indices deleted', 'index');
     expect(this.AlertService.warn).toHaveBeenCalledWith('1 nodes left the cluster', 'node');
     expect(this.AlertService.info).toHaveBeenCalledWith('1 indices created', 'index2');
     expect(this.AlertService.info).toHaveBeenCalledWith('1 nodes joined the cluster', 'node2');
+  });
+
+  it("should NOT alert changes to nodes and indices", function() {
+    var lastUpdate = 1;
+    var indices = ['index'];
+    var nodes = ['node'];
+    var clusterName = 'es';
+    this.RefreshService.lastUpdate = function() {
+      return lastUpdate;
+    };
+    this.DataService.clusterChanges = function(success, error) {
+      success({cluster_name: clusterName, indices: indices, nodes: nodes});
+    };
+    spyOn(this.DataService, 'clusterChanges').andCallThrough();
+    spyOn(this.AlertService, 'warn').andReturn();
+    spyOn(this.AlertService, 'info').andReturn();
+    this.$rootScope.$digest(); // will store initial data
+    indices = ['index2']; // changes list of indices
+    nodes = ['node2']; // changes list of nodes
+    clusterName = 'es2';
+    lastUpdate = 2; // force a refresh
+    this.$rootScope.$digest();
+    expect(this.DataService.clusterChanges).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+    expect(this.AlertService.warn).not.toHaveBeenCalled();
+    expect(this.AlertService.warn).not.toHaveBeenCalled();
+    expect(this.AlertService.info).not.toHaveBeenCalled();
+    expect(this.AlertService.info).not.toHaveBeenCalled();
   });
 
 });
