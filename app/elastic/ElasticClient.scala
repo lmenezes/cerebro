@@ -186,7 +186,7 @@ trait ElasticClient {
   }
 
   def getClusterSettings(target: ElasticServer) = {
-    val path = s"/_cluster/settings?flat_settings=true"
+    val path = s"/_cluster/settings?flat_settings=true&include_defaults=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 

@@ -59,14 +59,11 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
       $scope.pendingChanges = 0;
       ClusterSettingsDataService.getClusterSettings(
         function(response) {
-          angular.forEach(response.persistent, function(value, property) {
-            $scope.settings[property] = value;
-            $scope.originalSettings[property] = value;
-          });
-          // transient settings have priority over persistent settings
-          angular.forEach(response.transient, function(value, property) {
-            $scope.settings[property] = value;
-            $scope.originalSettings[property] = value;
+          ['persistent', 'transient', 'defaults'].forEach(function(group) {
+            angular.forEach(response[group], function(value, property) {
+              $scope.settings[property] = value;
+              $scope.originalSettings[property] = value;
+            });
           });
         },
         function(error) {

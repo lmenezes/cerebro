@@ -24,7 +24,8 @@ describe('ClusterSettingsController', function() {
     it('loads cluster settings', function () {
       var settings = {
         persistent: {setting: 'some value', setting_2: 'other value'},
-        transient: {setting: 'some other value'}
+        transient: {setting: 'some other value'},
+        defaults: { setting_3: 'still another'}
       };
       this.ClusterSettingsDataService.getClusterSettings = function(success, error) {
         success(settings);
@@ -32,8 +33,8 @@ describe('ClusterSettingsController', function() {
       spyOn(this.ClusterSettingsDataService, "getClusterSettings").andCallThrough();
       this.scope.setup();
       expect(this.ClusterSettingsDataService.getClusterSettings).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.settings).toEqual({setting: 'some other value', setting_2: 'other value'});
-      expect(this.scope.originalSettings).toEqual({setting: 'some other value', setting_2: 'other value'});
+      expect(this.scope.settings).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
+      expect(this.scope.originalSettings).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
       expect(this.scope.changes).toEqual({});
       expect(this.scope.pendingChanges).toEqual(0);
     });
