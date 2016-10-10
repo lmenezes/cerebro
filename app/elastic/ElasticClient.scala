@@ -88,6 +88,11 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def getIndexSettingsFlat(index: String, target: ElasticServer) = {
+    val path = s"/$index/_settings?flat_settings=true&include_defaults=true"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
   def getIndexMapping(index: String, target: ElasticServer) = {
     val path = s"/$index/_mapping"
     execute(s"${target.host}$path", "GET", None, target.authentication)
@@ -140,7 +145,7 @@ trait ElasticClient {
 
   def createIndex(index: String, metadata: JsValue, target: ElasticServer) = {
     val path = s"/$index"
-    execute(s"${target.host}$path", "POST", Some(metadata.toString), target.authentication)
+    execute(s"${target.host}$path", "PUT", Some(metadata.toString), target.authentication)
   }
 
   def getIndices(target: ElasticServer) = {
@@ -187,6 +192,11 @@ trait ElasticClient {
 
   def saveClusterSettings(settings: JsValue, target: ElasticServer) = {
     val path = s"/_cluster/settings"
+    execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
+  }
+
+  def updateIndexSettings(index: String, settings: JsValue, target: ElasticServer) = {
+    val path = s"/$index/_settings"
     execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
   }
 

@@ -54,6 +54,10 @@ POST        /templates/create                         @controllers.TemplatesCont
 POST        /cluster_settings                         @controllers.ClusterSettingsController.getSettings
 POST        /cluster_settings/save                    @controllers.ClusterSettingsController.save
 
+# Index settings module
+POST        /index_settings                           @controllers.IndexSettingsController.get
+POST        /index_settings/update                    @controllers.IndexSettingsController.update
+
 # Connect module
 GET         /connect/hosts                            @controllers.ConnectController.index
 

@@ -1,0 +1,44 @@
+<h4>{{index}} settings</h4>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="form-group">
+      <select ng-model="group" ng-init="group = 'index_settings/index_settings.html'" class="form-control">
+        <option value="index_settings/index_settings.html">index</option>
+        <option value="index_settings/blocks.html">block operations</option>
+        <option value="index_settings/translog.html">translog</option>
+        <option value="index_settings/routing.html">routing</option>
+        <option value="index_settings/cache.html">cache</option>
+        <option value="index_settings/slowlog.html">slowlog</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-xs-12">
+    <div ng-include src="group"></div>
+  </div>
+</div>
+<div class="row" ng-show="pendingChanges">
+  <div class="col-xs-12">
+    <table class="table">
+      <thead>
+      <tr>
+        <td>{{pendingChanges}} pending changes</td>
+      </tr>
+      </thead>
+      <tr ng-repeat="(p, v) in changes track by $index" ng-show="v">
+        <td>
+          <i class="fa fa-cog"> </i> {{p}} <span class="info-text"> set to value</span> {{v}}
+          <i class="fa fa-undo normal-action pull-right" ng-click="revert(p)"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-lg-12 text-right">
+    <div class="form-group">
+      <div class="btn-group">
+        <button class="btn btn-success" ng-click="save()">
+          save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

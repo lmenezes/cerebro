@@ -1,0 +1,11 @@
+<div class="row form-group">
+
+  <div class="col-xs-12">
+    <h4>translog</h4>
+  </div>
+
+  <cluster-setting settings="settings" set="set(property)" property="'index.translog.flush_threshold_size'" />
+  <cluster-setting settings="settings" set="set(property)" property="'index.translog.sync_interval'" />
+  <cluster-setting settings="settings" set="set(property)" property="'index.translog.durability'" />
+
+</div>

@@ -122,6 +122,9 @@
               <li ng-click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear cache</a>
               </li>
+              <li ng-click="showIndexSettings(index.name)">
+                <a target="_self"><i class="fa fa-fw fa-cog"> </i> index settings</a>
+              </li>
               <li class="divider"></li>
               <li ng-click="deleteIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-trash red"> </i> delete index</a>
