@@ -7,6 +7,14 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'overview.html',
           controller: 'OverviewController'
         })
+        .when('/nodes', {
+          templateUrl: 'nodes.html',
+          controller: 'NodesController'
+        })
+        .when('/indices', {
+          templateUrl: 'indices.html',
+          controller: 'IndicesController'
+        })
         .when('/connect', {
           templateUrl: 'connect.html',
           controller: 'ConnectController'
@@ -34,10 +42,6 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
         .when('/cluster_settings', {
           templateUrl: 'cluster_settings/index.html',
           controller: 'ClusterSettingsController'
-        })
-        .when('/index_settings', {
-          templateUrl: 'index_settings/index.html',
-          controller: 'IndexSettingsController'
         })
         .otherwise({
             redirectTo: '/connect'
@@ -539,6 +543,67 @@ angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
     return this;
   }
 ]);
+
+angular.module('cerebro').controller('IndicesController', ['$scope', '$http',
+  'DataService', 'AlertService', 'ModalService', 'RefreshService',
+  function($scope, $http, DataService, AlertService, ModalService,
+           RefreshService) {
+
+    $scope.data = undefined;
+    $scope.indices = undefined;
+
+    $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
+
+    $scope.$watch(
+      function() {
+        return RefreshService.lastUpdate();
+      },
+      function() {
+        $scope.refresh();
+      },
+      true
+    );
+
+    $scope.refresh = function() {
+      DataService.getOverview(
+        function(data) {
+          $scope.data = data;
+          $scope.setIndices(data.indices);
+        },
+        function(error) {
+          AlertService.error('Error while loading data', error);
+          $scope.indices = undefined;
+          $scope.data = undefined;
+        }
+      );
+    };
+
+    $scope.$watch('indices_filter', function() {
+        if ($scope.data) {
+          $scope.setIndices($scope.data.indices);
+        }
+      },
+      true);
+
+    $scope.setIndices = function(indices) {
+      $scope.indices = indices.filter(function(index) {
+        return $scope.indices_filter.matches(index);
+      });
+    };
+
+    var displayInfo = function(info) {
+      ModalService.showInfo(info);
+    };
+
+    var error = function(data) {
+      AlertService.error('Operation failed', data);
+    };
+
+    $scope.indexStats = function(index) {
+      DataService.indexStats(index, displayInfo, error);
+    };
+
+  }]);
 
 angular.module('cerebro').controller('ModalController', ['$scope',
   'ModalService', function($scope, ModalService) {
@@ -1522,6 +1587,40 @@ angular.module('cerebro').filter('startsWith', function() {
     });
     return filtered;
   };
+});
+
+angular.module('cerebro').filter('timeInterval', function() {
+
+  var UNITS = ['yr', 'mo', 'd', 'h', 'min'];
+
+  var UNIT_MEASURE = {
+    yr: 31536000000,
+    mo: 2678400000,
+    wk: 604800000,
+    d: 86400000,
+    h: 3600000,
+    min: 60000
+  };
+
+  function stringify(seconds) {
+
+    var result = 'less than a minute';
+
+    for (var idx = 0; idx < UNITS.length; idx++) {
+      var amount = Math.floor(seconds / UNIT_MEASURE[UNITS[idx]]);
+      if (amount) {
+        result = amount + UNITS[idx] + '.';
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  return function(seconds) {
+    return stringify(seconds);
+  };
+
 });
 
 function URLAutocomplete(mappings) {
