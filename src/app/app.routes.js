@@ -43,6 +43,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'cluster_settings/index.html',
           controller: 'ClusterSettingsController'
         })
+        .when('/index_settings', {
+          templateUrl: 'index_settings/index.html',
+          controller: 'IndexSettingsController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
