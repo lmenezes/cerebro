@@ -1,16 +1,16 @@
-describe('NodesController', function() {
+describe('IndicesController', function() {
 
   beforeEach(angular.mock.module('cerebro'));
 
   beforeEach(angular.mock.inject(function($rootScope, $controller, $injector) {
     this.scope = $rootScope.$new();
-    this.$http = $injector.get('$http');    
+    this.$http = $injector.get('$http')
     this.DataService = $injector.get('DataService');
     this.AlertService = $injector.get('AlertService');
     this.ModalService = $injector.get('ModalService');
     this.RefreshService = $injector.get('RefreshService');
     this.createController = function() {
-      return $controller('NodesController',
+      return $controller('IndicesController',
         {$scope: this.scope}, this.$http, this.DataService, this.AlertService, this.ModalService, this.RefreshService);
     };
     this._controller = this.createController();
@@ -19,8 +19,8 @@ describe('NodesController', function() {
   it('should have intial state correctly set', function() {
     expect(this.scope.indices).toEqual(undefined);
     expect(this.scope.nodes).toEqual(undefined);
-    // node filter
-    expect(this.scope.nodes_filter.name).toEqual('');
+    // indices filter
+    expect(this.scope.indices_filter.name).toEqual('');
   });
 
   describe('refresh data when refresh interval is reached', function() {
@@ -56,15 +56,15 @@ describe('NodesController', function() {
         this.DataService.getOverview = function(success, error) {
           success(data);
         }
-        spyOn(this.DataService, 'getOverview').andCallThrough();        
-        spyOn(this.scope, 'setNodes').andReturn(true);
+        spyOn(this.DataService, 'getOverview').andCallThrough();
+        spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.refresh();
         expect(this.DataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-        expect(this.scope.setNodes).toHaveBeenCalledWith(nodes);
+        expect(this.scope.setIndices).toHaveBeenCalledWith(indicess);
         expect(this.scope.data).toEqual(data);
       }
     );
-    
+
     it('cleans state and alerts users if refreshing data fails',
       function() {
         this.DataService.getOverview = function(success, error) {
@@ -78,5 +78,5 @@ describe('NodesController', function() {
       }
     );
   });
-  
+
 });
