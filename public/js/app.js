@@ -858,8 +858,9 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+  'ClipboardService',
   function($scope, $http, $sce, DataService, AlertService, ModalService,
-           AceEditorService) {
+           AceEditorService, ClipboardService) {
 
     $scope.editor = undefined;
     $scope.response = undefined;
@@ -904,6 +905,30 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
         $scope.options = autocomplete.getAlternatives(text);
       }
     };
+
+    $scope.copyAsCURLCommand = function() {
+      var method = $scope.method;
+      var host = DataService.getHost();
+      var path = encodeURI($scope.path);
+      if (path.substring(0, 1) !== '/') {
+        path = '/' + path;
+      }
+      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+      var curl = 'curl -X' + method + ' \'' + host + path + '\'';
+      if (['POST', 'PUT'].indexOf(method) >= 0) {
+        curl += ' -d \'' + body + '\'';
+      }
+      ClipboardService.copy(
+        curl,
+        function() {
+          AlertService.info('cURL request successfully copied to clipboard');
+        },
+        function() {
+          AlertService.error('Error while copying request to clipboard');
+        }
+      );
+    };
+
   }]
 );
 
@@ -1749,6 +1774,35 @@ angular.module('cerebro').factory('AlertService', function() {
 
   return this;
 });
+
+angular.module('cerebro').factory('ClipboardService', ['AlertService',
+  '$document', '$window',
+  function(AlertService, $document, $window) {
+    var textarea = angular.element($document[0].createElement('textarea'));
+    textarea.css({
+      position: 'absolute',
+      left: '-9999px',
+      top: (
+          $window.pageYOffset || $document[0].documentElement.scrollTop
+      ) + 'px'
+    });
+    textarea.attr({readonly: ''});
+    angular.element($document[0].body).append(textarea);
+
+    this.copy = function(value, success, failure) {
+      try {
+        textarea.val(value);
+        textarea.select();
+        $document[0].execCommand('copy');
+        success();
+      } catch (error) {
+        failure();
+      }
+    };
+
+    return this;
+  }
+]);
 
 angular.module('cerebro').factory('ClusterChangesService', [
   '$rootScope', 'AlertService', 'RefreshService', 'DataService',
