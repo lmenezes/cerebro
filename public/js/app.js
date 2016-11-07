@@ -925,6 +925,8 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
 
     $scope.editor = undefined;
 
+    $scope.title = "create new template";
+
     $scope.paginator = new Paginator(1, 10, [],
       new IndexTemplateFilter('', ''));
 
@@ -955,7 +957,7 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       try {
         var template = $scope.editor.getValue();
         var success = function(response) {
-          AlertService.info('Template successfully created');
+          AlertService.info('Template successfully saved');
           $scope.loadTemplates();
         };
         var errorCallback = function(response) {
@@ -983,6 +985,12 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
           TemplatesDataService.delete(name, success, errorCallback);
         }
       );
+    };
+
+    $scope.loadIndexTemplate = function(template) {
+      $scope.name = template.name;
+      $scope.title = "edit template";
+      $scope.editor.setValue(JSON.stringify(template.template, undefined, 2));
     };
 
     $scope.setup = function() {
