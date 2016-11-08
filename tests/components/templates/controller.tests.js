@@ -20,9 +20,11 @@ describe('TemplatesController', function() {
     it('loads aliases and indices, and initializes ace editor', function() {
       spyOn(this.scope, 'loadTemplates').andReturn();
       spyOn(this.scope, 'initEditor').andReturn();
+      spyOn(this.scope, 'init').andReturn();
       this.scope.setup();
       expect(this.scope.loadTemplates).toHaveBeenCalled();
       expect(this.scope.initEditor).toHaveBeenCalled();
+      expect(this.scope.init).toHaveBeenCalled();
     });
   });
 
@@ -95,6 +97,52 @@ describe('TemplatesController', function() {
       this.scope.create('someTemplate');
       expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error creating template', 'ko');
+    });
+  });
+
+  describe('update', function() {
+    it('update template', function() {
+      this.TemplatesDataService.update = function(name, oldName, template, success, error) {
+        success('ok');
+      };
+      this.scope.editor = {
+        getValue: function() {
+        }
+      };
+      spyOn(this.TemplatesDataService, 'update').andCallThrough();
+      spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
+      spyOn(this.AlertService, 'info').andReturn();
+      this.scope.updateWithoutModal('newTemplate', 'oldTemplate');
+      expect(this.TemplatesDataService.update).toHaveBeenCalledWith('newTemplate', 'oldTemplate',
+          {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
+      expect(this.AlertService.info).toHaveBeenCalledWith('Template successfully updated');
+    });
+    it('alerts about malformed template', function() {
+      this.scope.editor = {
+        getValue: function() {
+          throw 'pffff';
+        }
+      };
+      spyOn(this.TemplatesDataService, 'update').andCallThrough();
+      spyOn(this.AlertService, 'error').andReturn();
+      this.scope.updateWithoutModal('newTemplate', 'oldTemplate');
+      expect(this.TemplatesDataService.update).not.toHaveBeenCalled();
+      expect(this.AlertService.error).toHaveBeenCalledWith('Malformed template', 'pffff');
+    });
+    it('alerts on error while update', function() {
+      this.TemplatesDataService.update = function(name, oldName, template, success, error) {
+        error('ko');
+      };
+      this.scope.editor = {
+        getValue: function() {
+        }
+      };
+      spyOn(this.TemplatesDataService, 'update').andCallThrough();
+      spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
+      spyOn(this.AlertService, 'error').andReturn();
+      this.scope.updateWithoutModal('newTemplate', 'oldTemplate');
+      expect(this.TemplatesDataService.update).toHaveBeenCalledWith('newTemplate', 'oldTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
+      expect(this.AlertService.error).toHaveBeenCalledWith('Error updating template', 'ko');
     });
   });
 

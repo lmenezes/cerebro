@@ -19,6 +19,12 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
     $scope.paginator = new Paginator(1, 10, [],
       new IndexTemplateFilter('', ''));
 
+    $scope.init = function() {
+      $scope.title = 'create new template';
+      $scope.created = true;
+      $scope.oldName = '';
+    };
+
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
     }, true);
@@ -76,9 +82,50 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       );
     };
 
+    $scope.updateWithoutModal = function(name, oldName) {
+      try {
+        var template = $scope.editor.getValue();
+        var success = function(response) {
+          AlertService.info('Template successfully updated');
+          $scope.loadTemplates();
+          $scope.init();
+          $scope.name = '';
+          $scope.editor.setValue(TemplateBase);
+        };
+        var errorCallback = function(response) {
+          AlertService.error('Error updating template', response);
+        };
+
+        TemplatesDataService.update(name, oldName, template,
+            success, errorCallback);
+      }
+      catch
+          (error) {
+        AlertService.error('Malformed template', error);
+      }
+    };
+
+    $scope.update = function(name, oldName) {
+      ModalService.promptConfirmation(
+          'Update template ' + oldName + '?',
+          function() {
+            $scope.updateWithoutModal(name, oldName);
+          }
+      );
+    };
+
+    $scope.loadIndexTemplate = function(template) {
+      $scope.name = template.name;
+      $scope.oldName = template.name;
+      $scope.title = 'edit template';
+      $scope.created = false;
+      $scope.editor.setValue(JSON.stringify(template.template, undefined, 2));
+    };
+
     $scope.setup = function() {
       $scope.loadTemplates();
       $scope.initEditor();
+      $scope.init();
     };
   }
 ]);

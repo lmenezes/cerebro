@@ -14,6 +14,11 @@ angular.module('cerebro').factory('TemplatesDataService', ['DataService',
       DataService.send('/templates/create', data, success, error);
     };
 
+    this.update = function(name, oldName, template, success, error) {
+      var data = {name: name, oldName: oldName, template: template};
+      DataService.send('/templates/update', data, success, error);
+    };
+
     return this;
 
   }

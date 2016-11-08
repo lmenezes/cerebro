@@ -49,6 +49,7 @@ POST        /create_index/create                      @controllers.CreateIndexCo
 POST        /templates                                @controllers.TemplatesController.templates
 POST        /templates/delete                         @controllers.TemplatesController.delete
 POST        /templates/create                         @controllers.TemplatesController.create
+POST        /templates/update                         @controllers.TemplatesController.update
 
 # Cluster settings module
 POST        /cluster_settings                         @controllers.ClusterSettingsController.getSettings
