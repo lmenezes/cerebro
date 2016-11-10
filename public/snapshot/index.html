@@ -1,0 +1,89 @@
+<div class="row">
+  <div class="col-md-6">
+    <h4>
+      existing snapshots
+      <div class="form-inline form-group pull-right">
+        <div class="form-group">
+          <select class="form-control" ng-model="repository"
+                  ng-options="r for r in repositories| orderBy:'r'">
+            <option value="">select repository</option>
+          </select>
+        </div>
+      </div>
+    </h4>
+    <table class="table">
+      <tr ng-repeat="snapshot in snapshots track by $index" ng-show="snapshot">
+        <td>
+          <div>
+            <i class="fa fa-database"></i> {{snapshot.snapshot}} <span class="info-text"> created at </span>
+            {{snapshot.start_time | date:'yyyy-MM-dd HH:mm:ss Z' }}
+            <i class="fa fa-trash normal-action alert-danger pull-right"
+               ng-click="delete(repository, snapshot.snapshot)"
+               data-toggle="modal"
+               href="#confirm_dialog">
+            </i>
+            <i class="fa fa-download normal-action pull-right"
+               data-toggle="collapse" href="#{{snapshot.snapshot}}_details">
+            </i>
+          </div>
+          <div class="collapse" id="{{snapshot.snapshot}}_details">
+            <ng-include src="'./snapshot/restore_snapshot.html'"
+                        onload="form = {includeAliases: true, includeGlobalState: true, ignoreUnavailable: true}">
+              {{form}}
+            </ng-include>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <h4>create new snapshot</h4>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="form-label">repository</label>
+          <select class="form-control" ng-model="form.repository" ng-options="r for r in repositories">
+            <option value="">select repository</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">snapshot name</label>
+          <input ng-model="form.snapshot" class="form-control" placeholder="snapshot name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" ng-model="form.ignoreUnavailable"> ignore unavailable indices
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <input type="checkbox" ng-model="form.includeGlobalState"> include global state
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="form-label">
+            indices (defaults to all if none is selected)
+            <label class="cluster-map-node-type">
+              <input type="checkbox" ng-model="showSpecialIndices" ng-true-value="true"> show special indices
+            </label>
+          </label>
+          <select multiple ng-model="form.indices" ng-options="index for index in indices | orderBy:'index'"
+                  class="form-control" size="13">
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <button type="submit" class="btn btn-success pull-right"
+                ng-click="create(form.repository, form.snapshot, form.ignoreUnavailable, form.includeGlobalState, form.indices)">
+          <i class="fa fa-file-o"></i> create
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-include></ng-include>

@@ -1,0 +1,48 @@
+<div class="form-group col-xs-12">
+  <label class="form-label">path</label>
+  <input ng-model="settings.path" class="form-control" placeholder="path with the file-system where data is stored/loaded">
+</div>
+<div class="form-group col-xs-6">
+  <label class="form-label">uri</label>
+  <input ng-model="settings.uri" class="form-control" placeholder="Hadoop file-system URI(hdfs://<host>:<port>/)">
+</div>
+<div class="form-group col-xs-6">
+  <label class="form-label">conf_location</label>
+  <input ng-model="settings.conf_location" class="form-control" placeholder="Hadoop XML config(use commas for multi values)">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">concurrent_streams</label>
+  <input ng-model="settings.concurrent_streams" class="form-control" placeholder="the number of concurrent streams(defaults to 5)">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">chunk_size</label>
+  <input ng-model="settings.chunk_size" class="form-control" placeholder="chunk size: 10mb, 1gb (disabled by default).">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">compress data</label>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">load default Hadoop configuration</label>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.load_defaults" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.load_defaults" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>

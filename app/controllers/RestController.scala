@@ -9,7 +9,7 @@ class RestController extends BaseController {
     client.executeRequest(
       request.get("method"),
       request.get("path"),
-      request.getOpt("data"),
+      request.getObjOpt("data"),
       ElasticServer(request.host, request.authentication)
     ).map { response =>
       Status(response.status)(response.body)

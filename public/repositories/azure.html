@@ -1,0 +1,30 @@
+<div class="form-group col-xs-6">
+  <label class="form-label">container</label>
+  <input ng-model="settings.container" class="form-control" placeholder="Container name. Defaults to elasticsearch-snapshots">
+</div>
+<div class="form-group col-xs-6">
+  <label class="form-label">base_path</label>
+  <input ng-model="settings.base_path" class="form-control" placeholder="Path within container to data(defaults to root dir.)">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">concurrent_streams</label>
+  <input ng-model="settings.concurrent_streams" class="form-control" placeholder="Number of streams(per node). Defaults to 5">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">chunk_size</label>
+  <input ng-model="settings.chunk_size" class="form-control" placeholder="Defaults to 64m (64m max)">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">compress data(defaults to false)</label>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@ class CreateIndexController extends BaseController {
 
   def execute = process { (request, client) =>
     client.createIndex(
-      request.get("index"), request.getOpt("metadata").getOrElse(Json.obj()),
+      request.get("index"), request.getObjOpt("metadata").getOrElse(Json.obj()),
       ElasticServer(request.host, request.authentication)
     ).map { response =>
       Status(response.status)(response.body)

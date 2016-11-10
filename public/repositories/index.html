@@ -1,0 +1,57 @@
+<div class="row">
+  <div class="col-md-6">
+    <h4>existing repositories</h4>
+    <table class="table">
+      <tr ng-repeat="repository in repositories track by $index" ng-show="repository">
+        <td>
+          <i class="fa fa-database"></i> {{repository.name}} <span class="info-text"> of type </span> {{repository.type}}
+          <i class="fa fa-trash normal-action alert-danger pull-right"
+             ng-click="remove(repository.name)"
+             data-toggle="modal"
+             href="#confirm_dialog">
+          </i>
+          <i class="fa fa-pencil normal-action pull-right"
+             ng-click="edit(repository.name, repository.type, repository.settings)">
+          </i>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="col-md-6">
+    <h4 ng-hide="update">create new repository</h4>
+    <h4 ng-show="update">update repository</h4>
+    <div class="row">
+      <div class="form-group col-md-6">
+        <label class="form-label">repository name</label>
+        <input ng-model="name" class="form-control" placeholder="repository name">
+      </div>
+      <div class="form-group col-md-6">
+        <label class="form-label">type</label>
+        <select class="form-control" ng-model="type"
+                ng-options="t for t in ['fs', 'url', 's3', 'hdfs', 'azure']"></select>
+      </div>
+    </div>
+    <div class="row" ng-plain-include file="repositories/fs.html" ng-show="type == 'fs'"></div>
+    <div class="row" ng-plain-include file="repositories/url.html" ng-show="type == 'url'"></div>
+    <div class="row" ng-plain-include file="repositories/s3.html" ng-show="type == 's3'"></div>
+    <div class="row" ng-plain-include file="repositories/azure.html" ng-show="type == 'azure'"></div>
+    <div class="row" ng-plain-include file="repositories/hdfs.html" ng-show="type == 'hdfs'"></div>
+    <div class="row">
+      <div class="col-lg-12 action-buttons">
+        <span class="validation-error">{{validation_error}}</span>
+        <button type="submit" class="btn btn-success pull-right" ng-click="create(name, type, settings)" ng-hide="update">
+          <i class="fa fa-file-o"> </i> create
+        </button>
+        <button type="submit"
+                class="btn btn-success pull-right"
+                ng-click="save(name, type, settings)"
+                ng-show="update"
+                data-toggle="modal"
+                href="#confirm_dialog">
+          <i class="fa fa-floppy-o"> </i> update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

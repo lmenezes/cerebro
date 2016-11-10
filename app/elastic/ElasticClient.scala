@@ -2,7 +2,8 @@ package elastic
 
 import models.{ESAuth, ElasticServer}
 import play.api.Play.current
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
+import play.api.http
+import play.api.libs.json._
 import play.api.libs.ws.{WS, WSAuthScheme}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -188,6 +189,66 @@ trait ElasticClient {
   def getClusterSettings(target: ElasticServer) = {
     val path = s"/_cluster/settings?flat_settings=true&include_defaults=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+
+  // Repositories
+  def getRepositories(target: ElasticServer) = {
+    val path = s"/_snapshot"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def createRepository(name: String, repoType: String, settings: JsValue, target: ElasticServer) = {
+    val path = s"/_snapshot/$name"
+    val data = Json.obj("type" -> JsString(repoType), "settings" -> settings).toString
+    execute(s"${target.host}$path", "PUT", Some(data), target.authentication)
+  }
+
+  def deleteRepository(name: String, target: ElasticServer) = {
+    val path = s"/_snapshot/$name"
+    execute(s"${target.host}$path", "DELETE", None, target.authentication)
+  }
+
+  // Snapshots
+  def getSnapshots(repository: String, target: ElasticServer) = {
+    val path = s"/_snapshot/$repository/_all"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
+  def deleteSnapshot(repository: String, snapshot: String, target: ElasticServer) = {
+    val path = s"/_snapshot/$repository/$snapshot"
+    execute(s"${target.host}$path", "DELETE", None, target.authentication)
+  }
+
+  def createSnapshot(repository: String, snapshot: String, ignoreUnavailable: Boolean,
+                     includeGlobalState: Boolean, indices: Option[String], target: ElasticServer) = {
+    val path = s"/_snapshot/$repository/$snapshot"
+    val data = JsObject(
+      Seq(
+        ("repository", JsString(repository)),
+        ("snapshot", JsString(snapshot)),
+        ("ignoreUnavailable", JsBoolean(ignoreUnavailable)),
+        ("includeGlobalState", JsBoolean(includeGlobalState))
+      ) ++ indices.map { i => Seq(("indices", JsString(i))) }.getOrElse(Nil)
+    ).toString
+    execute(s"${target.host}$path", "PUT", Some(data), target.authentication)
+  }
+
+  def restoreSnapshot(repository: String, snapshot: String, renamePattern: Option[String],
+                      renameReplacement: Option[String], ignoreUnavailable: Boolean, includeAliases: Boolean,
+                      includeGlobalState: Boolean, indices: Option[String], target: ElasticServer) = {
+    val path = s"/_snapshot/$repository/$snapshot/_restore"
+    val data = JsObject(
+      Seq(
+        ("ignore_unavailable", JsBoolean(ignoreUnavailable)),
+        ("include_global_state", JsBoolean(includeGlobalState)),
+        ("include_aliases", JsBoolean(includeAliases))
+      ) ++
+      indices.map { i => Seq(("indices", JsString(i))) }.getOrElse(Nil) ++
+      renamePattern.map { r => Seq(("rename_pattern", JsString(r))) }.getOrElse(Nil) ++
+        renameReplacement.map { r => Seq(("rename_replacement", JsString(r))) }.getOrElse(Nil)
+    ).toString
+    execute(s"${target.host}$path", "POST", Some(data), target.authentication)
   }
 
   def saveClusterSettings(settings: JsValue, target: ElasticServer) = {

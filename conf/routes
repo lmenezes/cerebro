@@ -61,6 +61,18 @@ POST        /index_settings/update                    @controllers.IndexSettings
 # Connect module
 GET         /connect/hosts                            @controllers.ConnectController.index
 
+# Repositories module
+POST        /repositories                             @controllers.RepositoriesController.get
+POST        /repositories/create                      @controllers.RepositoriesController.save
+POST        /repositories/delete                      @controllers.RepositoriesController.delete
+
+# Snapshots module
+POST        /snapshots                                @controllers.SnapshotsController.get
+POST        /snapshots/load                           @controllers.SnapshotsController.getSnapshots
+POST        /snapshots/create                         @controllers.SnapshotsController.create
+POST        /snapshots/delete                         @controllers.SnapshotsController.delete
+POST        /snapshots/restore                        @controllers.SnapshotsController.restore
+
 # Map the JS resource paths
 GET         /public/*file                             controllers.Assets.at(path="/public", file)
 GET         /*file                                    controllers.Assets.versioned(path="/public", file: Asset)

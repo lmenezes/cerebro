@@ -39,6 +39,14 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'index_settings/index.html',
           controller: 'IndexSettingsController'
         })
+        .when('/snapshot', {
+          templateUrl: 'snapshot/index.html',
+          controller: 'SnapshotController'
+        })
+        .when('/repository', {
+          templateUrl: 'repositories/index.html',
+          controller: 'RepositoriesController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }

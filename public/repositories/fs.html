@@ -1,0 +1,30 @@
+<div class="form-group col-xs-12">
+  <label class="form-label">location</label>
+  <input ng-model="settings.location" class="form-control" placeholder="location of the snapshots">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">max_restore_bytes_per_sec</label>
+  <input ng-model="settings.max_restore_bytes_per_sec" class="form-control" placeholder="Throttles per node restore rate. Defaults to 20mb per second.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">max_snapshot_bytes_per_sec</label>
+  <input ng-model="settings.max_snapshot_bytes_per_sec" class="form-control" placeholder="Throttles per node snapshot rate. Defaults to 20mb per second.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">chunk size</label>
+  <input ng-model="settings.chunk_size" class="form-control" placeholder="chunk size(1g, 10m, 5k). defaults to unlimited">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">compress snapshot files(defaults to true)</label>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>

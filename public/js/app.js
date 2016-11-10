@@ -39,6 +39,14 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'index_settings/index.html',
           controller: 'IndexSettingsController'
         })
+        .when('/snapshot', {
+          templateUrl: 'snapshot/index.html',
+          controller: 'SnapshotController'
+        })
+        .when('/repository', {
+          templateUrl: 'repositories/index.html',
+          controller: 'RepositoriesController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
@@ -856,6 +864,118 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
   }]);
 
+angular.module('cerebro').controller('RepositoriesController', ['$scope',
+'RepositoriesDataService', 'AlertService', 'ModalService',
+  function($scope, RepositoriesDataService, AlertService, ModalService) {
+
+    $scope.name = '';
+    $scope.type = '';
+    $scope.settings = {};
+    $scope.repositories = [];
+    $scope.update = false;
+
+    $scope.$watch(
+      'name',
+      function(newValue, oldValue) {
+        var repositories = $scope.repositories.map(function(r) {
+          return r.name;
+        });
+        $scope.update = repositories.indexOf(newValue) !== -1;
+      },
+      true
+    );
+
+    $scope.create = function(name, type, settings) {
+      RepositoriesDataService.create(name, type, settings,
+        function(response) {
+          $scope.setup();
+          AlertService.info('Repository successfully created', response);
+        },
+        function(error) {
+          AlertService.error('Error creating repository', error);
+        }
+      );
+    };
+
+    $scope.edit = function(name, type, settings) {
+      $scope.name = name;
+      $scope.type = type;
+      angular.copy(settings, $scope.settings);
+    };
+
+    $scope.remove = function(name) {
+      ModalService.promptConfirmation(
+        'Delete repository ' + name + '?',
+        function() {
+          RepositoriesDataService.delete(name,
+            function(data) {
+              $scope.setup();
+              AlertService.success('Operation successfully executed', data);
+            },
+            function(data) {
+              AlertService.error('Operation failed', data);
+            }
+          );
+        }
+      );
+    };
+
+    $scope.save = function(name, type, settings) {
+      ModalService.promptConfirmation(
+        'Save settings for repository ' + name + '?',
+        function() {
+          RepositoriesDataService.create(name, type, settings,
+            function(response) {
+              $scope.setup();
+              AlertService.info('Successfully updated', response);
+            },
+            function(error) {
+              AlertService.error('Error updating repository', error);
+            }
+          );
+        }
+      );
+    };
+
+    $scope.setup = function() {
+      RepositoriesDataService.load(
+        function(repositories) {
+          $scope.repositories = repositories;
+        },
+        function(error) {
+          AlertService.error('Error loading repositories', error);
+        }
+      );
+    };
+
+  }]
+);
+
+angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
+  function(DataService) {
+
+    this.load = function(success, error) {
+      DataService.send('/repositories', {}, success, error);
+    };
+
+    this.create = function(name, type, settings, success, error) {
+      var data = {
+        name: name,
+        type: type,
+        settings: settings
+      };
+      DataService.send('/repositories/create', data, success, error);
+    };
+
+    this.delete = function(name, success, error) {
+      DataService.send('/repositories/delete', {name: name}, success, error);
+    };
+
+    return this;
+
+  }
+]);
+
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
   'ClipboardService',
@@ -931,6 +1051,165 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
   }]
 );
+
+angular.module('cerebro').controller('SnapshotController', ['$scope',
+'SnapshotsDataService', 'AlertService', 'ModalService',
+  function($scope, SnapshotsDataService, AlertService, ModalService) {
+
+    $scope.indices = [];
+    $scope.repositories = [];
+
+    $scope.repository = undefined;
+    $scope.snapshots = [];
+    $scope.form = {
+      snapshot: '',
+      repository: '',
+      ignoreUnavailable: false,
+      includeGlobalState: true
+    };
+
+    $scope.$watch(
+      'repository',
+      function(newValue, oldValue) {
+        $scope.loadSnapshots(newValue);
+      },
+      true
+    );
+
+    $scope.loadSnapshots = function(repository) {
+      if (repository) {
+        SnapshotsDataService.loadSnapshots(
+          repository,
+          function(snapshots) {
+            $scope.snapshots = snapshots;
+          },
+          function(error) {
+            AlertService.error('Error loading snapshots', error);
+          }
+        );
+      }
+    };
+
+    $scope.create = function(repository, snapshot, ignoreUnavailable,
+      includeGlobalState, indices) {
+      SnapshotsDataService.create(
+        repository,
+        snapshot,
+        ignoreUnavailable,
+        includeGlobalState,
+        indices,
+        function(response) {
+          $scope.loadSnapshots($scope.repository);
+          AlertService.info('Snapshot successfully created', response);
+        },
+        function(error) {
+          AlertService.error('Error creating snapshot', error);
+        }
+      );
+    };
+
+    $scope.delete = function(repository, snapshot) {
+      ModalService.promptConfirmation(
+        'Delete snapshot ' + snapshot + '?',
+        function() {
+          SnapshotsDataService.delete(
+            repository,
+            snapshot,
+            function(response) {
+              $scope.loadSnapshots($scope.repository);
+              AlertService.info('Snapshot successfully deleted');
+            },
+            function(error) {
+              AlertService.error('Error loading repositories', error);
+            }
+          );
+        }
+      );
+    };
+
+    $scope.restore = function(repository, snapshot, form) {
+      SnapshotsDataService.restore(
+        repository,
+        snapshot,
+        form.renamePattern,
+        form.renameReplacement,
+        form.ignoreUnavailable,
+        form.includeAliases,
+        form.includeGlobalState,
+        form.indices,
+        function(response) {
+          AlertService.info('Snapshot successfully restored', response);
+        },
+        function(error) {
+          AlertService.error('Error restoring snapshot', error);
+        }
+      );
+    };
+
+    $scope.setup = function() {
+      SnapshotsDataService.load(
+        function(data) {
+          $scope.indices = data.indices;
+          $scope.repositories = data.repositories;
+        },
+        function(error) {
+          AlertService.error('Error loading repositories', error);
+        }
+      );
+    };
+  }]
+);
+
+angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
+  function(DataService) {
+
+    this.load = function(success, error) {
+      DataService.send('/snapshots', {}, success, error);
+    };
+
+    this.loadSnapshots = function(repository, success, error) {
+      var data = {repository: repository};
+      DataService.send('/snapshots/load', data, success, error);
+    };
+
+    this.delete = function(repository, snapshot, success, error) {
+      var data = {repository: repository, snapshot: snapshot};
+      DataService.send('/snapshots/delete', data, success, error);
+    };
+
+    this.create = function(repository, snapshot, ignoreUnavailable,
+      includeGlobalState, indices, success, error) {
+      var data = {
+        repository: repository,
+        snapshot: snapshot,
+        ignoreUnavailable: ignoreUnavailable,
+        includeGlobalState: includeGlobalState,
+        indices: indices
+      };
+      DataService.send('/snapshots/create', data, success, error);
+    };
+
+    this.restore = function(repository, snapshot, renamePattern,
+    renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
+    indices, success, error) {
+      var data = {
+        repository: repository,
+        snapshot: snapshot,
+        renamePattern: renamePattern,
+        renameReplacement: renameReplacement,
+        ignoreUnavailable: ignoreUnavailable,
+        includeAliases: includeAliases,
+        includeGlobalState: includeGlobalState,
+        indices: indices
+      };
+      console.log(data);
+      DataService.send('/snapshots/restore', data, success, error);
+    };
+
+    return this;
+
+  }
+]);
 
 angular.module('cerebro').controller('TemplatesController', ['$scope',
   'AlertService', 'AceEditorService', 'TemplatesDataService', 'ModalService',
@@ -1681,6 +1960,14 @@ function URLAutocomplete(mappings) {
   return this;
 
 }
+
+angular.module('cerebro').directive('ngPlainInclude', function() {
+  return {
+    templateUrl: function(elem, attr) {
+      return attr.file;
+    }
+  };
+});
 
 angular.module('cerebro').factory('AceEditorService', function() {
 
