@@ -22,7 +22,6 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
     $scope.init = function() {
       $scope.title = 'create new template';
       $scope.created = true;
-      $scope.oldName = '';
     };
 
     $scope.$watch('paginator', function(filter, previous) {
@@ -82,7 +81,7 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       );
     };
 
-    $scope.updateWithoutModal = function(name, oldName) {
+    $scope.updateWithoutModal = function(name) {
       try {
         var template = $scope.editor.getValue();
         var success = function(response) {
@@ -96,8 +95,8 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
           AlertService.error('Error updating template', response);
         };
 
-        TemplatesDataService.update(name, oldName, template,
-            success, errorCallback);
+        TemplatesDataService.create(name, template, success,
+          errorCallback);
       }
       catch
           (error) {
@@ -105,18 +104,17 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       }
     };
 
-    $scope.update = function(name, oldName) {
+    $scope.update = function(name) {
       ModalService.promptConfirmation(
-          'Update template ' + oldName + '?',
+          'Update template ' + name + '?',
           function() {
-            $scope.updateWithoutModal(name, oldName);
+            $scope.updateWithoutModal(name);
           }
       );
     };
 
     $scope.loadIndexTemplate = function(template) {
       $scope.name = template.name;
-      $scope.oldName = template.name;
       $scope.title = 'edit template';
       $scope.created = false;
       $scope.editor.setValue(JSON.stringify(template.template, undefined, 2));

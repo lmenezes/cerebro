@@ -41,7 +41,7 @@
       <div class="col-xs-12">
         <div class="form-group">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="name" ng-model="name">
+            <input type="text" class="form-control" placeholder="name" ng-model="name" ng-disabled="!created">
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@
         <button type="submit" class="btn btn-info" ng-click="create(name)" ng-show="created">
           <i class="fa fa-file-o normal-action alert-info"> </i> create
         </button>
-        <button type="submit" class="btn btn-info" ng-click="update(name, oldName)" ng-show="!created"
+        <button type="submit" class="btn btn-info" ng-click="update(name)" ng-show="!created"
                 data-toggle="modal" href="#confirm_dialog" target="_self">
           <i class="fa fa-file-o normal-action alert-info"> </i> update
         </button>
