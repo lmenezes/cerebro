@@ -52,6 +52,8 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .node-badges { width: 20px; display: inline-block; float: left; }
 .node-info { margin-left: 20px; }
 .node-labels { padding-top: 5px; }
+.node-stat { font-size: 36px; font-weight: 300; float: left; line-height: 40px; min-width: 70px; margin-right: 15px; }
+.node-stat-detail { float: left; line-height: 20px; }
 
 .normal-action { cursor: pointer; }
 .table-control { line-height: 50px !important; }
@@ -106,3 +108,36 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .pager-text { border: none !important; }
 
 .info-text { color: #6F7579; }
+
+/** Sort Nodes and Indices **/
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
+.index-healthy {
+  float: left;
+}
+.icon-healthy {
+  color: green;
+}
+.icon-unhealthy {
+  color: yellow;
+}
+.sortlink {
+  cursor: pointer;
+}
+.normal-action-info {
+  cursor: pointer;
+}
+.sortlink:hover .icon-sort:before {
+  content: '\25bc';
+  font-family: FontAwesome;
+  cursor: pointer;
+}
+.normal-action-info:hover .icon-circle:before {
+  content: "\f05a";
+  font-family: FontAwesome;
+  cursor: pointer;
+}
