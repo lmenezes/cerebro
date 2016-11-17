@@ -1,7 +1,8 @@
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+  'ClipboardService',
   function($scope, $http, $sce, DataService, AlertService, ModalService,
-           AceEditorService) {
+           AceEditorService, ClipboardService) {
 
     $scope.editor = undefined;
     $scope.response = undefined;
@@ -46,5 +47,29 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
         $scope.options = autocomplete.getAlternatives(text);
       }
     };
+
+    $scope.copyAsCURLCommand = function() {
+      var method = $scope.method;
+      var host = DataService.getHost();
+      var path = encodeURI($scope.path);
+      if (path.substring(0, 1) !== '/') {
+        path = '/' + path;
+      }
+      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+      var curl = 'curl -X' + method + ' \'' + host + path + '\'';
+      if (['POST', 'PUT'].indexOf(method) >= 0) {
+        curl += ' -d \'' + body + '\'';
+      }
+      ClipboardService.copy(
+        curl,
+        function() {
+          AlertService.info('cURL request successfully copied to clipboard');
+        },
+        function() {
+          AlertService.error('Error while copying request to clipboard');
+        }
+      );
+    };
+
   }]
 );
