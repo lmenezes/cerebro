@@ -17,6 +17,7 @@ Even though I'm open to feature requests, I might not always agree on the value 
 
 Once working on a pull request, please:
 - include the generated css/js files(grunt build)
+- add tests that validate your changes
 - squash your development commits to keep only important commits(fix typo, wrong indent should not be part of git history)
 - rebase it against development before submiting
 - make sure all tests pass(sbt test / grunt test)
