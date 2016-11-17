@@ -22,9 +22,13 @@
             <td>
               <i class="fa fa-book"></i> {{template.name}} <span class="info-text"> with pattern</span>
               {{template.template.template}}
-              <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="delete(template.name)"
+              <div class="pull-right">
+              <i class="fa fa-pencil normal-action" ng-click="loadIndexTemplate(template)"
+                 ng-hide="template.removed"></i>
+              <i class="fa fa-trash normal-action alert-danger" ng-click="delete(template.name)"
                  ng-hide="template.removed" data-toggle="modal" href="#confirm_dialog" target="_self"></i>
-              <i class="fa fa-trash alert-danger pull-right disabled" ng-show="template.removed"></i>
+              <i class="fa fa-trash alert-danger disabled" ng-show="template.removed"></i>
+              </div>
             </td>
           </tr>
         </table>
@@ -32,12 +36,12 @@
     </div>
   </div>
   <div class="col-md-6">
-    <h4>create new template</h4>
+    <h4>{{title}}</h4>
     <div class="row">
       <div class="col-xs-12">
         <div class="form-group">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="name" ng-model="name">
+            <input type="text" class="form-control" placeholder="name" ng-model="name" ng-disabled="!created">
           </div>
         </div>
       </div>
@@ -47,8 +51,12 @@
         </div>
       </div>
       <div class="col-xs-12 text-right">
-        <button type="submit" class="btn btn-info" ng-click="create(name)">
+        <button type="submit" class="btn btn-info" ng-click="create(name)" ng-show="created">
           <i class="fa fa-file-o normal-action alert-info"> </i> create
+        </button>
+        <button type="submit" class="btn btn-info" ng-click="update(name)" ng-show="!created"
+                data-toggle="modal" href="#confirm_dialog" target="_self">
+          <i class="fa fa-file-o normal-action alert-info"> </i> update
         </button>
       </div>
     </div>

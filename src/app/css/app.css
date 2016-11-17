@@ -106,3 +106,5 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .pager-text { border: none !important; }
 
 .info-text { color: #6F7579; }
+
+.form-control[disabled] { background-color: #434749; }

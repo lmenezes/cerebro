@@ -29,5 +29,4 @@ class TemplatesController extends BaseController {
     }
   }
 
-
 }
