@@ -42,10 +42,8 @@ object Nodes {
   def apply(clusterState: JsValue, nodesStats: JsValue, nodes: JsValue): Seq[JsValue] = {
     val currentMaster = (clusterState \ "master_node").as[String]
     (nodes \ "nodes").as[JsObject].value.map { case (nodeId, info) =>
-      val master = (info \ "attributes" \ "master").asOpt[String].getOrElse("true").equals("true")
-      val data = (info \ "attributes" \ "data").asOpt[String].getOrElse("true").equals("true")
-      val client = (info \ "attributes" \ "client").asOpt[String].getOrElse("false").equals("true")
 
+      val nodeRoles = NodeRoles(info)
       val stats = (nodesStats \ "nodes" \ nodeId).as[JsObject]
       // FIXME: 1.X
       val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)
@@ -64,9 +62,10 @@ object Nodes {
         "load_average"         -> JsNumber(BigDecimal((stats \ "os" \ "load_average").asOpt[Int].getOrElse(0))),// FIXME: 1.X
         "available_processors" -> (info \ "os" \ "available_processors").as[JsNumber],
         "cpu_percent"    -> cpuPercent,
-        "master"         -> JsBoolean(master && !client),
-        "data"           -> JsBoolean(data && !client),
-        "client"         -> JsBoolean(client || !master && !data),
+        "master"         -> JsBoolean(nodeRoles.master),
+        "data"           -> JsBoolean(nodeRoles.data),
+        "client"         -> JsBoolean(nodeRoles.client),
+        "ingest"         -> JsBoolean(nodeRoles.ingest),
         "heap"           -> Json.obj(
           "used"          -> (stats \ "jvm" \ "mem" \ "heap_used_in_bytes").as[JsNumber],
           "committed"     -> (stats \ "jvm" \ "mem" \ "heap_committed_in_bytes").as[JsNumber],
