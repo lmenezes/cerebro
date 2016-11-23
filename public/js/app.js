@@ -858,8 +858,9 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+  'ClipboardService',
   function($scope, $http, $sce, DataService, AlertService, ModalService,
-           AceEditorService) {
+           AceEditorService, ClipboardService) {
 
     $scope.editor = undefined;
     $scope.response = undefined;
@@ -904,6 +905,30 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
         $scope.options = autocomplete.getAlternatives(text);
       }
     };
+
+    $scope.copyAsCURLCommand = function() {
+      var method = $scope.method;
+      var host = DataService.getHost();
+      var path = encodeURI($scope.path);
+      if (path.substring(0, 1) !== '/') {
+        path = '/' + path;
+      }
+      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+      var curl = 'curl -X' + method + ' \'' + host + path + '\'';
+      if (['POST', 'PUT'].indexOf(method) >= 0) {
+        curl += ' -d \'' + body + '\'';
+      }
+      ClipboardService.copy(
+        curl,
+        function() {
+          AlertService.info('cURL request successfully copied to clipboard');
+        },
+        function() {
+          AlertService.error('Error while copying request to clipboard');
+        }
+      );
+    };
+
   }]
 );
 
@@ -1750,6 +1775,35 @@ angular.module('cerebro').factory('AlertService', function() {
   return this;
 });
 
+angular.module('cerebro').factory('ClipboardService', ['AlertService',
+  '$document', '$window',
+  function(AlertService, $document, $window) {
+    var textarea = angular.element($document[0].createElement('textarea'));
+    textarea.css({
+      position: 'absolute',
+      left: '-9999px',
+      top: (
+          $window.pageYOffset || $document[0].documentElement.scrollTop
+      ) + 'px'
+    });
+    textarea.attr({readonly: ''});
+    angular.element($document[0].body).append(textarea);
+
+    this.copy = function(value, success, failure) {
+      try {
+        textarea.val(value);
+        textarea.select();
+        $document[0].execCommand('copy');
+        success();
+      } catch (error) {
+        failure();
+      }
+    };
+
+    return this;
+  }
+]);
+
 angular.module('cerebro').factory('ClusterChangesService', [
   '$rootScope', 'AlertService', 'RefreshService', 'DataService',
   function($rootScope, AlertService, RefreshService, DataService) {
@@ -2071,15 +2125,17 @@ angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
 angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
   '$document', function(DataService, $rootScope, $document) {
 
-    var link = $document[0].querySelector('link[rel~=\'icon\']');
     var clusterName;
     var clusterStatus;
 
-    if (link) {
-      var faviconUrl = link.href;
-      var img = $document[0].createElement('img');
-      img.src = faviconUrl;
-    }
+    var link = $document[0].querySelector('link[rel~=\'icon\']');
+
+    var colors = {
+      green: 'img/green-favicon.png',
+      yellow: 'img/yellow-favicon.png',
+      red: 'img/red-favicon.png',
+      black: 'img/black-favicon.png'
+    };
 
     this.setup = function(newName, newStatus) {
       setPageTitle(newName);
@@ -2101,23 +2157,9 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
     var setFavIconColor = function(newClusterStatus) {
       if (link) {
         clusterStatus = newClusterStatus;
-        try {
-          var colors = {green: '#1AC98E', yellow: '#E4D836', red: '#E64759'};
-          var color = clusterStatus ? colors[clusterStatus] : '#222426';
-          var canvas = $document[0].createElement('canvas');
-          canvas.width = 32;
-          canvas.height = 34;
-          var context = canvas.getContext('2d');
-          context.drawImage(img, 0, 0);
-          context.globalCompositeOperation = 'source-in';
-          context.fillStyle = color;
-          context.fillRect(0, 0, 32, 34);
-          context.fill();
-          link.type = 'image/png';
-          link.href = canvas.toDataURL();
-        } catch (exception) {
-          //
-        }
+        var url = clusterStatus ? colors[clusterStatus] : colors.black;
+        link.type = 'image/png';
+        link.href = url;
       }
     };
 
