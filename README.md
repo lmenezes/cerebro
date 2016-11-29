@@ -19,12 +19,17 @@ For an extensive list of Java System properties accepted, check https://www.play
 
 You can run Cerebro with service cerebro start|status|stop|force_stop.
 
+Create Cerebro user and group before use this script:
+```
+adduser cerebro
+```
+
 If you don't use Apache, delete or comment this line (43) :
 ```
 /etc/init.d/httpd reload >> /dev/null 2>> /dev/null & 
 ```
 
-Copy this file in /etc/init.d/ and this command:
+Copy this file in /etc/init.d/ and add execute:
 ```
 chmod 755 /etc/init.d/cerebro
 ```
