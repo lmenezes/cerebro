@@ -19,15 +19,15 @@ For an extensive list of Java System properties accepted, check https://www.play
 
 You can run Cerebro with service cerebro start|status|stop|force_stop.
 
-If you don't use Apache, or another delete or comment :
-...
+If you don't use Apache, delete or comment this line (43) :
+```
 /etc/init.d/httpd reload >> /dev/null 2>> /dev/null & 
-...
+```
 
 Copy this file in /etc/init.d/ and this command:
-...
+```
 chmod 755 /etc/init.d/cerebro
-...
+```
 
 ### HTTP server address and port
 You can run cerebro listening on a different port(9000) and host(0.0.0.0):
