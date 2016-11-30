@@ -3,7 +3,7 @@ body { padding-top: 50px; font-weight: normal; }
 .content { padding-top: 20px; padding-bottom: 10px; height: 100%; min-height: 100%; }
 
 /** Overview **/
-table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+table.shard-map { table-layout: fixed; }
 
 @-moz-document url-prefix() {
     table.shard-map {
@@ -106,3 +106,5 @@ table.shard-map { table-layout: fixed; -webkit-touch-callout: none; -webkit-user
 .pager-text { border: none !important; }
 
 .info-text { color: #6F7579; }
+
+.noselect { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
