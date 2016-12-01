@@ -151,10 +151,16 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-show="unassigned_shards > 0">
+    <tr ng-show="unassigned_shards > 0 || relocating_shards > 0 || initializing_shards > 0">
       <td>
-        <div class="subtitle">
+        <div class="subtitle" ng-show="unassigned_shards >= 0">
           <i class="fa fa-warning alert-warning"> </i> {{unassigned_shards}} unassigned shards
+        </div>
+        <div class="subtitle" ng-show="relocating_shards > 0">
+          <i class="fa fa-refresh fa-spin"> </i> {{relocating_shards}} relocating shards
+        </div>
+        <div class="subtitle" ng-show="initializing_shards > 0">
+          <i class="fa fa-spinner fa-spin"> </i> {{initializing_shards}} initializing shards
         </div>
         <div>
           <span class="normal-action" ng-show="indices_filter.healthy" ng-click="indices_filter.healthy = false"><i><small>show only unhealthy indices</small></i></span>

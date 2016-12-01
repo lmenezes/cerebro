@@ -608,6 +608,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.indices = undefined;
     $scope.nodes = undefined;
     $scope.unassigned_shards = 0;
+    $scope.relocating_shards = 0;
+    $scope.initializing_shards = 0;
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
     $scope.expandedView = false;
@@ -652,6 +654,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.setIndices(data.indices);
           $scope.setNodes(data.nodes);
           $scope.unassigned_shards = data.unassigned_shards;
+          $scope.relocating_shards = data.relocating_shards;
+          $scope.initializing_shards = data.initializing_shards;
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
@@ -662,6 +666,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.indices = undefined;
           $scope.nodes = undefined;
           $scope.unassigned_shards = 0;
+          $scope.relocating_shards = 0;
+          $scope.initializing_shards = 0;
           $scope.closed_indices = 0;
           $scope.special_indices = 0;
           $scope.shardAllocation = true;

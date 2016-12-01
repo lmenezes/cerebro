@@ -21,6 +21,8 @@ describe('OverviewController', function() {
     expect(this.scope.indices).toEqual(undefined);
     expect(this.scope.nodes).toEqual(undefined);
     expect(this.scope.unassigned_shards).toEqual(0);
+    expect(this.scope.initializing_shards).toEqual(0);
+    expect(this.scope.relocating_shards).toEqual(0);
     expect(this.scope.shardAllocation).toEqual(true);
     expect(this.scope.closed_indices).toEqual(0);
     expect(this.scope.special_indices).toEqual(0);
@@ -67,6 +69,8 @@ describe('OverviewController', function() {
           indices: indices,
           nodes: nodes,
           unassigned_shards: 1,
+          relocating_shards: 2,
+          initializing_shards: 3,
           closed_indices: 2,
           special_indices: 3,
           shard_allocation: true
@@ -80,6 +84,8 @@ describe('OverviewController', function() {
         this.scope.refresh();
         expect(this.DataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.unassigned_shards).toEqual(1);
+        expect(this.scope.initializing_shards).toEqual(3);
+        expect(this.scope.relocating_shards).toEqual(2);
         expect(this.scope.closed_indices).toEqual(2);
         expect(this.scope.special_indices).toEqual(3);
         expect(this.scope.shardAllocation).toEqual(true);
