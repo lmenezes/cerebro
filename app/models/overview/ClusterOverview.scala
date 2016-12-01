@@ -45,12 +45,8 @@ object Nodes {
 
       val nodeRoles = NodeRoles(info)
       val stats = (nodesStats \ "nodes" \ nodeId).as[JsObject]
-      // FIXME: 1.X
       val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)
-      // FIXME: 1.X
       val diskFreeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0l)
-      // FIXME 1.X
-      val cpuPercent = (stats \ "os" \ "cpu" \ "user").asOpt[JsNumber].getOrElse((stats \ "process" \ "cpu" \ "percent").as[JsNumber])
       Json.obj(
         "id"             -> JsString(nodeId),
         "current_master" -> JsBoolean(nodeId.equals(currentMaster)),
@@ -59,9 +55,9 @@ object Nodes {
         "ip"             -> (info \ "ip").as[JsString],
         "es_version"     -> (info \ "version").as[JsString],
         "jvm_version"    -> (info \ "jvm" \ "version").as[JsString],
-        "load_average"         -> JsNumber(BigDecimal((stats \ "os" \ "load_average").asOpt[Int].getOrElse(0))),// FIXME: 1.X
+        "load_average"         -> loadAverage(stats),
         "available_processors" -> (info \ "os" \ "available_processors").as[JsNumber],
-        "cpu_percent"    -> cpuPercent,
+        "cpu_percent"    -> cpuPercent(stats),
         "master"         -> JsBoolean(nodeRoles.master),
         "data"           -> JsBoolean(nodeRoles.data),
         "client"         -> JsBoolean(nodeRoles.client),
@@ -79,6 +75,20 @@ object Nodes {
         )
       )
     }.toSeq
+  }
+
+  def loadAverage(nodeStats: JsValue): JsNumber = {
+    val load = (nodeStats \ "os" \ "cpu" \ "load_average" \ "1m").asOpt[Float].getOrElse( // 5.X
+      (nodeStats \ "os" \ "load_average").asOpt[Float].getOrElse(0f) // FIXME: 2.X
+    )
+    JsNumber(BigDecimal(load))
+  }
+
+  def cpuPercent(nodeStats: JsValue): JsNumber = {
+    val cpu = (nodeStats \ "os" \ "cpu" \ "percent").asOpt[Int].getOrElse( // 5.X
+      (nodeStats \ "os" \ "cpu_percent").asOpt[Int].getOrElse(0) // FIXME 2.X
+    )
+    JsNumber(BigDecimal(cpu))
   }
 
 }
