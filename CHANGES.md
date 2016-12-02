@@ -30,3 +30,23 @@ First cerebro release.
 
 #### New features
 - added index settings module
+
+###v0.3.1 - November 17th, 2016
+
+#### Bug fixes
+- displayed node roles
+
+###v0.4.0 - December 2nd, 2016
+
+#### Bug fixes
+- fix favicon for
+- handle cpu / load info from both 2.X and 5.X
+
+#### Enhancements
+- pagination buttons unselectable
+- display relocating / initializing shards on overview
+
+#### New features
+- copy to curl to rest client
+- repositories / snapshots module
+
