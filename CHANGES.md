@@ -50,3 +50,7 @@ First cerebro release.
 - copy to curl to rest client
 - repositories / snapshots module
 
+###v0.4.1 - December 6th, 2016
+
+#### Bug fixes
+- fix indices selection on snapshot creation
