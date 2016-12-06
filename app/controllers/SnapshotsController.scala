@@ -40,7 +40,7 @@ class SnapshotsController extends BaseController {
   def create = process { (request, client) =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
-    val indices = request.getAsStringArray("indices").map(_.mkString)
+    val indices = request.getAsStringArray("indices").map(_.mkString(","))
     val ignoreUnavailable = request.getBoolean("ignoreUnavailable")
     val includeGlobalState = request.getBoolean("includeGlobalState")
     client.createSnapshot(repository, snapshot, ignoreUnavailable,
