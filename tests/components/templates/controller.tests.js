@@ -69,6 +69,22 @@ describe('TemplatesController', function() {
       expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.info).toHaveBeenCalledWith('Template successfully created');
     });
+    it('updates existing template', function() {
+       this.scope.editMode = true;
+       this.TemplatesDataService.create = function(name, template, success, error) {
+         success('ok');
+       };
+       this.scope.editor = {
+         getValue: function() {
+         }
+       };
+       spyOn(this.TemplatesDataService, 'create').andCallThrough();
+       spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
+       spyOn(this.AlertService, 'info').andReturn();
+       this.scope.create('someTemplate');
+       expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
+       expect(this.AlertService.info).toHaveBeenCalledWith('Template successfully updated');
+     });
     it('alerts about malformed template', function() {
       this.scope.editor = {
         getValue: function() {
@@ -122,6 +138,33 @@ describe('TemplatesController', function() {
       this.scope.paginator.nextPage();
       this.scope.$digest();
       expect(this.scope.page).toEqual([8, 9, 1]);
+    });
+  });
+
+  describe('editMode', function() {
+    it('enables editMode when name changes to existing template', function() {
+      var templates = [{name: 'tmp'}, {name: 'tmp2'}];
+      spyOn(this.scope.paginator, 'getCollection').andReturn(templates);
+      this.scope.name = 'tmp';
+      this.scope.$digest();
+      expect(this.scope.editMode).toEqual(true);
+    });
+    it('disables editMode when name changes to non existing template', function() {
+      var templates = [{name: 'tmp'}, {name: 'tmp2'}];
+      spyOn(this.scope.paginator, 'getCollection').andReturn(templates);
+      this.scope.name = 'tm';
+      this.scope.$digest();
+      expect(this.scope.editMode).toEqual(false);
+    });
+  });
+
+  describe('edit', function() {
+    it('loads templates into form', function() {
+      this.scope.editor = {setValue: function(){}};
+      spyOn(this.scope.editor, 'setValue').andReturn();
+      this.scope.edit('some name', {some: 'obj'});
+      expect(this.scope.name).toEqual('some name');
+      expect(this.scope.editor.setValue).toHaveBeenCalledWith('{\n  "some": "obj"\n}');
     });
   });
 
