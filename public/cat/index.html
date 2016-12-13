@@ -1,0 +1,36 @@
+<h4>cluster settings</h4>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="form-group">
+      <select ng-model="api" class="form-control" ng-options="a for a in apis">
+      </select>
+    </div>
+  </div>
+  <div class="col-xs-12">
+    <button class="btn btn-success pull-right" ng-click="get(api)">
+      execute
+    </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="text-center" ng-show="data.length === 0">No data available</h4>
+    <table class="table">
+      <thead>
+      <tr>
+        <th ng-repeat="col in headers track by $index" ng-show="col" ng-click="sort(col)" class="normal-action">
+          {{col}}<span ng-show="col === sortCol">
+          <i class="fa fa-caret-down" ng-show="sortAsc"></i>
+          <i class="fa fa-caret-up" ng-hide="sortAsc"></i>
+        </span>
+        </th>
+      </tr>
+      </thead>
+      <tr ng-repeat="row in data | orderBy:sortCol:sortAsc track by $index " ng-show="row">
+        <td ng-repeat="col in headers track by $index" ng-show="col">
+          {{row[col]}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

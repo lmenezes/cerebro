@@ -261,6 +261,12 @@ trait ElasticClient {
     execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
   }
 
+  // Cat requests
+  def catRequest(api: String, target: ElasticServer) = {
+    val path = s"/_cat/$api"
+    execute(s"${target.host}$path?format=json", "GET", None, target.authentication)
+  }
+
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
     execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
 

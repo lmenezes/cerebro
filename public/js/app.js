@@ -47,6 +47,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'repositories/index.html',
           controller: 'RepositoriesController'
         })
+        .when('/cat', {
+          templateUrl: 'cat/index.html',
+          controller: 'CatController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
@@ -255,6 +259,74 @@ angular.module('cerebro').directive('analysisTokens', function() {
     templateUrl: 'analysis/tokens.html'
   };
 });
+
+angular.module('cerebro').controller('CatController', ['$scope',
+  'CatDataService', 'AlertService',
+  function($scope, CatDataService, AlertService) {
+
+    $scope.api = undefined;
+
+    $scope.apis = [
+      'aliases',
+      'allocation',
+      'count',
+      'fielddata',
+      'health',
+      'indices',
+      'master',
+      'nodeattrs',
+      'nodes',
+      'pending tasks',
+      'plugins',
+      'recovery',
+      'repositories',
+      'thread pool',
+      'shards',
+      'segments'
+    ];
+
+    $scope.headers = undefined;
+    $scope.data = undefined;
+    $scope.sortCol = undefined;
+    $scope.sortAsc = true;
+
+    $scope.get = function(api) {
+      CatDataService.get(
+        api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
+        function(data) {
+          $scope.headers = Object.keys(data[0]);
+          $scope.sort($scope.headers[0]);
+          $scope.data = data;
+        },
+        function(error) {
+          AlertService.error('Error executing request', error);
+        }
+      );
+    };
+
+    $scope.sort = function(col) {
+      if ($scope.sortCol === col) {
+        $scope.sortAsc = !$scope.sortAsc;
+      } else {
+        $scope.sortAsc = true;
+      }
+      $scope.sortCol = col;
+    };
+
+  }]
+);
+
+angular.module('cerebro').factory('CatDataService', ['DataService',
+  function(DataService) {
+
+    this.get = function(api, success, error) {
+      DataService.send('/cat', {api: api}, success, error);
+    };
+
+    return this;
+
+  }
+]);
 
 angular.module('cerebro').directive('clusterSetting', function() {
   return {
