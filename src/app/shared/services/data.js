@@ -82,6 +82,11 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request('/overview/get_shard_stats', data, success, error);
     };
 
+    this.relocateShard = function(shard, index, from, to, success, error) {
+      var data = {shard: shard, index: index, from: from, to: to};
+      request('/overview/relocate_shard', data, success, error);
+    };
+
     // ---------- Create index ----------
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};

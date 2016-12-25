@@ -118,6 +118,26 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def relocateShard(shard: Int, index: String, from: String, to: String, target: ElasticServer) = {
+    val path = "/_cluster/reroute"
+    val commands =
+      s"""
+         |{
+         |  "commands": [
+         |    {
+         |      "move": {
+         |        "shard": $shard,
+         |        "index": \"$index\",
+         |        "from_node": \"$from\",
+         |        "to_node": \"$to\"
+         |      }
+         |    }
+         |  ]
+         |}
+       """.stripMargin
+    execute(s"${target.host}$path", "POST", Some(commands), target.authentication)
+  }
+
   def getIndexRecovery(index: String, target: ElasticServer) = {
     val path = s"/$index/_recovery?active_only=true&human=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)

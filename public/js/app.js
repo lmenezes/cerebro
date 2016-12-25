@@ -684,7 +684,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.initializing_shards = 0;
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
-    $scope.expandedView = false;
     $scope.shardAllocation = true;
 
     $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
@@ -938,6 +937,44 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.showIndexSettings = function(index) {
       $location.path('index_settings').search('index', index);
+    };
+
+    $scope.select = function(shard) {
+      $scope.relocatingShard = shard;
+    };
+
+    $scope.relocateShard = function(node) {
+      var shard = $scope.relocatingShard;
+      DataService.relocateShard(shard.shard, shard.index, shard.node, node.id,
+        function(response) {
+          $scope.relocatingShard = undefined;
+          RefreshService.refresh();
+          AlertService.info('Relocation successfully started', response);
+        },
+        function(error) {
+          AlertService.error('Error while starting relocation', error);
+        }
+      );
+    };
+
+    $scope.canReceiveShard = function(index, node) {
+      var shard = $scope.relocatingShard;
+      if (shard && index) { // in case num indices < num columns
+        if (shard.node !== node.id && shard.index === index.name) {
+          var shards = index.shards[node.id];
+          if (shards) {
+            var sameShard = function(s) {
+              return s.shard === shard.shard;
+            };
+            if (shards.filter(sameShard).length === 0) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }
+      }
+      return false;
     };
 
   }]);
@@ -2069,6 +2106,26 @@ angular.module('cerebro').directive('ngPlainInclude', function() {
   };
 });
 
+angular.module('cerebro').directive('ngShard', function() {
+  return {
+    scope: true,
+    link: function(scope) {
+      var shard = scope.shard;
+      scope.state = shard.state.toLowerCase();
+      scope.replica = !shard.primary && shard.node;
+      scope.id = shard.shard + '_' + shard.node + '_' + shard.index;
+      scope.clazz = scope.replica ? 'shard-replica' : '';
+      scope.equal = function(other) {
+        return other && shard.index === other.index &&
+          shard.node === other.node && shard.shard === other.shard;
+      };
+    },
+    templateUrl: function() {
+      return 'overview/shard.html';
+    }
+  };
+});
+
 angular.module('cerebro').factory('AceEditorService', function() {
 
   this.init = function(name) {
@@ -2347,6 +2404,11 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     this.getShardStats = function(index, node, shard, success, error) {
       var data = {index: index, node: node, shard: shard};
       request('/overview/get_shard_stats', data, success, error);
+    };
+
+    this.relocateShard = function(shard, index, from, to, success, error) {
+      var data = {shard: shard, index: index, from: from, to: to};
+      request('/overview/relocate_shard', data, success, error);
     };
 
     // ---------- Create index ----------
