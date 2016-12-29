@@ -153,7 +153,7 @@
     <tbody>
     <tr ng-show="unassigned_shards > 0 || relocating_shards > 0 || initializing_shards > 0">
       <td>
-        <div class="subtitle" ng-show="unassigned_shards >= 0">
+        <div class="subtitle" ng-show="unassigned_shards > 0">
           <i class="fa fa-warning alert-warning"> </i> {{unassigned_shards}} unassigned shards
         </div>
         <div class="subtitle" ng-show="relocating_shards > 0">
