@@ -112,7 +112,7 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
         try {
           alias.validate();
           $scope.new_alias = new Alias('', '', '', '', '');
-          $scope.changes.push({add: alias.toJson()});
+          $scope.changes.push({add: alias});
         } catch (error) {
           AlertService.error(error);
         }
@@ -135,12 +135,27 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       var error = function(body) {
         AlertService.error('Error while updating aliases', body);
       };
-      DataService.updateAliases($scope.changes, success, error);
+      var changes = [];
+      for (var i = 0; i < $scope.changes.length; i++) {
+        if (angular.isObject($scope.changes[i])) {
+          var operation = Object.keys($scope.changes[i])[0];
+          var change = {};
+          change[operation] = $scope.changes[i][operation].toJson();
+          changes.push(change);
+        }
+      }
+      DataService.updateAliases(changes, success, error);
     };
 
     $scope.loadAliases = function() {
       DataService.getAliases(
-        function(aliases) {
+        function(items) {
+          var aliases = [];
+          for (var i = 0; i < items.length; i++) {
+            var alias = new Alias(items[i].alias, items[i].index,
+                items[i].filter, items[i].indexRouting, items[i].searchRouting);
+            aliases.push(alias);
+          }
           $scope.paginator.setCollection(aliases);
           $scope.page = $scope.paginator.getPage();
         },
@@ -1559,7 +1574,7 @@ function Alias(alias, index, filter, indexRouting, searchRouting) {
     return {
       alias: this.alias,
       index: this.index,
-      filter: this.filter,
+      filter: this.filter ? this.filter : undefined,
       index_routing: cleanInput(this.index_routing),
       search_routing: cleanInput(this.search_routing)
     };

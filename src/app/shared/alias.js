@@ -22,7 +22,7 @@ function Alias(alias, index, filter, indexRouting, searchRouting) {
     return {
       alias: this.alias,
       index: this.index,
-      filter: this.filter,
+      filter: this.filter ? this.filter : undefined,
       index_routing: cleanInput(this.index_routing),
       search_routing: cleanInput(this.search_routing)
     };
