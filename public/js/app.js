@@ -135,7 +135,15 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       var error = function(body) {
         AlertService.error('Error while updating aliases', body);
       };
-      DataService.updateAliases($scope.changes, success, error);
+      var changes = $scope.changes.map(function(a) {
+        if (a.remove) {
+          var alias = a.remove;
+          return {remove: {index: alias.index, alias: alias.alias}};
+        } else {
+          return a;
+        }
+      });
+      DataService.updateAliases(changes, success, error);
     };
 
     $scope.loadAliases = function() {

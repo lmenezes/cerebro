@@ -109,6 +109,31 @@ describe('AliasesController', function() {
       expect(this.scope.loadAliases).toHaveBeenCalled();
       expect(this.scope.changes).toEqual([]);
     });
+    it('transforms remove operations to right format', function () {
+      var response = 'all good!';
+      this.DataService.updateAliases = function(changes, success, error) {
+        success(response)
+      };
+      spyOn(this.DataService, 'updateAliases').andCallThrough(true);
+      spyOn(this.scope, 'loadAliases').andReturn(true);
+      spyOn(this.AlertService, 'success').andReturn(true);
+      this.scope.changes = [
+          {remove: {index: 'a', alias: 'b', other: 'ko'}},
+          {add: {index: 'a2', alias: 'b2', other: 'ok'}}
+        ];
+      this.scope.saveChanges();
+      expect(this.DataService.updateAliases).toHaveBeenCalledWith(
+        [
+          {remove: {index: 'a', alias: 'b'}},
+          {add: {index: 'a2', alias: 'b2', other: 'ok'}},
+        ],
+        jasmine.any(Function),
+        jasmine.any(Function)
+      );
+      expect(this.AlertService.success).toHaveBeenCalledWith('Aliases successfully updated', response);
+      expect(this.scope.loadAliases).toHaveBeenCalled();
+      expect(this.scope.changes).toEqual([]);
+    });
     it('handles failure while saving changes', function () {
       var response = 'not good!';
       this.DataService.updateAliases = function(changes, success, error) {
