@@ -104,7 +104,7 @@ describe('AliasesController', function() {
       spyOn(this.AlertService, 'success').andReturn(true);
       this.scope.changes = [ 1, 2, 3 ];
       this.scope.saveChanges();
-      expect(this.DataService.updateAliases).toHaveBeenCalledWith([ 1, 2, 3 ], jasmine.any(Function), jasmine.any(Function));
+      expect(this.DataService.updateAliases).toHaveBeenCalledWith([], jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.success).toHaveBeenCalledWith('Aliases successfully updated', response);
       expect(this.scope.loadAliases).toHaveBeenCalled();
       expect(this.scope.changes).toEqual([]);
@@ -118,7 +118,7 @@ describe('AliasesController', function() {
       spyOn(this.AlertService, 'error').andReturn(true);
       this.scope.changes = [ 1, 2, 3 ];
       this.scope.saveChanges();
-      expect(this.DataService.updateAliases).toHaveBeenCalledWith([ 1, 2, 3 ], jasmine.any(Function), jasmine.any(Function));
+      expect(this.DataService.updateAliases).toHaveBeenCalledWith([], jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error while updating aliases', response);
     });
   });
@@ -135,15 +135,13 @@ describe('AliasesController', function() {
       this.scope.addAlias();
       expect(alias.filter).toEqual(filter);
       var expected = {
-        add: {
-          alias: 'somealias',
-          index: 'someindex',
-          filter: { filter : 'value' },
-          index_routing: undefined,
-          search_routing: undefined
-        }
+        alias: 'somealias',
+        index: 'someindex',
+        filter: { filter : 'value' },
+        index_routing: undefined,
+        search_routing: undefined
       };
-      expect(this.scope.changes[0]).toEqual(expected);
+      expect(this.scope.changes[0].add.toJson()).toEqual(expected);
       expect(this.scope.new_alias).not.toEqual(alias);
       expect(alias.validate).toHaveBeenCalled();
     });
