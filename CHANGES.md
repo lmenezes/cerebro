@@ -54,3 +54,14 @@ First cerebro release.
 
 #### Bug fixes
 - fix indices selection on snapshot creation
+
+###v0.4.2 - January 4th, 2017
+
+#### Bug fixes
+- fixed issue that prevent alias removal
+- only display unassigned shard count when count is > 0
+
+#### New features
+- support shard relocation
+- support edit index template
+- added cat module

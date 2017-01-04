@@ -1,6 +1,6 @@
 name := "cerebro"
 
-version := "0.4.1"
+version := "0.4.2"
 
 scalaVersion := "2.11.6"
 
