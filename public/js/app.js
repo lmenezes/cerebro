@@ -47,6 +47,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'repositories/index.html',
           controller: 'RepositoriesController'
         })
+        .when('/cat', {
+          templateUrl: 'cat/index.html',
+          controller: 'CatController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }
@@ -131,7 +135,15 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       var error = function(body) {
         AlertService.error('Error while updating aliases', body);
       };
-      DataService.updateAliases($scope.changes, success, error);
+      var changes = $scope.changes.map(function(a) {
+        if (a.remove) {
+          var alias = a.remove;
+          return {remove: {index: alias.index, alias: alias.alias}};
+        } else {
+          return a;
+        }
+      });
+      DataService.updateAliases(changes, success, error);
     };
 
     $scope.loadAliases = function() {
@@ -255,6 +267,74 @@ angular.module('cerebro').directive('analysisTokens', function() {
     templateUrl: 'analysis/tokens.html'
   };
 });
+
+angular.module('cerebro').controller('CatController', ['$scope',
+  'CatDataService', 'AlertService',
+  function($scope, CatDataService, AlertService) {
+
+    $scope.api = undefined;
+
+    $scope.apis = [
+      'aliases',
+      'allocation',
+      'count',
+      'fielddata',
+      'health',
+      'indices',
+      'master',
+      'nodeattrs',
+      'nodes',
+      'pending tasks',
+      'plugins',
+      'recovery',
+      'repositories',
+      'thread pool',
+      'shards',
+      'segments'
+    ];
+
+    $scope.headers = undefined;
+    $scope.data = undefined;
+    $scope.sortCol = undefined;
+    $scope.sortAsc = true;
+
+    $scope.get = function(api) {
+      CatDataService.get(
+        api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
+        function(data) {
+          $scope.headers = Object.keys(data[0]);
+          $scope.sort($scope.headers[0]);
+          $scope.data = data;
+        },
+        function(error) {
+          AlertService.error('Error executing request', error);
+        }
+      );
+    };
+
+    $scope.sort = function(col) {
+      if ($scope.sortCol === col) {
+        $scope.sortAsc = !$scope.sortAsc;
+      } else {
+        $scope.sortAsc = true;
+      }
+      $scope.sortCol = col;
+    };
+
+  }]
+);
+
+angular.module('cerebro').factory('CatDataService', ['DataService',
+  function(DataService) {
+
+    this.get = function(api, success, error) {
+      DataService.send('/cat', {api: api}, success, error);
+    };
+
+    return this;
+
+  }
+]);
 
 angular.module('cerebro').directive('clusterSetting', function() {
   return {
@@ -612,7 +692,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.initializing_shards = 0;
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
-    $scope.expandedView = false;
     $scope.shardAllocation = true;
 
     $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
@@ -866,6 +945,44 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.showIndexSettings = function(index) {
       $location.path('index_settings').search('index', index);
+    };
+
+    $scope.select = function(shard) {
+      $scope.relocatingShard = shard;
+    };
+
+    $scope.relocateShard = function(node) {
+      var shard = $scope.relocatingShard;
+      DataService.relocateShard(shard.shard, shard.index, shard.node, node.id,
+        function(response) {
+          $scope.relocatingShard = undefined;
+          RefreshService.refresh();
+          AlertService.info('Relocation successfully started', response);
+        },
+        function(error) {
+          AlertService.error('Error while starting relocation', error);
+        }
+      );
+    };
+
+    $scope.canReceiveShard = function(index, node) {
+      var shard = $scope.relocatingShard;
+      if (shard && index) { // in case num indices < num columns
+        if (shard.node !== node.id && shard.index === index.name) {
+          var shards = index.shards[node.id];
+          if (shards) {
+            var sameShard = function(s) {
+              return s.shard === shard.shard;
+            };
+            if (shards.filter(sameShard).length === 0) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }
+      }
+      return false;
     };
 
   }]);
@@ -1234,12 +1351,24 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
     );
 
     $scope.editor = undefined;
+    $scope.editMode = false;
 
     $scope.paginator = new Paginator(1, 10, [],
       new IndexTemplateFilter('', ''));
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
+    }, true);
+
+    $scope.$watch('name', function(current, previous) {
+      var isExistingTemplate = false;
+      var templates = $scope.paginator.getCollection();
+      templates.forEach(function(t) {
+        if (t.name === current) {
+          isExistingTemplate = true;
+        }
+      });
+      $scope.editMode = isExistingTemplate;
     }, true);
 
     $scope.initEditor = function() {
@@ -1261,11 +1390,20 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       );
     };
 
+    $scope.edit = function(name, template) {
+      $scope.name = name;
+      $scope.editor.setValue(JSON.stringify(template, undefined, 2));
+    };
+
     $scope.create = function(name) {
       try {
         var template = $scope.editor.getValue();
         var success = function(response) {
-          AlertService.info('Template successfully created');
+          if ($scope.editMode) {
+            AlertService.info('Template successfully updated');
+          } else {
+            AlertService.info('Template successfully created');
+          }
           $scope.loadTemplates();
         };
         var errorCallback = function(response) {
@@ -1976,6 +2114,26 @@ angular.module('cerebro').directive('ngPlainInclude', function() {
   };
 });
 
+angular.module('cerebro').directive('ngShard', function() {
+  return {
+    scope: true,
+    link: function(scope) {
+      var shard = scope.shard;
+      scope.state = shard.state.toLowerCase();
+      scope.replica = !shard.primary && shard.node;
+      scope.id = shard.shard + '_' + shard.node + '_' + shard.index;
+      scope.clazz = scope.replica ? 'shard-replica' : '';
+      scope.equal = function(other) {
+        return other && shard.index === other.index &&
+          shard.node === other.node && shard.shard === other.shard;
+      };
+    },
+    templateUrl: function() {
+      return 'overview/shard.html';
+    }
+  };
+});
+
 angular.module('cerebro').factory('AceEditorService', function() {
 
   this.init = function(name) {
@@ -2254,6 +2412,11 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     this.getShardStats = function(index, node, shard, success, error) {
       var data = {index: index, node: node, shard: shard};
       request('/overview/get_shard_stats', data, success, error);
+    };
+
+    this.relocateShard = function(shard, index, from, to, success, error) {
+      var data = {shard: shard, index: index, from: from, to: to};
+      request('/overview/relocate_shard', data, success, error);
     };
 
     // ---------- Create index ----------

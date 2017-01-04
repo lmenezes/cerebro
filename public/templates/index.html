@@ -25,6 +25,7 @@
               <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="delete(template.name)"
                  ng-hide="template.removed" data-toggle="modal" href="#confirm_dialog" target="_self"></i>
               <i class="fa fa-trash alert-danger pull-right disabled" ng-show="template.removed"></i>
+              <i class="fa fa-pencil normal-action pull-right" ng-hide="template.removed" ng-click="edit(template.name, template.template)"></i>
             </td>
           </tr>
         </table>
@@ -32,7 +33,8 @@
     </div>
   </div>
   <div class="col-md-6">
-    <h4>create new template</h4>
+    <h4 ng-hide="editMode">create new template</h4>
+    <h4 ng-show="editMode">update template {{name}}</h4>
     <div class="row">
       <div class="col-xs-12">
         <div class="form-group">
@@ -47,8 +49,11 @@
         </div>
       </div>
       <div class="col-xs-12 text-right">
-        <button type="submit" class="btn btn-info" ng-click="create(name)">
-          <i class="fa fa-file-o normal-action alert-info"> </i> create
+        <button type="submit" class="btn btn-success" ng-click="create(name)" ng-hide="editMode">
+          <i class="fa fa-file-o normal-action alert-success"> </i> create
+        </button>
+        <button type="submit" class="btn btn-warning" ng-click="create(name)" ng-show="editMode">
+          <i class="fa fa-floppy-o normal-action alert-warning"> </i> update
         </button>
       </div>
     </div>

@@ -20,6 +20,7 @@ POST        /overview/clear_indices_cache             @controllers.ClusterOvervi
 POST        /overview/refresh_indices                 @controllers.ClusterOverviewController.refreshIndex
 POST        /overview/delete_indices                  @controllers.ClusterOverviewController.deleteIndex
 POST        /overview/get_shard_stats                 @controllers.ClusterOverviewController.getShardStats
+POST        /overview/relocate_shard                  @controllers.ClusterOverviewController.relocateShard
 
 # Navbar module
 POST        /navbar                                   @controllers.NavbarController.index
@@ -72,6 +73,9 @@ POST        /snapshots/load                           @controllers.SnapshotsCont
 POST        /snapshots/create                         @controllers.SnapshotsController.create
 POST        /snapshots/delete                         @controllers.SnapshotsController.delete
 POST        /snapshots/restore                        @controllers.SnapshotsController.restore
+
+# Cat module
+POST        /cat                                      @controllers.CatController.get
 
 # Map the JS resource paths
 GET         /public/*file                             controllers.Assets.at(path="/public", file)

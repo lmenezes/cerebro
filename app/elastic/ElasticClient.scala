@@ -118,6 +118,26 @@ trait ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def relocateShard(shard: Int, index: String, from: String, to: String, target: ElasticServer) = {
+    val path = "/_cluster/reroute"
+    val commands =
+      s"""
+         |{
+         |  "commands": [
+         |    {
+         |      "move": {
+         |        "shard": $shard,
+         |        "index": \"$index\",
+         |        "from_node": \"$from\",
+         |        "to_node": \"$to\"
+         |      }
+         |    }
+         |  ]
+         |}
+       """.stripMargin
+    execute(s"${target.host}$path", "POST", Some(commands), target.authentication)
+  }
+
   def getIndexRecovery(index: String, target: ElasticServer) = {
     val path = s"/$index/_recovery?active_only=true&human=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)
@@ -259,6 +279,12 @@ trait ElasticClient {
   def updateIndexSettings(index: String, settings: JsValue, target: ElasticServer) = {
     val path = s"/$index/_settings"
     execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
+  }
+
+  // Cat requests
+  def catRequest(api: String, target: ElasticServer) = {
+    val path = s"/_cat/$api"
+    execute(s"${target.host}$path?format=json", "GET", None, target.authentication)
   }
 
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =

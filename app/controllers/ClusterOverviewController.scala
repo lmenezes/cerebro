@@ -84,4 +84,15 @@ class ClusterOverviewController extends BaseController {
     }
   }
 
+  def relocateShard = process { (request, client) =>
+    val index = request.get("index")
+    val shard = request.getInt("shard")
+    val from = request.get("from")
+    val to = request.get("to")
+    val server = ElasticServer(request.host, request.authentication)
+    client.relocateShard(shard, index, from, to, server).map { response =>
+      Status(response.status)(response.body)
+    }
+  }
+
 }

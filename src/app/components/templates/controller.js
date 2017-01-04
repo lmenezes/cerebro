@@ -15,12 +15,24 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
     );
 
     $scope.editor = undefined;
+    $scope.editMode = false;
 
     $scope.paginator = new Paginator(1, 10, [],
       new IndexTemplateFilter('', ''));
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
+    }, true);
+
+    $scope.$watch('name', function(current, previous) {
+      var isExistingTemplate = false;
+      var templates = $scope.paginator.getCollection();
+      templates.forEach(function(t) {
+        if (t.name === current) {
+          isExistingTemplate = true;
+        }
+      });
+      $scope.editMode = isExistingTemplate;
     }, true);
 
     $scope.initEditor = function() {
@@ -42,11 +54,20 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       );
     };
 
+    $scope.edit = function(name, template) {
+      $scope.name = name;
+      $scope.editor.setValue(JSON.stringify(template, undefined, 2));
+    };
+
     $scope.create = function(name) {
       try {
         var template = $scope.editor.getValue();
         var success = function(response) {
-          AlertService.info('Template successfully created');
+          if ($scope.editMode) {
+            AlertService.info('Template successfully updated');
+          } else {
+            AlertService.info('Template successfully created');
+          }
           $scope.loadTemplates();
         };
         var errorCallback = function(response) {

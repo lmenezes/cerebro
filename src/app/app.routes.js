@@ -47,6 +47,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'repositories/index.html',
           controller: 'RepositoriesController'
         })
+        .when('/cat', {
+          templateUrl: 'cat/index.html',
+          controller: 'CatController'
+        })
         .otherwise({
             redirectTo: '/connect'
           }

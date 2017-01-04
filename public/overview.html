@@ -153,7 +153,7 @@
     <tbody>
     <tr ng-show="unassigned_shards > 0 || relocating_shards > 0 || initializing_shards > 0">
       <td>
-        <div class="subtitle" ng-show="unassigned_shards >= 0">
+        <div class="subtitle" ng-show="unassigned_shards > 0">
           <i class="fa fa-warning alert-warning"> </i> {{unassigned_shards}} unassigned shards
         </div>
         <div class="subtitle" ng-show="relocating_shards > 0">
@@ -222,12 +222,11 @@
       </td>
       <td ng-repeat="index in page.elements track by $index">
         <span ng-repeat="shard in index.shards[node.id] | orderBy:'shard' track by $index">
-          <span class="shard shard-{{shard.state.toLowerCase()}} normal-action"
-                ng-class="{'shard-replica': !shard.primary && shard.node}"
-                ng-click="shardStats(index.name, node.id, shard.shard)" data-toggle="modal" href="#confirm_dialog"
-                target="_self">
-            <small>{{shard.shard}}</small>
-          </span>
+          <ng-shard></ng-shard>
+        </span>
+        <span class="shard shard-spot normal-action" ng-click="relocateShard(node)"
+              ng-show="canReceiveShard(index, node)">
+          <i class="fa fa-download"></i>
         </span>
       </td>
     </tr>

@@ -37,8 +37,23 @@ It is also possible to avoid the creation of the RUNNING_PID file by setting the
 ```yaml
 pidfile.path = "/dev/null"
 ```
+### Using an alternate configuration file
+It is possible to define an alternate configuration file(other than conf/application.conf). This can be achieved in two different ways:
 
-###List of known hosts
+#### -Dconfig.resource
+This will pick the specified file from the classpath.
+```
+bin/cerebro -Dconfig.resource=alternate.conf 
+```
+
+#### -Dconfig.file
+This will pick the specified file from a directory other than the apps dir.
+```
+bin/cerebro -Dconfig.fiel=/some/other/dir/alternate.conf 
+```
+
+
+### List of known hosts
 A list of predefined hosts can be defined for quicker access by editing conf/application.conf file. If host is password protected, authentication should be also set.
 
 Example:
