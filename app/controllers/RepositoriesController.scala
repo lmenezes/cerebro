@@ -1,10 +1,14 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
 import models.repository.Repositories
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RepositoriesController extends BaseController {
+class RepositoriesController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def get = process { (request, client) =>
     client.getRepositories(ElasticServer(request.host, request.authentication)).map { response =>

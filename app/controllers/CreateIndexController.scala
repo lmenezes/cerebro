@@ -1,11 +1,14 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.{ElasticServer, IndexMetadata}
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CreateIndexController extends BaseController {
+class CreateIndexController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def execute = process { (request, client) =>
     client.createIndex(

@@ -10,7 +10,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object AnalysisControllerSpec extends Specification with Mockito {
+object AnalysisControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -34,7 +34,7 @@ object AnalysisControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController {
+    val controller = new AnalysisController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.getIndices()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
@@ -66,7 +66,7 @@ object AnalysisControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getIndexSettings("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController {
+    val controller = new AnalysisController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.getIndexAnalyzers()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
@@ -95,7 +95,7 @@ object AnalysisControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getIndexMapping("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController {
+    val controller = new AnalysisController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.getIndexFields()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
@@ -120,7 +120,7 @@ object AnalysisControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.analyzeTextByAnalyzer("foo", "bar", "qux", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController {
+    val controller = new AnalysisController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "analyzer" -> "bar", "text" -> "qux")
@@ -158,7 +158,7 @@ object AnalysisControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.analyzeTextByField("foo", "bar", "qux", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController {
+    val controller = new AnalysisController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "field" -> "bar", "text" -> "qux")

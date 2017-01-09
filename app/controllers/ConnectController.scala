@@ -1,13 +1,16 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import play.api.Play
 import play.api.libs.json.{JsArray, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 
 
-class ConnectController extends Controller {
+class ConnectController @Inject()(val authentication: AuthenticationModule) extends Controller with AuthSupport {
 
-  def index = Action {
+  def index = AuthAction(authentication) {
     request => {
       val hosts = Play.current.configuration.getConfigSeq("hosts") match {
         case Some(configs) =>

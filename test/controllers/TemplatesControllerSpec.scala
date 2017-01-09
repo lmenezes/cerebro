@@ -10,7 +10,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object TemplatesControllerSpec extends Specification with Mockito {
+object TemplatesControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -72,7 +72,7 @@ object TemplatesControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getTemplates(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mockedResponse))
-    val controller = new TemplatesController {
+    val controller = new TemplatesController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.templates()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
@@ -87,7 +87,7 @@ object TemplatesControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.deleteTemplate("someTemplate", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new TemplatesController {
+    val controller = new TemplatesController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.delete()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate")))
@@ -95,7 +95,7 @@ object TemplatesControllerSpec extends Specification with Mockito {
   }
 
   def requireNameDelete = {
-    val controller = new TemplatesController
+    val controller = new TemplatesController(auth)
     val response = controller.delete()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
     (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
@@ -114,7 +114,7 @@ object TemplatesControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.createTemplate("someTemplate", template, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new TemplatesController {
+    val controller = new TemplatesController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate", "template" -> template)))
@@ -122,13 +122,13 @@ object TemplatesControllerSpec extends Specification with Mockito {
   }
 
   def requireNameCreate = {
-    val controller = new TemplatesController
+    val controller = new TemplatesController(auth)
     val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
     (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
 
   def requireNameTemplate = {
-    val controller = new TemplatesController
+    val controller = new TemplatesController(auth)
     val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "any")))
     (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter template\"}"))
   }

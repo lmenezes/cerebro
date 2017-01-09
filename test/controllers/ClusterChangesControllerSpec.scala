@@ -10,7 +10,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object ClusterChangesControllerSpec extends Specification with Mockito {
+object ClusterChangesControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -50,7 +50,7 @@ object ClusterChangesControllerSpec extends Specification with Mockito {
     mockedClient.main(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mainResponse))
     mockedClient.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
     mockedClient.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
-    val controller = new ClusterChangesController {
+    val controller = new ClusterChangesController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.get()(FakeRequest().withBody(Json.obj("host" -> "somehost")))

@@ -1,12 +1,14 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
-import models.analysis.OpenIndices
 import models.templates.Templates
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TemplatesController extends BaseController {
+class TemplatesController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def templates = process { (request, client) =>
     client.getTemplates(ElasticServer(request.host, request.authentication)).map { response =>

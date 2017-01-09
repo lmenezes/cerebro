@@ -1,5 +1,8 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
@@ -8,7 +11,7 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SnapshotsController extends BaseController {
+class SnapshotsController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def get = process { (request, client) =>
     Future.sequence(Seq(

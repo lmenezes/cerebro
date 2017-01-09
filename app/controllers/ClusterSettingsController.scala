@@ -1,9 +1,13 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ClusterSettingsController extends BaseController {
+class ClusterSettingsController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def getSettings = process { (request, client) =>
     client.getClusterSettings(ElasticServer(request.host, request.authentication)).map { response =>

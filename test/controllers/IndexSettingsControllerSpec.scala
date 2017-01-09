@@ -10,7 +10,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object IndexSettingsControllerSpec extends Specification with Mockito {
+object IndexSettingsControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -39,7 +39,7 @@ object IndexSettingsControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getIndexSettingsFlat("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new IndexSettingsController {
+    val controller = new IndexSettingsController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.get()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
@@ -65,7 +65,7 @@ object IndexSettingsControllerSpec extends Specification with Mockito {
         |}
       """.stripMargin)
     mockedClient.updateIndexSettings("foo", body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new IndexSettingsController {
+    val controller = new IndexSettingsController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.update()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo", "settings" -> body)))

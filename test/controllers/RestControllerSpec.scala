@@ -11,7 +11,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object RestControllerSpec extends Specification with Mockito {
+object RestControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -37,7 +37,7 @@ object RestControllerSpec extends Specification with Mockito {
     val body = Json.obj("host" -> "somehost", "method" -> "GET", "path" -> "/someesapi")
     val mockedClient = mock[ElasticClient]
     mockedClient.executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new RestController {
+    val controller = new RestController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.request()(FakeRequest().withBody(body))
@@ -48,7 +48,7 @@ object RestControllerSpec extends Specification with Mockito {
 
   def missingPath = {
     val body = Json.obj("host" -> "somehost", "method" -> "GET")
-    val controller = new RestController
+    val controller = new RestController(auth)
     val response = controller.request()(FakeRequest().withBody(body))
     contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter path") and
       (status(response) mustEqual 400)
@@ -57,7 +57,7 @@ object RestControllerSpec extends Specification with Mockito {
 
   def missingMethod = {
     val body = Json.obj("host" -> "somehost", "path" -> "GET")
-    val controller = new RestController
+    val controller = new RestController(auth)
     val response = controller.request()(FakeRequest().withBody(body))
     contentAsJson(response) mustEqual Json.obj("error" -> "Missing required parameter method") and
       (status(response) mustEqual 400)

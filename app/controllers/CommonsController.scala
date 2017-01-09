@@ -1,11 +1,14 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
 import models.commons.{Indices, Nodes}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CommonsController extends BaseController {
+class CommonsController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def indices = process { (request, client) =>
     client.getIndices(ElasticServer(request.host, request.authentication)).map { response =>

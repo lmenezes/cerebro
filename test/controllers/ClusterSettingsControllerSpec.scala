@@ -10,7 +10,7 @@ import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object ClusterSettingsControllerSpec extends Specification with Mockito {
+object ClusterSettingsControllerSpec extends Specification with Mockito with NoAuthController {
 
   def is =
     s2"""
@@ -32,7 +32,7 @@ object ClusterSettingsControllerSpec extends Specification with Mockito {
       """.stripMargin
     )
     mockedClient.getClusterSettings(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new ClusterSettingsController {
+    val controller = new ClusterSettingsController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.getSettings()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
@@ -58,7 +58,7 @@ object ClusterSettingsControllerSpec extends Specification with Mockito {
         |}
       """.stripMargin)
     mockedClient.saveClusterSettings(body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new ClusterSettingsController {
+    val controller = new ClusterSettingsController(auth) {
       override val client: ElasticClient = mockedClient
     }
     val response = controller.save()(FakeRequest().withBody(Json.obj("host" -> "somehost", "settings" -> body)))
@@ -66,7 +66,7 @@ object ClusterSettingsControllerSpec extends Specification with Mockito {
   }
 
   def requireSettings = {
-    val controller = new ClusterSettingsController
+    val controller = new ClusterSettingsController(auth)
     val response = controller.save()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
     (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter settings\"}"))
   }

@@ -1,5 +1,8 @@
 package controllers
 
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
 import models.ElasticServer
 import models.commons.{Indices, Nodes}
 import play.api.libs.json.Json
@@ -7,7 +10,7 @@ import play.api.libs.json.Json
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ClusterChangesController extends BaseController {
+class ClusterChangesController @Inject()(val authentication: AuthenticationModule) extends BaseController {
 
   def get = process { (request, client) =>
     Future.sequence(Seq(

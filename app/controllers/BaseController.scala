@@ -1,16 +1,19 @@
 package controllers
 
+import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
 import exceptions.MissingRequiredParamException
 import models.CerebroRequest
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller, Result}
+import play.api.mvc.{Controller, Result}
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-trait BaseController extends Controller {
+trait BaseController extends Controller with AuthSupport {
+
+  val authentication: AuthenticationModule
 
   val client: ElasticClient = ElasticClient
 
@@ -18,7 +21,7 @@ trait BaseController extends Controller {
 
   type RequestProcessor = (CerebroRequest, ElasticClient) => Future[Result]
 
-  final def process(processor: RequestProcessor) = Action.async(parse.json) { request =>
+  final def process(processor: RequestProcessor) = AuthAction(authentication).async(parse.json) { request =>
     try {
       processor(CerebroRequest(request.body), client)
     } catch {
