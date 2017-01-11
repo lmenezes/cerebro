@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
 import models.ElasticServer
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
@@ -11,9 +12,10 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SnapshotsController @Inject()(val authentication: AuthenticationModule) extends BaseController {
+class SnapshotsController @Inject()(val authentication: AuthenticationModule,
+                                    client: ElasticClient) extends BaseController {
 
-  def get = process { (request, client) =>
+  def get = process { request =>
     Future.sequence(Seq(
       client.getIndices(ElasticServer(request.host, request.authentication)),
       client.getRepositories(ElasticServer(request.host, request.authentication))
@@ -25,14 +27,14 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule) ex
     }.map(Ok(_))
   }
 
-  def getSnapshots = process { (request, client) =>
+  def getSnapshots = process { request =>
     val repository = request.get("repository")
     client.getSnapshots(repository, ElasticServer(request.host, request.authentication)).map { response =>
       Status(response.status)(Snapshots(response.body))
     }
   }
 
-  def delete = process { (request, client) =>
+  def delete = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     client.deleteSnapshot(repository, snapshot, ElasticServer(request.host, request.authentication)).map { response =>
@@ -40,7 +42,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule) ex
     }
   }
 
-  def create = process { (request, client) =>
+  def create = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     val indices = request.getAsStringArray("indices").map(_.mkString(","))
@@ -52,7 +54,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule) ex
     }
   }
 
-  def restore = process { (request, client) =>
+  def restore = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     val renamePattern = request.getOpt("renamePattern")

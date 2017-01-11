@@ -3,12 +3,14 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
 import play.api.Play
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Controller
 
 
-class ConnectController @Inject()(val authentication: AuthenticationModule) extends Controller with AuthSupport {
+class ConnectController @Inject()(val authentication: AuthenticationModule,
+                                  client: ElasticClient) extends Controller with AuthSupport {
 
   def index = AuthAction(authentication) {
     request => {

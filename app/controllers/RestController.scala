@@ -3,13 +3,15 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
 import models.{ClusterMapping, ElasticServer}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RestController @Inject()(val authentication: AuthenticationModule) extends BaseController {
+class RestController @Inject()(val authentication: AuthenticationModule,
+                               client: ElasticClient) extends BaseController {
 
-  def request = process { (request, client) =>
+  def request = process { request =>
     client.executeRequest(
       request.get("method"),
       request.get("path"),
@@ -20,7 +22,7 @@ class RestController @Inject()(val authentication: AuthenticationModule) extends
     }
   }
 
-  def getClusterMapping = process { (request, client) =>
+  def getClusterMapping = process { request =>
     client.getClusterMapping(ElasticServer(request.host, request.authentication)).map {
       response => Ok(ClusterMapping(response.body))
     }

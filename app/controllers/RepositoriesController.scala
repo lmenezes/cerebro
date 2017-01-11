@@ -3,20 +3,22 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
 import models.ElasticServer
 import models.repository.Repositories
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RepositoriesController @Inject()(val authentication: AuthenticationModule) extends BaseController {
+class RepositoriesController @Inject()(val authentication: AuthenticationModule,
+                                       client: ElasticClient) extends BaseController {
 
-  def get = process { (request, client) =>
+  def get = process { request =>
     client.getRepositories(ElasticServer(request.host, request.authentication)).map { response =>
       Status(response.status)(Repositories(response.body))
     }
   }
 
-  def save = process { (request, client) =>
+  def save = process { request =>
     val name = request.get("name")
     val repoType = request.get("type")
     val settings = request.getObj("settings")
@@ -25,7 +27,7 @@ class RepositoriesController @Inject()(val authentication: AuthenticationModule)
     }
   }
 
-  def delete = process { (request, client) =>
+  def delete = process { request =>
     val name = request.get("name")
     client.deleteRepository(name, ElasticServer(request.host, request.authentication)).map { response =>
       Status(response.status)(response.body)

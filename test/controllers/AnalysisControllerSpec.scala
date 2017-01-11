@@ -1,30 +1,27 @@
 package controllers
 
-import elastic.{ElasticClient, ElasticResponse}
+import elastic.ElasticResponse
 import models.ElasticServer
-import org.specs2.Specification
-import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object AnalysisControllerSpec extends Specification with Mockito with NoAuthController {
+object AnalysisControllerSpec extends MockedServices {
 
   def is =
     s2"""
-    AnalysisController should                            ${step(play.api.Play.start(FakeApplication()))}
+    AnalysisController should                            ${step(play.api.Play.start(application))}
       return open indices                                $indices
       return index analyzers                             $analyzers
       return index fields                                $fields
       analyze by field                                   $analyzeByField
       analyze by analyzer                                $analyzeByAnalyzer
-                                                         ${step(play.api.Play.stop(FakeApplication()))}
+                                                         ${step(play.api.Play.stop(application))}
       """
 
   def indices = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |[
@@ -33,16 +30,12 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
         |]
       """.stripMargin
     )
-    mockedClient.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController(auth) {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.getIndices()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
+    client.getIndices(ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/analysis/indices").withBody(Json.obj("host" -> "somehost"))).get
     (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("index1", "index2"))
   }
 
   def analyzers = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -65,16 +58,12 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
         |}
       """.stripMargin
     )
-    mockedClient.getIndexSettings("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController(auth) {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.getIndexAnalyzers()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
+    client.getIndexSettings("foo", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/analysis/analyzers").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
     (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("foo_analyzer"))
   }
 
   def fields = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -94,16 +83,12 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
         |}
       """.stripMargin
     )
-    mockedClient.getIndexMapping("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController(auth) {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.getIndexFields()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
+    client.getIndexMapping("foo", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/analysis/fields").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
     (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("name"))
   }
 
   def analyzeByAnalyzer = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -119,12 +104,9 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
         |}
       """.stripMargin
     )
-    mockedClient.analyzeTextByAnalyzer("foo", "bar", "qux", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController(auth) {
-      override val client: ElasticClient = mockedClient
-    }
+    client.analyzeTextByAnalyzer("foo", "bar", "qux", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "analyzer" -> "bar", "text" -> "qux")
-    val response = controller.analyzeByAnalyzer()(FakeRequest().withBody(params))
+    val response = route(FakeRequest(POST, "/analysis/analyze/analyzer").withBody(params)).get
     val expected = Json.parse(
       """
         |[
@@ -141,7 +123,6 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
   }
 
   def analyzeByField = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -157,12 +138,9 @@ object AnalysisControllerSpec extends Specification with Mockito with NoAuthCont
         |}
       """.stripMargin
     )
-    mockedClient.analyzeTextByField("foo", "bar", "qux", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new AnalysisController(auth) {
-      override val client: ElasticClient = mockedClient
-    }
+    client.analyzeTextByField("foo", "bar", "qux", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "field" -> "bar", "text" -> "qux")
-    val response = controller.analyzeByField()(FakeRequest().withBody(params))
+    val response = route(FakeRequest(POST, "/analysis/analyze/field").withBody(params)).get
     val expected = Json.parse(
       """
         |[
