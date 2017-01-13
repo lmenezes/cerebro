@@ -48,6 +48,6 @@ object ClusterChangesControllerSpec extends MockedServices {
     client.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
     client.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
     val response = route(FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    ensure(response, 200, expectedResponse)
   }
 }

@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.ElasticServer
+import models.{CerebroResponse, ElasticServer}
 import models.commons.{Indices, Nodes}
 import play.api.libs.json.Json
 
@@ -25,6 +25,6 @@ class ClusterChangesController @Inject()(val authentication: AuthenticationModul
         "nodes" -> Nodes(responses(1).body),
         "cluster_name" -> (responses(2).body \ "cluster_name").as[String]
       )
-    }.map(Ok(_))
+    }.map(CerebroResponse(200, _))
   }
 }

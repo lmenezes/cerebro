@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.ElasticServer
+import models.{CerebroResponse, ElasticServer}
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
 import play.api.libs.json.Json
@@ -24,13 +24,13 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
         "indices" -> Indices(responses(0).body),
         "repositories" -> Repositories(responses(1).body)
       )
-    }.map(Ok(_))
+    }.map(CerebroResponse(200, _))
   }
 
   def getSnapshots = process { request =>
     val repository = request.get("repository")
     client.getSnapshots(repository, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Snapshots(response.body))
+      CerebroResponse(response.status, Snapshots(response.body))
     }
   }
 
@@ -38,7 +38,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     client.deleteSnapshot(repository, snapshot, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
@@ -50,7 +50,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     val includeGlobalState = request.getBoolean("includeGlobalState")
     client.createSnapshot(repository, snapshot, ignoreUnavailable,
       includeGlobalState, indices, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+      response => CerebroResponse(response.status, response.body)
     }
   }
 
@@ -66,7 +66,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     client.restoreSnapshot(repository, snapshot, renamePattern,
       renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
       indices, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+      response => CerebroResponse(response.status, response.body)
     }
   }
 }

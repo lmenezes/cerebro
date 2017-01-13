@@ -6,7 +6,7 @@ import play.api.mvc.Controller
 
 class Application @Inject()(val authentication: AuthenticationModule) extends Controller with AuthSupport {
 
-  def index = AuthAction(authentication) { request =>
+  def index = AuthAction(authentication, true) { request =>
     Ok(views.html.Index())
   }
   

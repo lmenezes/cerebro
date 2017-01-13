@@ -37,7 +37,7 @@ object IndexSettingsControllerSpec extends MockedServices {
     )
     client.getIndexSettingsFlat("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = route(FakeRequest(POST, "/index_settings").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    ensure(response, 200, expectedResponse)
   }
 
   def update = {
@@ -59,7 +59,7 @@ object IndexSettingsControllerSpec extends MockedServices {
       """.stripMargin)
     client.updateIndexSettings("foo", body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = route(FakeRequest(POST, "/index_settings/update").withBody(Json.obj("host" -> "somehost", "index" -> "foo", "settings" -> body))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    ensure(response, 200, expectedResponse)
   }
 
 }

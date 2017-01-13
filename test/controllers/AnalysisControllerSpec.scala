@@ -32,7 +32,7 @@ object AnalysisControllerSpec extends MockedServices {
     )
     client.getIndices(ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = route(FakeRequest(POST, "/analysis/indices").withBody(Json.obj("host" -> "somehost"))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("index1", "index2"))
+    ensure(response, 200, Json.arr("index1", "index2"))
   }
 
   def analyzers = {
@@ -60,7 +60,7 @@ object AnalysisControllerSpec extends MockedServices {
     )
     client.getIndexSettings("foo", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = route(FakeRequest(POST, "/analysis/analyzers").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("foo_analyzer"))
+    ensure(response, 200, Json.arr("foo_analyzer"))
   }
 
   def fields = {
@@ -85,7 +85,7 @@ object AnalysisControllerSpec extends MockedServices {
     )
     client.getIndexMapping("foo", ElasticServer("somehost")) returns Future.successful(ElasticResponse(200, expectedResponse))
     val response = route(FakeRequest(POST, "/analysis/fields").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual Json.arr("name"))
+    ensure(response, 200, Json.arr("name"))
   }
 
   def analyzeByAnalyzer = {
@@ -119,7 +119,7 @@ object AnalysisControllerSpec extends MockedServices {
         |  }
         |]
       """.stripMargin)
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expected)
+    ensure(response, 200, expected)
   }
 
   def analyzeByField = {
@@ -153,7 +153,7 @@ object AnalysisControllerSpec extends MockedServices {
         |  }
         |]
       """.stripMargin)
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expected)
+    ensure(response, 200, expected)
   }
 
 }

@@ -2,7 +2,7 @@ package controllers
 
 import controllers.auth.AuthenticationModule
 import exceptions.MissingRequiredParamException
-import models.CerebroRequest
+import models.{CerebroRequest, CerebroResponse}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Controller, Result}
@@ -23,9 +23,9 @@ trait BaseController extends Controller with AuthSupport {
       processor(CerebroRequest(request.body))
     } catch {
       case e: MissingRequiredParamException =>
-        Future.successful(Status(400)(Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
+        Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
       case NonFatal(e) =>
-        Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
+        Future.successful(CerebroResponse(500, Json.obj("error" -> "Error"))) // FIXME: proper error handling
     }
   }
 

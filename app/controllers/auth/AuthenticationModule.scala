@@ -21,7 +21,9 @@ class AuthenticationModuleImpl @Inject()(config: Configuration) extends Authenti
     case _             => None
   }
 
-  def isEnabled: Boolean = service.isDefined
+  def isEnabled: Boolean = {
+    service.isDefined
+  }
 
   def authentication(username: String, password: String): Option[String] = {
     service.getOrElse(throw new RuntimeException("No authentication modules is active")).auth(username, password)

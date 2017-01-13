@@ -5,7 +5,7 @@ import javax.inject.Inject
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
 import models.overview.ClusterOverview
-import models.{ElasticServer, ShardStats}
+import models.{CerebroResponse, ElasticServer, ShardStats}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -27,54 +27,54 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
       )
     ).map { f =>
       new ClusterOverview(f(0).body, f(1).body, f(2).body, f(3).body, f(4).body, f(5).body, f(6).body, f(7).body).json
-    }.map(Ok(_))
+    }.map(CerebroResponse(200, _))
   }
 
   def disableShardAllocation = process { request =>
     client.disableShardAllocation(ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def enableShardAllocation = process { request =>
     client.enableShardAllocation(ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def closeIndices = process { request =>
     client.closeIndex(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def openIndices = process { request =>
     client.openIndex(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def forceMerge = process { request =>
     client.forceMerge(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def clearIndexCache = process { request =>
     client.clearIndexCache(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def refreshIndex = process { request =>
     client.refreshIndex(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
   def deleteIndex = process { request =>
     client.deleteIndex(request.get("indices"), ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
@@ -85,7 +85,7 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     client.getShardStats(index, ElasticServer(request.host, request.authentication)).zip(
       client.getIndexRecovery(index, ElasticServer(request.host, request.authentication))
     ).map {
-      case (stats, recovery) => Status(200)(ShardStats(index, node, shard, stats.body, recovery.body))
+      case (stats, recovery) => CerebroResponse(200, ShardStats(index, node, shard, stats.body, recovery.body))
     }
   }
 
@@ -96,7 +96,7 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     val to = request.get("to")
     val server = ElasticServer(request.host, request.authentication)
     client.relocateShard(shard, index, from, to, server).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 

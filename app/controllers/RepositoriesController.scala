@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.ElasticServer
+import models.{CerebroResponse, ElasticServer}
 import models.repository.Repositories
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +14,7 @@ class RepositoriesController @Inject()(val authentication: AuthenticationModule,
 
   def get = process { request =>
     client.getRepositories(ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Repositories(response.body))
+      CerebroResponse(response.status, Repositories(response.body))
     }
   }
 
@@ -23,14 +23,14 @@ class RepositoriesController @Inject()(val authentication: AuthenticationModule,
     val repoType = request.get("type")
     val settings = request.getObj("settings")
     client.createRepository(name, repoType, settings, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+      response => CerebroResponse(response.status, response.body)
     }
   }
 
   def delete = process { request =>
     val name = request.get("name")
     client.deleteRepository(name, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+      CerebroResponse(response.status, response.body)
     }
   }
 
