@@ -13,31 +13,31 @@ class CommonsController @Inject()(val authentication: AuthenticationModule,
                                   client: ElasticClient) extends BaseController {
 
   def indices = process { request =>
-    client.getIndices(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndices(request.target).map { response =>
       CerebroResponse(response.status, Indices(response.body))
     }
   }
 
   def nodes = process { request =>
-    client.getNodes(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getNodes(request.target).map { response =>
       CerebroResponse(response.status, Nodes(response.body))
     }
   }
 
   def getIndexSettings = process { request =>
-    client.getIndexSettings(request.get("index"), ElasticServer(request.host, request.authentication)) map { response =>
+    client.getIndexSettings(request.get("index"), request.target) map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
 
   def getIndexMappings = process { request =>
-    client.getIndexMapping(request.get("index"), ElasticServer(request.host, request.authentication)) map { response =>
+    client.getIndexMapping(request.get("index"), request.target) map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
 
   def getNodeStats = process { request =>
-    client.nodeStats(request.get("node"), ElasticServer(request.host, request.authentication)).map { response =>
+    client.nodeStats(request.get("node"), request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

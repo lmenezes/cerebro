@@ -17,8 +17,8 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
 
   def get = process { request =>
     Future.sequence(Seq(
-      client.getIndices(ElasticServer(request.host, request.authentication)),
-      client.getRepositories(ElasticServer(request.host, request.authentication))
+      client.getIndices(request.target),
+      client.getRepositories(request.target)
     )).map { responses =>
       Json.obj(
         "indices" -> Indices(responses(0).body),
@@ -29,7 +29,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
 
   def getSnapshots = process { request =>
     val repository = request.get("repository")
-    client.getSnapshots(repository, ElasticServer(request.host, request.authentication)).map { response =>
+    client.getSnapshots(repository, request.target).map { response =>
       CerebroResponse(response.status, Snapshots(response.body))
     }
   }
@@ -37,7 +37,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
   def delete = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
-    client.deleteSnapshot(repository, snapshot, ElasticServer(request.host, request.authentication)).map { response =>
+    client.deleteSnapshot(repository, snapshot, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
@@ -49,7 +49,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     val ignoreUnavailable = request.getBoolean("ignoreUnavailable")
     val includeGlobalState = request.getBoolean("includeGlobalState")
     client.createSnapshot(repository, snapshot, ignoreUnavailable,
-      includeGlobalState, indices, ElasticServer(request.host, request.authentication)).map {
+      includeGlobalState, indices, request.target).map {
       response => CerebroResponse(response.status, response.body)
     }
   }
@@ -65,7 +65,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     val indices = request.getAsStringArray("indices").map(_.mkString)
     client.restoreSnapshot(repository, snapshot, renamePattern,
       renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
-      indices, ElasticServer(request.host, request.authentication)).map {
+      indices, request.target).map {
       response => CerebroResponse(response.status, response.body)
     }
   }

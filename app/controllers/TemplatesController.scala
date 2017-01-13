@@ -13,14 +13,14 @@ class TemplatesController @Inject()(val authentication: AuthenticationModule,
                                     client: ElasticClient) extends BaseController {
 
   def templates = process { request =>
-    client.getTemplates(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getTemplates(request.target).map { response =>
       CerebroResponse(response.status, Templates(response.body))
     }
   }
 
   def delete = process { request =>
     val name = request.get("name")
-    client.deleteTemplate(name, ElasticServer(request.host, request.authentication)).map { response =>
+    client.deleteTemplate(name, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
@@ -28,7 +28,7 @@ class TemplatesController @Inject()(val authentication: AuthenticationModule,
   def create = process { request =>
     val name = request.get("name")
     val template = request.getObj("template")
-    client.createTemplate(name, template, ElasticServer(request.host, request.authentication)).map { response =>
+    client.createTemplate(name, template, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

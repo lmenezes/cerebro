@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ClusterMapping, ElasticServer}
+import models.{CerebroResponse, ClusterMapping}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,14 +16,14 @@ class RestController @Inject()(val authentication: AuthenticationModule,
       request.get("method"),
       request.get("path"),
       request.getObjOpt("data"),
-      ElasticServer(request.host, request.authentication)
+      request.target
     ).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
 
   def getClusterMapping = process { request =>
-    client.getClusterMapping(ElasticServer(request.host, request.authentication)).map {
+    client.getClusterMapping(request.target).map {
       response => CerebroResponse(200, ClusterMapping(response.body))
     }
   }

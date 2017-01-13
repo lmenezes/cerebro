@@ -20,7 +20,7 @@ trait BaseController extends Controller with AuthSupport {
 
   final def process(processor: RequestProcessor) = AuthAction(authentication).async(parse.json) { request =>
     try {
-      processor(CerebroRequest(request.body))
+      processor(CerebroRequest(request))
     } catch {
       case e: MissingRequiredParamException =>
         Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage))) // FIXME: proper error handling

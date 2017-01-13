@@ -12,7 +12,7 @@ class NavbarController @Inject()(val authentication: AuthenticationModule,
                                  client: ElasticClient) extends BaseController {
 
   def index = process { request =>
-    client.clusterHealth(ElasticServer(request.host, request.authentication)).map { response =>
+    client.clusterHealth(request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

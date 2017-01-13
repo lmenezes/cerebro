@@ -13,7 +13,7 @@ class CatController @Inject()(val authentication: AuthenticationModule,
 
   def get = process { request =>
     val api = request.get("api")
-    client.catRequest(api, ElasticServer(request.host, request.authentication)).map { response =>
+    client.catRequest(api, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

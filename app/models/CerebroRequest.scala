@@ -1,9 +1,10 @@
 package models
 
+import controllers.auth.AuthRequest
 import exceptions.{MissingRequiredParamException, MissingTargetHostException}
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 
-class CerebroRequest(val host: String, val authentication: Option[ESAuth], body: JsValue) {
+class CerebroRequest(val target: ElasticServer, body: JsValue, val user: Option[User]) {
 
   def get(name: String) =
     (body \ name).asOpt[String].getOrElse(throw MissingRequiredParamException(name))
@@ -35,7 +36,9 @@ class CerebroRequest(val host: String, val authentication: Option[ESAuth], body:
 
 object CerebroRequest {
 
-  def apply(body: JsValue) = {
+  def apply(request: AuthRequest[JsValue]) = {
+    val body = request.body
+
     val host = (body \ "host").asOpt[String].getOrElse(throw MissingTargetHostException)
     val username = (body \ "username").asOpt[String]
     val password = (body \ "password").asOpt[String]
@@ -46,7 +49,8 @@ object CerebroRequest {
         None
       }
     }
-    new CerebroRequest(host, auth, body)
+    val cluster = ElasticServer(host, auth)
+    new CerebroRequest(cluster, body, request.user)
   }
 
 }

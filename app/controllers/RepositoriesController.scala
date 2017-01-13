@@ -13,7 +13,7 @@ class RepositoriesController @Inject()(val authentication: AuthenticationModule,
                                        client: ElasticClient) extends BaseController {
 
   def get = process { request =>
-    client.getRepositories(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getRepositories(request.target).map { response =>
       CerebroResponse(response.status, Repositories(response.body))
     }
   }
@@ -22,14 +22,14 @@ class RepositoriesController @Inject()(val authentication: AuthenticationModule,
     val name = request.get("name")
     val repoType = request.get("type")
     val settings = request.getObj("settings")
-    client.createRepository(name, repoType, settings, ElasticServer(request.host, request.authentication)).map {
+    client.createRepository(name, repoType, settings, request.target).map {
       response => CerebroResponse(response.status, response.body)
     }
   }
 
   def delete = process { request =>
     val name = request.get("name")
-    client.deleteRepository(name, ElasticServer(request.host, request.authentication)).map { response =>
+    client.deleteRepository(name, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

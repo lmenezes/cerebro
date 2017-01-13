@@ -12,7 +12,7 @@ class IndexSettingsController @Inject()(val authentication: AuthenticationModule
                                         client: ElasticClient) extends BaseController {
 
   def get = process { request =>
-    client.getIndexSettingsFlat(request.get("index"), ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndexSettingsFlat(request.get("index"), request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
@@ -20,7 +20,7 @@ class IndexSettingsController @Inject()(val authentication: AuthenticationModule
   def update = process { request =>
     val index = request.get("index")
     val settings = request.getObj("settings")
-    client.updateIndexSettings(index, settings, ElasticServer(request.host, request.authentication)).map { response =>
+    client.updateIndexSettings(index, settings, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

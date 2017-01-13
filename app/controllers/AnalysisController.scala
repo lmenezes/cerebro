@@ -13,21 +13,21 @@ class AnalysisController @Inject()(val authentication: AuthenticationModule,
                                    client: ElasticClient) extends BaseController {
 
   def getIndices = process { request =>
-    client.getIndices(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndices(request.target).map { response =>
       CerebroResponse(response.status, OpenIndices(response.body))
     }
   }
 
   def getIndexAnalyzers = process { request =>
     val index = request.get("index")
-    client.getIndexSettings(index, ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndexSettings(index, request.target).map { response =>
       CerebroResponse(response.status, IndexAnalyzers(index, response.body))
     }
   }
 
   def getIndexFields = process { request =>
     val index = request.get("index")
-    client.getIndexMapping(index, ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndexMapping(index, request.target).map { response =>
       CerebroResponse(response.status, IndexFields(index, response.body))
     }
   }
@@ -36,7 +36,7 @@ class AnalysisController @Inject()(val authentication: AuthenticationModule,
     val index = request.get("index")
     val field = request.get("field")
     val text = request.get("text")
-    client.analyzeTextByField(index, field, text, ElasticServer(request.host, request.authentication)).map { response =>
+    client.analyzeTextByField(index, field, text, request.target).map { response =>
       CerebroResponse(response.status, Tokens(response.body))
     }
   }
@@ -45,7 +45,7 @@ class AnalysisController @Inject()(val authentication: AuthenticationModule,
     val index = request.get("index")
     val analyzer = request.get("analyzer")
     val text = request.get("text")
-    client.analyzeTextByAnalyzer(index, analyzer, text, ElasticServer(request.host, request.authentication)).map { response =>
+    client.analyzeTextByAnalyzer(index, analyzer, text, request.target).map { response =>
       CerebroResponse(response.status, Tokens(response.body))
     }
   }

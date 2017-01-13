@@ -12,14 +12,14 @@ class ClusterSettingsController @Inject()(val authentication: AuthenticationModu
                                           client: ElasticClient) extends BaseController {
 
   def getSettings = process { request =>
-    client.getClusterSettings(ElasticServer(request.host, request.authentication)).map { response =>
+    client.getClusterSettings(request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
 
   def save = process { request =>
     val settings = request.getObj("settings")
-    client.saveClusterSettings(settings, ElasticServer(request.host, request.authentication)).map { response =>
+    client.saveClusterSettings(settings, request.target).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

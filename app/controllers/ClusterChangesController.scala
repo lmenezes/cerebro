@@ -16,9 +16,9 @@ class ClusterChangesController @Inject()(val authentication: AuthenticationModul
 
   def get = process { request =>
     Future.sequence(Seq(
-      client.getIndices(ElasticServer(request.host, request.authentication)),
-      client.getNodes(ElasticServer(request.host, request.authentication)),
-      client.main(ElasticServer(request.host, request.authentication))
+      client.getIndices(request.target),
+      client.getNodes(request.target),
+      client.main(request.target)
     )).map { responses =>
       Json.obj(
         "indices" -> Indices(responses(0).body),

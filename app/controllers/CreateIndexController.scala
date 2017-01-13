@@ -15,14 +15,14 @@ class CreateIndexController @Inject()(val authentication: AuthenticationModule,
   def execute = process { request =>
     client.createIndex(
       request.get("index"), request.getObjOpt("metadata").getOrElse(Json.obj()),
-      ElasticServer(request.host, request.authentication)
+      request.target
     ).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }
 
   def getIndexMetadata = process { request =>
-    client.getIndexMetadata(request.get("index"), ElasticServer(request.host, request.authentication)).map { response =>
+    client.getIndexMetadata(request.get("index"), request.target).map { response =>
       CerebroResponse(response.status, IndexMetadata(response.body))
     }
   }

@@ -1,20 +1,20 @@
 package controllers.auth
 
 import controllers.routes
-import models.CerebroResponse
+import models.{CerebroResponse, User}
 import play.api.libs.json.JsNull
 import play.api.mvc._
 
 import scala.concurrent.Future
 
-class AuthRequest[A](val username: String, request: Request[A]) extends WrappedRequest[A](request)
+class AuthRequest[A](val user: Option[User], request: Request[A]) extends WrappedRequest[A](request)
 
 final class AuthAction(auth: AuthenticationModule, redirect: Boolean) extends ActionBuilder[AuthRequest] {
 
   def invokeBlock[A](request: Request[A], block: (AuthRequest[A]) => Future[Result]) = {
     if (auth.isEnabled) {
       request.session.get(AuthAction.SESSION_USER).map { username =>
-        block(new AuthRequest(username, request))
+        block(new AuthRequest(Some(User(username)), request))
       }.getOrElse {
         if (redirect) {
           Future.successful(
@@ -25,7 +25,7 @@ final class AuthAction(auth: AuthenticationModule, redirect: Boolean) extends Ac
         }
       }
     } else {
-      block(new AuthRequest("guest", request))
+      block(new AuthRequest(None, request))
     }
   }
 
