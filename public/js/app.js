@@ -651,6 +651,7 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
     $scope.status = undefined;
     $scope.cluster_name = undefined;
     $scope.host = undefined;
+    $scope.username = undefined;
 
     $scope.$watch(
       function() {
@@ -661,6 +662,7 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
           function(data) {
             $scope.status = data.status;
             $scope.cluster_name = data.cluster_name;
+            $scope.username = data.username;
             $scope.host = DataService.getHost();
             PageService.setup($scope.cluster_name, $scope.status);
           },
