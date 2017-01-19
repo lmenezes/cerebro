@@ -1,27 +1,24 @@
 package controllers
 
-import elastic.{ElasticClient, ElasticResponse}
+import elastic.{ElasticResponse, HTTPElasticClient}
 import models.ElasticServer
-import org.specs2.Specification
-import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object IndexSettingsControllerSpec extends Specification with Mockito {
+object IndexSettingsControllerSpec extends MockedServices {
 
   def is =
     s2"""
-    IndexSettingsController should            ${step(play.api.Play.start(FakeApplication()))}
+    IndexSettingsController should            ${step(play.api.Play.start(application))}
       return index settings                   $get
       update index settings                   $update
-                                              ${step(play.api.Play.stop(FakeApplication()))}
+                                              ${step(play.api.Play.stop(application))}
       """
 
   def get = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -38,16 +35,12 @@ object IndexSettingsControllerSpec extends Specification with Mockito {
         |}
       """.stripMargin
     )
-    mockedClient.getIndexSettingsFlat("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new IndexSettingsController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.get()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo")))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.getIndexSettingsFlat("foo", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/index_settings").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
+    ensure(response, 200, expectedResponse)
   }
 
   def update = {
-    val mockedClient = mock[ElasticClient]
     val body = Json.parse(
       """
         |{
@@ -64,12 +57,9 @@ object IndexSettingsControllerSpec extends Specification with Mockito {
         |  "acknowledged":true
         |}
       """.stripMargin)
-    mockedClient.updateIndexSettings("foo", body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new IndexSettingsController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.update()(FakeRequest().withBody(Json.obj("host" -> "somehost", "index" -> "foo", "settings" -> body)))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.updateIndexSettings("foo", body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/index_settings/update").withBody(Json.obj("host" -> "somehost", "index" -> "foo", "settings" -> body))).get
+    ensure(response, 200, expectedResponse)
   }
 
 }

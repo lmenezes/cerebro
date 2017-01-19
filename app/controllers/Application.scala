@@ -1,11 +1,12 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
-import play.api.http.MimeTypes
+import com.google.inject.Inject
+import controllers.auth.AuthenticationModule
+import play.api.mvc.Controller
 
-object Application extends Controller {
+class Application @Inject()(val authentication: AuthenticationModule) extends Controller with AuthSupport {
 
-  def index = Action {
+  def index = AuthAction(authentication, true) { request =>
     Ok(views.html.Index())
   }
   

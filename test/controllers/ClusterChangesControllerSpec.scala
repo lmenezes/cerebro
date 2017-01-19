@@ -1,26 +1,23 @@
 package controllers
 
-import elastic.{ElasticClient, ElasticResponse}
+import elastic.ElasticResponse
 import models.ElasticServer
-import org.specs2.Specification
-import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object ClusterChangesControllerSpec extends Specification with Mockito {
+object ClusterChangesControllerSpec extends MockedServices {
 
   def is =
     s2"""
-    ClusterChangesController should               ${step(play.api.Play.start(FakeApplication()))}
+    ClusterChangesController should               ${step(play.api.Play.start(application))}
       return indices, nodes and cluster name      $get
-                                                  ${step(play.api.Play.stop(FakeApplication()))}
+                                                  ${step(play.api.Play.stop(application))}
       """
 
   def get = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -47,13 +44,10 @@ object ClusterChangesControllerSpec extends Specification with Mockito {
       |]
       """.stripMargin
     )
-    mockedClient.main(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mainResponse))
-    mockedClient.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
-    mockedClient.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
-    val controller = new ClusterChangesController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.get()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.main(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mainResponse))
+    client.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
+    client.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
+    val response = route(FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
+    ensure(response, 200, expectedResponse)
   }
 }

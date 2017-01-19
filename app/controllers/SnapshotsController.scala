@@ -1,6 +1,10 @@
 package controllers
 
-import models.ElasticServer
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
+import models.{CerebroResponse, ElasticServer}
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
 import play.api.libs.json.Json
@@ -8,48 +12,49 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SnapshotsController extends BaseController {
+class SnapshotsController @Inject()(val authentication: AuthenticationModule,
+                                    client: ElasticClient) extends BaseController {
 
-  def get = process { (request, client) =>
+  def get = process { request =>
     Future.sequence(Seq(
-      client.getIndices(ElasticServer(request.host, request.authentication)),
-      client.getRepositories(ElasticServer(request.host, request.authentication))
+      client.getIndices(request.target),
+      client.getRepositories(request.target)
     )).map { responses =>
       Json.obj(
         "indices" -> Indices(responses(0).body),
         "repositories" -> Repositories(responses(1).body)
       )
-    }.map(Ok(_))
+    }.map(CerebroResponse(200, _))
   }
 
-  def getSnapshots = process { (request, client) =>
+  def getSnapshots = process { request =>
     val repository = request.get("repository")
-    client.getSnapshots(repository, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Snapshots(response.body))
+    client.getSnapshots(repository, request.target).map { response =>
+      CerebroResponse(response.status, Snapshots(response.body))
     }
   }
 
-  def delete = process { (request, client) =>
+  def delete = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
-    client.deleteSnapshot(repository, snapshot, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+    client.deleteSnapshot(repository, snapshot, request.target).map { response =>
+      CerebroResponse(response.status, response.body)
     }
   }
 
-  def create = process { (request, client) =>
+  def create = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     val indices = request.getAsStringArray("indices").map(_.mkString(","))
     val ignoreUnavailable = request.getBoolean("ignoreUnavailable")
     val includeGlobalState = request.getBoolean("includeGlobalState")
     client.createSnapshot(repository, snapshot, ignoreUnavailable,
-      includeGlobalState, indices, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+      includeGlobalState, indices, request.target).map {
+      response => CerebroResponse(response.status, response.body)
     }
   }
 
-  def restore = process { (request, client) =>
+  def restore = process { request =>
     val repository = request.get("repository")
     val snapshot = request.get("snapshot")
     val renamePattern = request.getOpt("renamePattern")
@@ -60,8 +65,8 @@ class SnapshotsController extends BaseController {
     val indices = request.getAsStringArray("indices").map(_.mkString)
     client.restoreSnapshot(repository, snapshot, renamePattern,
       renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
-      indices, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+      indices, request.target).map {
+      response => CerebroResponse(response.status, response.body)
     }
   }
 }

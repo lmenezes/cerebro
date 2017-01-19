@@ -64,13 +64,18 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="hidden-xs">
           <a class="nav-item nav-link">
-            <span ng-hide="host"><i>Not connected</i></span>
             <span ng-show="host">{{host}}</span>
           </a>
         </li>
         <li>
           <a href="#connect" class="nav-item nav-link hidden-xs"><i class="fa fa-plug"></i></a>
-          <a href="#connect" class="nav-item nav-link visible-xs">connect...</a>
+        </li>
+        <li>
+          <form action="/auth/logout" method="POST" ng-show="username">
+            <button class="btn btn-lg btn-link" type="submit">
+              <i class="fa fa-power-off"></i>
+            </button>
+          </form>
         </li>
       </ul>
     </div>

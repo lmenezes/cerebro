@@ -1,28 +1,25 @@
 package controllers
 
-import elastic.{ElasticClient, ElasticResponse}
+import elastic.ElasticResponse
 import models.ElasticServer
-import org.specs2.Specification
-import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object ClusterSettingsControllerSpec extends Specification with Mockito {
+object ClusterSettingsControllerSpec extends MockedServices {
 
   def is =
     s2"""
-    ClusterSettingsController should                     ${step(play.api.Play.start(FakeApplication()))}
+    ClusterSettingsController should                     ${step(play.api.Play.start(application))}
       return cluster settings                            $getSettings
       update cluster settings                            $updateSettings
       require settings to update                         $requireSettings
-                                                         ${step(play.api.Play.stop(FakeApplication()))}
+                                                         ${step(play.api.Play.stop(application))}
       """
 
   def getSettings = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{
@@ -31,16 +28,12 @@ object ClusterSettingsControllerSpec extends Specification with Mockito {
         |}
       """.stripMargin
     )
-    mockedClient.getClusterSettings(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new ClusterSettingsController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.getSettings()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.getClusterSettings(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/cluster_settings").withBody(Json.obj("host" -> "somehost"))).get
+    ensure(response, 200, expectedResponse)
   }
 
   def updateSettings = {
-    val mockedClient = mock[ElasticClient]
     val body = Json.parse(
       """
         |{
@@ -57,19 +50,14 @@ object ClusterSettingsControllerSpec extends Specification with Mockito {
         |  "transient": {}
         |}
       """.stripMargin)
-    mockedClient.saveClusterSettings(body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new ClusterSettingsController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.save()(FakeRequest().withBody(Json.obj("host" -> "somehost", "settings" -> body)))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.saveClusterSettings(body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost", "settings" -> body))).get
+    ensure(response, 200, expectedResponse)
   }
 
   def requireSettings = {
-    val controller = new ClusterSettingsController
-    val response = controller.save()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter settings\"}"))
+    val response = route(FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost"))).get
+    ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter settings\"}"))
   }
-
 
 }

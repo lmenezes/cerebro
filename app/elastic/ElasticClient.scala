@@ -1,304 +1,115 @@
 package elastic
 
-import models.{ESAuth, ElasticServer}
-import play.api.Play.current
-import play.api.http
+import models.ElasticServer
 import play.api.libs.json._
-import play.api.libs.ws.{WS, WSAuthScheme}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait ElasticClient {
 
-  def main(target: ElasticServer) =
-    execute(s"${target.host}", "GET", None, target.authentication)
+  def main(target: ElasticServer): Future[ElasticResponse]
 
-  def clusterState(target: ElasticServer) = {
-    val path = "/_cluster/state/master_node,routing_table,routing_nodes,blocks"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def clusterState(target: ElasticServer): Future[ElasticResponse]
 
-  def indicesStats(target: ElasticServer) = {
-    val path = "/_stats/docs,store"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def indicesStats(target: ElasticServer): Future[ElasticResponse]
 
-  def nodesStats(target: ElasticServer) = {
-    val path = "/_nodes/stats/jvm,fs,os,process"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def nodesStats(target: ElasticServer): Future[ElasticResponse]
 
-  def nodeStats(node: String, target: ElasticServer) = {
-    val path = s"/_nodes/$node/stats?human"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def nodeStats(node: String, target: ElasticServer): Future[ElasticResponse]
 
-  def clusterSettings(target: ElasticServer) = {
-    val path = "/_cluster/settings"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def clusterSettings(target: ElasticServer): Future[ElasticResponse]
 
-  def aliases(target: ElasticServer) = {
-    val path = "/_aliases"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def aliases(target: ElasticServer): Future[ElasticResponse]
 
-  def clusterHealth(target: ElasticServer) = {
-    val path = "/_cluster/health"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def clusterHealth(target: ElasticServer): Future[ElasticResponse]
 
-  def nodes(target: ElasticServer) = {
-    val path = "/_nodes/_all/os,jvm"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def nodes(target: ElasticServer): Future[ElasticResponse]
 
-  def closeIndex(index: String, target: ElasticServer) = {
-    val path = s"/$index/_close"
-    execute(s"${target.host}$path", "POST", None, target.authentication)
-  }
+  def closeIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def openIndex(index: String, target: ElasticServer) = {
-    val path = s"/$index/_open"
-    execute(s"${target.host}$path", "POST", None, target.authentication)
-  }
+  def openIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def refreshIndex(index: String, target: ElasticServer) = {
-    val path = s"/$index/_refresh"
-    execute(s"${target.host}$path", "POST", None, target.authentication)
-  }
+  def refreshIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
+  def forceMerge(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def forceMerge(index: String, target: ElasticServer) = {
-    val path = s"/$index/_forcemerge"
-    execute(s"${target.host}$path", "POST", None, target.authentication)
-  }
+  def clearIndexCache(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def clearIndexCache(index: String, target: ElasticServer) = {
-    val path = s"/$index/_cache/clear"
-    execute(s"${target.host}$path", "POST", None, target.authentication)
-  }
+  def deleteIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def deleteIndex(index: String, target: ElasticServer) = {
-    val path = s"/$index"
-    execute(s"${target.host}$path", "DELETE", None, target.authentication)
-  }
+  def getIndexSettings(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getIndexSettings(index: String, target: ElasticServer) = {
-    val path = s"/$index/_settings"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getIndexSettingsFlat(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getIndexSettingsFlat(index: String, target: ElasticServer) = {
-    val path = s"/$index/_settings?flat_settings=true&include_defaults=true"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getIndexMapping(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getIndexMapping(index: String, target: ElasticServer) = {
-    val path = s"/$index/_mapping"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
-
-  def putClusterSettings(settings: String, target: ElasticServer) = {
-    val path = "/_cluster/settings"
-    execute(s"${target.host}$path", "PUT", Some(settings), target.authentication)
-  }
+  def putClusterSettings(settings: String, target: ElasticServer): Future[ElasticResponse]
 
   private def allocationSettings(value: String) =
     s"""{"transient": {"cluster": {"routing": {"allocation": {"enable": \"$value\"}}}}}"""
 
-  def enableShardAllocation(target: ElasticServer) =
-    putClusterSettings(allocationSettings("all"), target)
+  def enableShardAllocation(target: ElasticServer): Future[ElasticResponse]
 
-  def disableShardAllocation(target: ElasticServer) =
-    putClusterSettings(allocationSettings("none"), target)
+  def disableShardAllocation(target: ElasticServer): Future[ElasticResponse]
 
-  def getShardStats(index: String, target: ElasticServer) = {
-    val path = s"/$index/_stats?level=shards&human=true"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getShardStats(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def relocateShard(shard: Int, index: String, from: String, to: String, target: ElasticServer) = {
-    val path = "/_cluster/reroute"
-    val commands =
-      s"""
-         |{
-         |  "commands": [
-         |    {
-         |      "move": {
-         |        "shard": $shard,
-         |        "index": \"$index\",
-         |        "from_node": \"$from\",
-         |        "to_node": \"$to\"
-         |      }
-         |    }
-         |  ]
-         |}
-       """.stripMargin
-    execute(s"${target.host}$path", "POST", Some(commands), target.authentication)
-  }
+  def relocateShard(shard: Int, index: String, from: String, to: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getIndexRecovery(index: String, target: ElasticServer) = {
-    val path = s"/$index/_recovery?active_only=true&human=true"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getIndexRecovery(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getClusterMapping(target: ElasticServer) = {
-    val path = "/_mapping"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getClusterMapping(target: ElasticServer): Future[ElasticResponse]
 
-  def getAliases(target: ElasticServer) = {
-    val path = "/_aliases"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getAliases(target: ElasticServer): Future[ElasticResponse]
 
-  def updateAliases(changes: Seq[JsValue], target: ElasticServer) = {
-    val path = "/_aliases"
-    val body = Json.obj("actions" -> JsArray(changes))
-    execute(s"${target.host}$path", "POST", Some(body.toString), target.authentication)
-  }
+  def updateAliases(changes: Seq[JsValue], target: ElasticServer): Future[ElasticResponse]
 
-  def getIndexMetadata(index: String, target: ElasticServer) = {
-    val path = s"/_cluster/state/metadata/$index?human=true"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getIndexMetadata(index: String, target: ElasticServer): Future[ElasticResponse]
 
-  def createIndex(index: String, metadata: JsValue, target: ElasticServer) = {
-    val path = s"/$index"
-    execute(s"${target.host}$path", "PUT", Some(metadata.toString), target.authentication)
-  }
+  def createIndex(index: String, metadata: JsValue, target: ElasticServer): Future[ElasticResponse]
 
-  def getIndices(target: ElasticServer) = {
-    val path = s"/_cat/indices?format=json"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getIndices(target: ElasticServer): Future[ElasticResponse]
 
-  def getTemplates(target: ElasticServer) = {
-    val path = s"/_template"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getTemplates(target: ElasticServer): Future[ElasticResponse]
 
-  def createTemplate(name: String, template: JsValue, target: ElasticServer) = {
-    val path = s"/_template/$name"
-    execute(s"${target.host}$path", "PUT", Some(template.toString), target.authentication)
-  }
+  def createTemplate(name: String, template: JsValue, target: ElasticServer): Future[ElasticResponse]
 
-  def deleteTemplate(name: String, target: ElasticServer) = {
-    val path = s"/_template/$name"
-    execute(s"${target.host}$path", "DELETE", None, target.authentication)
-  }
+  def deleteTemplate(name: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getNodes(target: ElasticServer) = {
-    val path = s"/_cat/nodes?format=json"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getNodes(target: ElasticServer): Future[ElasticResponse]
 
-  def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer) = {
-    val path = s"/$index/_analyze"
-    val body = Json.obj("text" -> text, "field" -> field).toString()
-    execute(s"${target.host}$path", "GET", Some(body), target.authentication)
-  }
+  def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer): Future[ElasticResponse]
 
-  def analyzeTextByAnalyzer(index: String, analyzer: String, text: String, target: ElasticServer) = {
-    val path = s"/$index/_analyze"
-    val body = Json.obj("text" -> text, "analyzer" -> analyzer).toString()
-    execute(s"${target.host}$path", "GET", Some(body), target.authentication)
-  }
+  def analyzeTextByAnalyzer(index: String, analyzer: String, text: String, target: ElasticServer): Future[ElasticResponse]
 
-  def getClusterSettings(target: ElasticServer) = {
-    val path = s"/_cluster/settings?flat_settings=true&include_defaults=true"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
-
+  def getClusterSettings(target: ElasticServer): Future[ElasticResponse]
 
   // Repositories
-  def getRepositories(target: ElasticServer) = {
-    val path = s"/_snapshot"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getRepositories(target: ElasticServer): Future[ElasticResponse]
 
-  def createRepository(name: String, repoType: String, settings: JsValue, target: ElasticServer) = {
-    val path = s"/_snapshot/$name"
-    val data = Json.obj("type" -> JsString(repoType), "settings" -> settings).toString
-    execute(s"${target.host}$path", "PUT", Some(data), target.authentication)
-  }
+  def createRepository(name: String, repoType: String, settings: JsValue, target: ElasticServer): Future[ElasticResponse]
 
-  def deleteRepository(name: String, target: ElasticServer) = {
-    val path = s"/_snapshot/$name"
-    execute(s"${target.host}$path", "DELETE", None, target.authentication)
-  }
+  def deleteRepository(name: String, target: ElasticServer): Future[ElasticResponse]
 
   // Snapshots
-  def getSnapshots(repository: String, target: ElasticServer) = {
-    val path = s"/_snapshot/$repository/_all"
-    execute(s"${target.host}$path", "GET", None, target.authentication)
-  }
+  def getSnapshots(repository: String, target: ElasticServer): Future[ElasticResponse]
 
-  def deleteSnapshot(repository: String, snapshot: String, target: ElasticServer) = {
-    val path = s"/_snapshot/$repository/$snapshot"
-    execute(s"${target.host}$path", "DELETE", None, target.authentication)
-  }
+  def deleteSnapshot(repository: String, snapshot: String, target: ElasticServer): Future[ElasticResponse]
 
   def createSnapshot(repository: String, snapshot: String, ignoreUnavailable: Boolean,
-                     includeGlobalState: Boolean, indices: Option[String], target: ElasticServer) = {
-    val path = s"/_snapshot/$repository/$snapshot"
-    val data = JsObject(
-      Seq(
-        ("repository", JsString(repository)),
-        ("snapshot", JsString(snapshot)),
-        ("ignoreUnavailable", JsBoolean(ignoreUnavailable)),
-        ("includeGlobalState", JsBoolean(includeGlobalState))
-      ) ++ indices.map { i => Seq(("indices", JsString(i))) }.getOrElse(Nil)
-    ).toString
-    execute(s"${target.host}$path", "PUT", Some(data), target.authentication)
-  }
+                     includeGlobalState: Boolean, indices: Option[String], target: ElasticServer): Future[ElasticResponse]
 
   def restoreSnapshot(repository: String, snapshot: String, renamePattern: Option[String],
                       renameReplacement: Option[String], ignoreUnavailable: Boolean, includeAliases: Boolean,
-                      includeGlobalState: Boolean, indices: Option[String], target: ElasticServer) = {
-    val path = s"/_snapshot/$repository/$snapshot/_restore"
-    val data = JsObject(
-      Seq(
-        ("ignore_unavailable", JsBoolean(ignoreUnavailable)),
-        ("include_global_state", JsBoolean(includeGlobalState)),
-        ("include_aliases", JsBoolean(includeAliases))
-      ) ++
-      indices.map { i => Seq(("indices", JsString(i))) }.getOrElse(Nil) ++
-      renamePattern.map { r => Seq(("rename_pattern", JsString(r))) }.getOrElse(Nil) ++
-        renameReplacement.map { r => Seq(("rename_replacement", JsString(r))) }.getOrElse(Nil)
-    ).toString
-    execute(s"${target.host}$path", "POST", Some(data), target.authentication)
-  }
+                      includeGlobalState: Boolean, indices: Option[String], target: ElasticServer): Future[ElasticResponse]
 
-  def saveClusterSettings(settings: JsValue, target: ElasticServer) = {
-    val path = s"/_cluster/settings"
-    execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
-  }
+  def saveClusterSettings(settings: JsValue, target: ElasticServer): Future[ElasticResponse]
 
-  def updateIndexSettings(index: String, settings: JsValue, target: ElasticServer) = {
-    val path = s"/$index/_settings"
-    execute(s"${target.host}$path", "PUT", Some(settings.toString), target.authentication)
-  }
+  def updateIndexSettings(index: String, settings: JsValue, target: ElasticServer): Future[ElasticResponse]
 
   // Cat requests
-  def catRequest(api: String, target: ElasticServer) = {
-    val path = s"/_cat/$api"
-    execute(s"${target.host}$path?format=json", "GET", None, target.authentication)
-  }
+  def catRequest(api: String, target: ElasticServer): Future[ElasticResponse]
 
-  def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
-    execute(s"${target.host}/$path", method, data.map(_.toString), target.authentication)
-
-  private def execute[T](url: String, method: String, body: Option[String] = None, authentication: Option[ESAuth] = None) = {
-    val request = authentication.foldLeft(WS.url(url).withMethod(method)) {
-      case (request, auth) => request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
-    }
-    body.fold(request)(request.withBody((_))).execute.map { response =>
-      ElasticResponse(response.status, response.json)
-    }
-  }
+  def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer): Future[ElasticResponse]
 
 }
-
-object ElasticClient extends ElasticClient

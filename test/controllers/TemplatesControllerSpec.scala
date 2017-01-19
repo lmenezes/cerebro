@@ -1,30 +1,27 @@
 package controllers
 
-import elastic.{ElasticClient, ElasticResponse}
+import elastic.ElasticResponse
 import models.ElasticServer
-import org.specs2.Specification
-import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.test.{FakeApplication, FakeRequest}
 
 import scala.concurrent.Future
 
-object TemplatesControllerSpec extends Specification with Mockito {
+object TemplatesControllerSpec extends MockedServices {
 
   def is =
     s2"""
-    TemplatesController should                           ${step(play.api.Play.start(FakeApplication()))}
+    TemplatesController should                           ${step(play.api.Play.start(application))}
       return all templates                               $templates
       delete template                                    $delete
       require template name to delete                    $requireNameDelete
       create template                                    $create
       require template name to create                    $requireNameCreate
-                                                         ${step(play.api.Play.stop(FakeApplication()))}
+                                                         ${step(play.api.Play.stop(application))}
       """
 
   def templates = {
-    val mockedClient = mock[ElasticClient]
     val mockedResponse = Json.parse(
       """
         |{
@@ -71,33 +68,25 @@ object TemplatesControllerSpec extends Specification with Mockito {
         |]
       """.stripMargin
     )
-    mockedClient.getTemplates(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mockedResponse))
-    val controller = new TemplatesController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.templates()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.getTemplates(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mockedResponse))
+    val response = route(FakeRequest(POST, "/templates").withBody(Json.obj("host" -> "somehost"))).get
+    ensure(response, 200, expectedResponse)
   }
 
   def delete = {
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{"acknowledged":true}
       """.stripMargin
     )
-    mockedClient.deleteTemplate("someTemplate", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new TemplatesController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.delete()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate")))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    client.deleteTemplate("someTemplate", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate"))).get
+    ensure(response, 200, expectedResponse)
   }
 
   def requireNameDelete = {
-    val controller = new TemplatesController
-    val response = controller.delete()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter name\"}"))
+    val response = route(FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost"))).get
+    ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
 
   def create = {
@@ -107,31 +96,27 @@ object TemplatesControllerSpec extends Specification with Mockito {
         |  "whatever": {}
         |}
       """.stripMargin)
-    val mockedClient = mock[ElasticClient]
     val expectedResponse = Json.parse(
       """
         |{"acknowledged":true}
       """.stripMargin
     )
-    mockedClient.createTemplate("someTemplate", template, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val controller = new TemplatesController {
-      override val client: ElasticClient = mockedClient
-    }
-    val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate", "template" -> template)))
-    (status(response) mustEqual 200) and (contentAsJson(response) mustEqual expectedResponse)
+    val body = Json.obj("host" -> "somehost", "name" -> "someTemplate", "template" -> template)
+    client.createTemplate("someTemplate", template, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
+    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    ensure(response, 200, expectedResponse)
   }
 
   def requireNameCreate = {
-    val controller = new TemplatesController
-    val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost")))
-    (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter name\"}"))
+    val body = Json.obj("host" -> "somehost")
+    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
 
   def requireNameTemplate = {
-    val controller = new TemplatesController
-    val response = controller.create()(FakeRequest().withBody(Json.obj("host" -> "somehost", "name" -> "any")))
-    (status(response) mustEqual 400) and (contentAsJson(response) mustEqual Json.parse("{\"error\":\"Missing required parameter template\"}"))
+    val body = Json.obj("host" -> "somehost", "name" -> "any")
+    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter template\"}"))
   }
-
 
 }

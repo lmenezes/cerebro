@@ -1,31 +1,31 @@
 package controllers
 
-import elastic.ElasticClient
+import controllers.auth.AuthenticationModule
 import exceptions.MissingRequiredParamException
-import models.CerebroRequest
+import models.{CerebroRequest, CerebroResponse}
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller, Result}
+import play.api.mvc.{Controller, Result}
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-trait BaseController extends Controller {
+trait BaseController extends Controller with AuthSupport {
 
-  val client: ElasticClient = ElasticClient
+  val authentication: AuthenticationModule
 
   protected val logger = Logger("elastic")
 
-  type RequestProcessor = (CerebroRequest, ElasticClient) => Future[Result]
+  type RequestProcessor = (CerebroRequest) => Future[Result]
 
-  final def process(processor: RequestProcessor) = Action.async(parse.json) { request =>
+  final def process(processor: RequestProcessor) = AuthAction(authentication).async(parse.json) { request =>
     try {
-      processor(CerebroRequest(request.body), client)
+      processor(CerebroRequest(request))
     } catch {
       case e: MissingRequiredParamException =>
-        Future.successful(Status(400)(Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
+        Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
       case NonFatal(e) =>
-        Future.successful(Status(500)(Json.obj("error" -> "Error"))) // FIXME: proper error handling
+        Future.successful(CerebroResponse(500, Json.obj("error" -> "Error"))) // FIXME: proper error handling
     }
   }
 

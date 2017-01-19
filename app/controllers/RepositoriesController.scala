@@ -1,30 +1,36 @@
 package controllers
 
-import models.ElasticServer
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
+import models.{CerebroResponse, ElasticServer}
 import models.repository.Repositories
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RepositoriesController extends BaseController {
+class RepositoriesController @Inject()(val authentication: AuthenticationModule,
+                                       client: ElasticClient) extends BaseController {
 
-  def get = process { (request, client) =>
-    client.getRepositories(ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(Repositories(response.body))
+  def get = process { request =>
+    client.getRepositories(request.target).map { response =>
+      CerebroResponse(response.status, Repositories(response.body))
     }
   }
 
-  def save = process { (request, client) =>
+  def save = process { request =>
     val name = request.get("name")
     val repoType = request.get("type")
     val settings = request.getObj("settings")
-    client.createRepository(name, repoType, settings, ElasticServer(request.host, request.authentication)).map {
-      response => Status(response.status)(response.body)
+    client.createRepository(name, repoType, settings, request.target).map {
+      response => CerebroResponse(response.status, response.body)
     }
   }
 
-  def delete = process { (request, client) =>
+  def delete = process { request =>
     val name = request.get("name")
-    client.deleteRepository(name, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+    client.deleteRepository(name, request.target).map { response =>
+      CerebroResponse(response.status, response.body)
     }
   }
 

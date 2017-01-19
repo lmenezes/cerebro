@@ -1,13 +1,23 @@
 package controllers
 
-import models.ElasticServer
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
+import models.CerebroResponse
+import play.api.libs.json.{JsObject, Json}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NavbarController extends BaseController {
+class NavbarController @Inject()(val authentication: AuthenticationModule,
+                                 client: ElasticClient) extends BaseController {
 
-  def index = process { (request, client) =>
-    client.clusterHealth(ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+  def index = process { request =>
+    client.clusterHealth(request.target).map { response =>
+      val body = request.user.fold(response.body) { user =>
+        response.body.as[JsObject] ++ Json.obj("username" -> user.name)
+      }
+      CerebroResponse(response.status, body)
     }
   }
 

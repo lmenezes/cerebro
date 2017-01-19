@@ -1,5 +1,5 @@
 # Home page
-GET         /                                         controllers.Application.index()
+GET         /                                         @controllers.Application.index()
 
 # Aliases module
 POST        /aliases/get_aliases                      @controllers.AliasesController.getAliases
@@ -76,6 +76,11 @@ POST        /snapshots/restore                        @controllers.SnapshotsCont
 
 # Cat module
 POST        /cat                                      @controllers.CatController.get
+
+# Auth
+POST        /auth/login                               @controllers.AuthController.login
+POST        /auth/logout                              @controllers.AuthController.logout
+GET         /login                                    @controllers.AuthController.index
 
 # Map the JS resource paths
 GET         /public/*file                             controllers.Assets.at(path="/public", file)

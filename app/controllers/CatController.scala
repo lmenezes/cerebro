@@ -1,16 +1,20 @@
 package controllers
 
-import models.analysis.{IndexAnalyzers, IndexFields, OpenIndices, Tokens}
-import models.ElasticServer
+import javax.inject.Inject
+
+import controllers.auth.AuthenticationModule
+import elastic.ElasticClient
+import models.{CerebroResponse, ElasticServer}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CatController extends BaseController {
+class CatController @Inject()(val authentication: AuthenticationModule,
+                              client: ElasticClient) extends BaseController {
 
-  def get = process { (request, client) =>
+  def get = process { request =>
     val api = request.get("api")
-    client.catRequest(api, ElasticServer(request.host, request.authentication)).map { response =>
-      Status(response.status)(response.body)
+    client.catRequest(api, request.target).map { response =>
+      CerebroResponse(response.status, response.body)
     }
   }
 
