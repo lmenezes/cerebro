@@ -71,3 +71,38 @@ hosts: [
 	}
 ]
 ```
+
+### User authentication
+It is possible to control access to cerebro through authentication.
+
+At the moment, there are no roles/permission level, and either an user is able to access or not.
+
+There are two methods of authentication:
+
+  - Basic: username and password on the configuration file
+  - LDAP: connect to an external provider for authentication
+
+Example for basic:
+```yaml
+auth {
+  type: basic
+  settings: {
+    username = "admin"
+    password = "1234"
+  }
+}
+```
+
+Example for LDAP:
+
+```yaml
+auth {
+  type: ldap
+  settings: {
+    url = "ldap://host:port"
+    base-dn = "ou=active,ou=Employee"
+    method  = "simple"
+    user-domain = "domain.com"
+  }
+}
+```
