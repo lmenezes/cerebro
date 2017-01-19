@@ -65,3 +65,11 @@ First cerebro release.
 - support shard relocation
 - support edit index template
 - added cat module
+
+###v0.5.0 - January 19th, 2017
+
+#### Bug fixes
+- fixed stuck shard state
+
+#### New features
+- added authentication support
