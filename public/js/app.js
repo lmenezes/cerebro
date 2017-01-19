@@ -967,6 +967,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
+    $scope.isSelected = function(shard) {
+      var relocating = $scope.relocatingShard;
+      return relocating && shard.index === relocating.index &&
+        shard.node === relocating.node && shard.shard === relocating.shard;
+    };
+
     $scope.canReceiveShard = function(index, node) {
       var shard = $scope.relocatingShard;
       if (shard && index) { // in case num indices < num columns
@@ -2112,26 +2118,6 @@ angular.module('cerebro').directive('ngPlainInclude', function() {
   return {
     templateUrl: function(elem, attr) {
       return attr.file;
-    }
-  };
-});
-
-angular.module('cerebro').directive('ngShard', function() {
-  return {
-    scope: true,
-    link: function(scope) {
-      var shard = scope.shard;
-      scope.state = shard.state.toLowerCase();
-      scope.replica = !shard.primary && shard.node;
-      scope.id = shard.shard + '_' + shard.node + '_' + shard.index;
-      scope.clazz = scope.replica ? 'shard-replica' : '';
-      scope.equal = function(other) {
-        return other && shard.index === other.index &&
-          shard.node === other.node && shard.shard === other.shard;
-      };
-    },
-    templateUrl: function() {
-      return 'overview/shard.html';
     }
   };
 });

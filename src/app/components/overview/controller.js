@@ -286,6 +286,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
+    $scope.isSelected = function(shard) {
+      var relocating = $scope.relocatingShard;
+      return relocating && shard.index === relocating.index &&
+        shard.node === relocating.node && shard.shard === relocating.shard;
+    };
+
     $scope.canReceiveShard = function(index, node) {
       var shard = $scope.relocatingShard;
       if (shard && index) { // in case num indices < num columns
