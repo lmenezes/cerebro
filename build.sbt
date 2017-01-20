@@ -2,7 +2,7 @@ name := "cerebro"
 
 version := "0.3.1"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play"          % "2.4.6",
