@@ -81,7 +81,7 @@ object Nodes {
     val load = (nodeStats \ "os" \ "cpu" \ "load_average" \ "1m").asOpt[Float].getOrElse( // 5.X
       (nodeStats \ "os" \ "load_average").asOpt[Float].getOrElse(0f) // FIXME: 2.X
     )
-    JsNumber(BigDecimal(load))
+    JsNumber(BigDecimal(load.toDouble))
   }
 
   def cpuPercent(nodeStats: JsValue): JsNumber = {

@@ -1,5 +1,6 @@
 package models.repository
 
+import models.UnexpectedResponseFormatException
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 object Repositories {
@@ -16,6 +17,7 @@ object Repositories {
             )
           }.toSeq
         )
+      case _ => throw UnexpectedResponseFormatException(json)
     }
   }
 

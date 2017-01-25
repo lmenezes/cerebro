@@ -33,19 +33,19 @@ object RestControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "method" -> "GET", "path" -> "/someesapi")
     client.executeRequest("GET", "/someesapi", None, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/rest/request").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/rest/request").withBody(body)).get
     ensure(response, 200, expectedResponse)
   }
 
   def missingPath = {
     val body = Json.obj("host" -> "somehost", "method" -> "GET")
-    val response = route(FakeRequest(POST, "/rest/request").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/rest/request").withBody(body)).get
     ensure(response, 400, Json.obj("error" -> "Missing required parameter path"))
   }
 
   def missingMethod = {
     val body = Json.obj("host" -> "somehost", "path" -> "GET")
-    val response = route(FakeRequest(POST, "/rest/request").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/rest/request").withBody(body)).get
     ensure(response, 400, Json.obj("error" -> "Missing required parameter method"))
   }
 

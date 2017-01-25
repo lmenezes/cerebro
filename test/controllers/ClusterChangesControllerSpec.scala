@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.AnalysisControllerSpec.application
 import elastic.ElasticResponse
 import models.ElasticServer
 import play.api.libs.json.Json
@@ -47,7 +48,7 @@ object ClusterChangesControllerSpec extends MockedServices {
     client.main(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mainResponse))
     client.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
     client.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
-    val response = route(FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
+    val response = route(application, FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
 }

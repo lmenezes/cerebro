@@ -69,7 +69,7 @@ object TemplatesControllerSpec extends MockedServices {
       """.stripMargin
     )
     client.getTemplates(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mockedResponse))
-    val response = route(FakeRequest(POST, "/templates").withBody(Json.obj("host" -> "somehost"))).get
+    val response = route(application, FakeRequest(POST, "/templates").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
 
@@ -80,12 +80,12 @@ object TemplatesControllerSpec extends MockedServices {
       """.stripMargin
     )
     client.deleteTemplate("someTemplate", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate"))).get
+    val response = route(application, FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate"))).get
     ensure(response, 200, expectedResponse)
   }
 
   def requireNameDelete = {
-    val response = route(FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost"))).get
+    val response = route(application, FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
 
@@ -103,19 +103,19 @@ object TemplatesControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "name" -> "someTemplate", "template" -> template)
     client.createTemplate("someTemplate", template, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/templates/create").withBody(body)).get
     ensure(response, 200, expectedResponse)
   }
 
   def requireNameCreate = {
     val body = Json.obj("host" -> "somehost")
-    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/templates/create").withBody(body)).get
     ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter name\"}"))
   }
 
   def requireNameTemplate = {
     val body = Json.obj("host" -> "somehost", "name" -> "any")
-    val response = route(FakeRequest(POST, "/templates/create").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/templates/create").withBody(body)).get
     ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter template\"}"))
   }
 

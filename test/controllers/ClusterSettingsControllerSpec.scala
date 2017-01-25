@@ -29,7 +29,7 @@ object ClusterSettingsControllerSpec extends MockedServices {
       """.stripMargin
     )
     client.getClusterSettings(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/cluster_settings").withBody(Json.obj("host" -> "somehost"))).get
+    val response = route(application, FakeRequest(POST, "/cluster_settings").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
 
@@ -51,12 +51,12 @@ object ClusterSettingsControllerSpec extends MockedServices {
         |}
       """.stripMargin)
     client.saveClusterSettings(body, ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost", "settings" -> body))).get
+    val response = route(application, FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost", "settings" -> body))).get
     ensure(response, 200, expectedResponse)
   }
 
   def requireSettings = {
-    val response = route(FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost"))).get
+    val response = route(application, FakeRequest(POST, "/cluster_settings/save").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 400, Json.parse("{\"error\":\"Missing required parameter settings\"}"))
   }
 

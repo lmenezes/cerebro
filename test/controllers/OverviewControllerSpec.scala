@@ -51,13 +51,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.deleteIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/delete_indices").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/delete_indices").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
   def missingIndicesToDelete = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/delete_indices").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/delete_indices").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -75,13 +75,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.refreshIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/refresh_indices").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/refresh_indices").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
   def missingIndicesToRefresh = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/refresh_indices").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/refresh_indices").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -99,13 +99,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.clearIndexCache("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/clear_indices_cache").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/clear_indices_cache").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
   def missingIndicesToClearCache = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/clear_indices_cache").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/clear_indices_cache").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -123,13 +123,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.forceMerge("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/force_merge").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/force_merge").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
   def missingIndicesToForceMerge = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/force_merge").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/force_merge").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -143,13 +143,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.openIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/overview/open_indices").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/overview/open_indices").withBody(body)).get
     ensure(response, 200, expectedResponse)
   }
 
   def missingIndicesToOpenIndices = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/open_indices").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/open_indices").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -163,13 +163,13 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.closeIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val response = route(FakeRequest(POST, "/overview/close_indices").withBody(body)).get
+    val response = route(application, FakeRequest(POST, "/overview/close_indices").withBody(body)).get
     ensure(response, 200, expectedResponse)
   }
 
   def missingIndicesToCloseIndices = {
     val body = Json.obj("host" -> "somehost")
-    val result= route(FakeRequest(POST, "/overview/close_indices").withBody(body)).get
+    val result= route(application, FakeRequest(POST, "/overview/close_indices").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 
@@ -177,25 +177,25 @@ object OverviewControllerSpec extends MockedServices {
     val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> 1)
     client.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedStats))
     client.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedRecovery))
-    val result = route(FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 200, expectedShardStats)
   }
 
   def missingIndexToFetchShardStats = {
     val body = Json.obj("host" -> "somehost")
-    val result = route(FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter index"))
   }
 
   def missingShardToFetchShardStats = {
     val body = Json.obj("host" -> "somehost", "index" -> "foo")
-    val result = route(FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter shard"))
   }
 
   def missingNodeToFetchShardStats = {
     val body = Json.obj("host" -> "somehost", "index" -> "foo", "shard" -> 1)
-    val result = route(FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter node"))
   }
 
@@ -220,7 +220,7 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
     client.enableShardAllocation(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/enable_shard_allocation").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/enable_shard_allocation").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
@@ -244,7 +244,7 @@ object OverviewControllerSpec extends MockedServices {
     )
     val body = Json.obj("host" -> "somehost")
     client.disableShardAllocation(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, expectedResponse))
-    val result = route(FakeRequest(POST, "/overview/disable_shard_allocation").withBody(body)).get
+    val result = route(application, FakeRequest(POST, "/overview/disable_shard_allocation").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
 
