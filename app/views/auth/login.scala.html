@@ -1,5 +1,7 @@
 @()(implicit flash: Flash)
 
+@import models.BuildInfo
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -22,7 +24,7 @@
                     <div class="text-center">
                         <img src="img/logo.png" height="160px">
                         <h4>
-                            Cerebro <small>v0.3.1</small>
+                            Cerebro <small>v@BuildInfo.version</small>
                         </h4>
                     </div>
                 </div>

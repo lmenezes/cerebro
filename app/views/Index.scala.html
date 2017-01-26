@@ -1,5 +1,7 @@
+@import models.BuildInfo
+
 <!DOCTYPE html>
-<html lang="en" ng-app="cerebro">
+<html lang="en" ng-app="cerebro" ng-init="appVersion = 'v@BuildInfo.version'">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">

@@ -12,7 +12,12 @@ libraryDependencies ++= Seq(
   "org.specs2"        %% "specs2-mock"   % "3.8.4" % "test"
 )
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).
+  enablePlugins(PlayScala, BuildInfoPlugin).
+  settings(
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "models"
+  )
 
 doc in Compile <<= target.map(_ / "none")
 
