@@ -4,12 +4,13 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ElasticServer, IndexMetadata}
+import models.{CerebroResponse, Hosts, IndexMetadata}
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class CreateIndexController @Inject()(val authentication: AuthenticationModule,
+                                      val hosts: Hosts,
                                       client: ElasticClient) extends BaseController {
 
   def execute = process { request =>

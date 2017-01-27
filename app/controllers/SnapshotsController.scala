@@ -4,15 +4,16 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ElasticServer}
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
+import models.{CerebroResponse, Hosts}
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SnapshotsController @Inject()(val authentication: AuthenticationModule,
+                                    val hosts: Hosts,
                                     client: ElasticClient) extends BaseController {
 
   def get = process { request =>

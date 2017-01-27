@@ -4,12 +4,13 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.CerebroResponse
+import models.{CerebroResponse, Hosts}
 import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class NavbarController @Inject()(val authentication: AuthenticationModule,
+                                 val hosts: Hosts,
                                  client: ElasticClient) extends BaseController {
 
   def index = process { request =>

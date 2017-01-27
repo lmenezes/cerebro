@@ -36,20 +36,21 @@ class CerebroRequest(val target: ElasticServer, body: JsValue, val user: Option[
 
 object CerebroRequest {
 
-  def apply(request: AuthRequest[JsValue]) = {
+  def apply(request: AuthRequest[JsValue], hosts: Hosts) = {
     val body = request.body
 
     val host = (body \ "host").asOpt[String].getOrElse(throw MissingTargetHostException)
-    val username = (body \ "username").asOpt[String]
-    val password = (body \ "password").asOpt[String]
-    val auth = {
+    val knownHost = hosts.getServer(host)
+    val cluster = knownHost.getOrElse {
+      val username = (body \ "username").asOpt[String]
+      val password = (body \ "password").asOpt[String]
       if (username.isDefined && password.isDefined) {
-        Some(ESAuth(username.get, password.get))
+        val auth = ESAuth(username.get, password.get)
+        ElasticServer(host, Some(auth))
       } else {
-        None
+        ElasticServer(host, None)
       }
     }
-    val cluster = ElasticServer(host, auth)
     new CerebroRequest(cluster, body, request.user)
   }
 

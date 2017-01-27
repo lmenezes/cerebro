@@ -4,11 +4,12 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ClusterMapping}
+import models.{CerebroResponse, ClusterMapping, Hosts}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class RestController @Inject()(val authentication: AuthenticationModule,
+                               val hosts: Hosts,
                                client: ElasticClient) extends BaseController {
 
   def request = process { request =>

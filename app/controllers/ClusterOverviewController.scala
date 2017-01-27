@@ -5,12 +5,13 @@ import javax.inject.Inject
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
 import models.overview.ClusterOverview
-import models.{CerebroResponse, ElasticServer, ShardStats}
+import models.{CerebroResponse, Hosts, ShardStats}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ClusterOverviewController @Inject()(val authentication: AuthenticationModule,
+                                          val hosts: Hosts,
                                           client: ElasticClient) extends BaseController {
 
   def index = process { request =>

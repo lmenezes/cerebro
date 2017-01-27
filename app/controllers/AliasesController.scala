@@ -4,12 +4,13 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{Aliases, CerebroResponse}
+import models.{Aliases, CerebroResponse, Hosts}
 import play.api.libs.json.JsArray
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AliasesController @Inject()(val authentication: AuthenticationModule,
+                                  val hosts: Hosts,
                                   client: ElasticClient) extends BaseController {
 
   def getAliases = process { request =>

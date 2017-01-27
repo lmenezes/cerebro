@@ -4,12 +4,13 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ElasticServer}
 import models.commons.{Indices, Nodes}
+import models.{CerebroResponse, Hosts}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class CommonsController @Inject()(val authentication: AuthenticationModule,
+                                  val hosts: Hosts,
                                   client: ElasticClient) extends BaseController {
 
   def indices = process { request =>

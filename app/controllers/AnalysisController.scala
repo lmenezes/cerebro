@@ -4,12 +4,13 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.ElasticClient
-import models.{CerebroResponse, ElasticServer}
+import models.{CerebroResponse, ElasticServer, Hosts}
 import models.analysis.{IndexAnalyzers, IndexFields, OpenIndices, Tokens}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AnalysisController @Inject()(val authentication: AuthenticationModule,
+                                   val hosts: Hosts,
                                    client: ElasticClient) extends BaseController {
 
   def getIndices = process { request =>

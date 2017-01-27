@@ -2,7 +2,7 @@ package controllers
 
 import controllers.auth.AuthenticationModule
 import exceptions.MissingRequiredParamException
-import models.{CerebroRequest, CerebroResponse}
+import models.{CerebroRequest, CerebroResponse, Hosts}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Controller, Result}
@@ -14,13 +14,15 @@ trait BaseController extends Controller with AuthSupport {
 
   val authentication: AuthenticationModule
 
+  val hosts: Hosts
+
   protected val logger = Logger("elastic")
 
   type RequestProcessor = (CerebroRequest) => Future[Result]
 
   final def process(processor: RequestProcessor) = AuthAction(authentication).async(parse.json) { request =>
     try {
-      processor(CerebroRequest(request))
+      processor(CerebroRequest(request, hosts))
     } catch {
       case e: MissingRequiredParamException =>
         Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
