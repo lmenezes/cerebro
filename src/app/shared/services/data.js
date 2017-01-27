@@ -214,7 +214,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         if (data.status === 303) {
           $window.location.href = '/login';
         } else {
-          if (data.status === 200) {
+          if (data.status >= 200 && data.status < 300) {
             success(data.body);
           } else {
             error(data.body);
