@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error, Success}
 import models.commons.{Indices, Nodes}
 import models.{CerebroResponse, Hosts}
 
@@ -14,14 +14,16 @@ class CommonsController @Inject()(val authentication: AuthenticationModule,
                                   client: ElasticClient) extends BaseController {
 
   def indices = process { request =>
-    client.getIndices(request.target).map { response =>
-      CerebroResponse(response.status, Indices(response.body))
+    client.getIndices(request.target).map {
+      case Success(status, indices) => CerebroResponse(status, Indices(indices))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 
   def nodes = process { request =>
-    client.getNodes(request.target).map { response =>
-      CerebroResponse(response.status, Nodes(response.body))
+    client.getNodes(request.target).map {
+      case Success(status, nodes) => CerebroResponse(status, Nodes(nodes))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 

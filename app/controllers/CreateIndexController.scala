@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error, Success}
 import models.{CerebroResponse, Hosts, IndexMetadata}
 import play.api.libs.json.Json
 
@@ -23,8 +23,9 @@ class CreateIndexController @Inject()(val authentication: AuthenticationModule,
   }
 
   def getIndexMetadata = process { request =>
-    client.getIndexMetadata(request.get("index"), request.target).map { response =>
-      CerebroResponse(response.status, IndexMetadata(response.body))
+    client.getIndexMetadata(request.get("index"), request.target).map {
+      case Success(status, metadata) => CerebroResponse(status, IndexMetadata(metadata))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 

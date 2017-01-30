@@ -296,8 +296,9 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val request = authentication.foldLeft(client.url(url).withMethod(method)) {
       case (request, auth) => request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }
+
     body.fold(request)(request.withBody((_))).execute.map { response =>
-      ElasticResponse(response.status, response.json)
+      ElasticResponse(response)
     }
   }
 

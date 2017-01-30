@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error}
 import models.commons.{Indices, Nodes}
 import models.{CerebroResponse, Hosts}
 import play.api.libs.json.Json
@@ -21,11 +21,18 @@ class ClusterChangesController @Inject()(val authentication: AuthenticationModul
       client.getNodes(request.target),
       client.main(request.target)
     )).map { responses =>
-      Json.obj(
-        "indices" -> Indices(responses(0).body),
-        "nodes" -> Nodes(responses(1).body),
-        "cluster_name" -> (responses(2).body \ "cluster_name").as[String]
-      )
-    }.map(CerebroResponse(200, _))
+      val failed = responses.find(_.isInstanceOf[Error])
+      failed match {
+        case None =>
+          val body = Json.obj(
+            "indices" -> Indices(responses(0).body),
+            "nodes" -> Nodes(responses(1).body),
+            "cluster_name" -> (responses(2).body \ "cluster_name").as[String]
+          )
+          CerebroResponse(200, body)
+        case Some(f) =>
+          CerebroResponse(f.status, f.body)
+      }
+    }
   }
 }

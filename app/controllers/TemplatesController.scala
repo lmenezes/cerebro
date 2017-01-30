@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error, Success}
 import models.templates.Templates
 import models.{CerebroResponse, Hosts}
 
@@ -14,8 +14,9 @@ class TemplatesController @Inject()(val authentication: AuthenticationModule,
                                     client: ElasticClient) extends BaseController {
 
   def templates = process { request =>
-    client.getTemplates(request.target).map { response =>
-      CerebroResponse(response.status, Templates(response.body))
+    client.getTemplates(request.target).map {
+      case Success(status, templates) => CerebroResponse(status, Templates(templates))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 

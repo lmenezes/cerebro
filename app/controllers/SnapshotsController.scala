@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error, Success}
 import models.commons.Indices
 import models.snapshot.{Repositories, Snapshots}
 import models.{CerebroResponse, Hosts}
@@ -30,8 +30,9 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
 
   def getSnapshots = process { request =>
     val repository = request.get("repository")
-    client.getSnapshots(repository, request.target).map { response =>
-      CerebroResponse(response.status, Snapshots(response.body))
+    client.getSnapshots(repository, request.target).map {
+      case Success(status, snapshots) => CerebroResponse(status, Snapshots(snapshots))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 

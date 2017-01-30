@@ -2,11 +2,12 @@ package models.overview
 
 import play.api.libs.json._
 
-class ClusterOverview(clusterState: JsValue, nodesStats: JsValue, indicesStats: JsValue,
-                      clusterSettings: JsValue, aliases: JsValue, clusterHealth: JsValue,
-                      nodes: JsValue, main: JsValue) {
+object ClusterOverview {
 
-  def json: JsValue = {
+  def apply(clusterState: JsValue, nodesStats: JsValue, indicesStats: JsValue,
+            clusterSettings: JsValue, aliases: JsValue, clusterHealth: JsValue,
+            nodes: JsValue, main: JsValue): JsValue = {
+
     val indices = Indices(clusterState, indicesStats, aliases)
     val clusterNodes = Nodes(clusterState, nodesStats, nodes)
 

@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error, Success}
 import models.{Aliases, CerebroResponse, Hosts}
 import play.api.libs.json.JsArray
 
@@ -14,8 +14,9 @@ class AliasesController @Inject()(val authentication: AuthenticationModule,
                                   client: ElasticClient) extends BaseController {
 
   def getAliases = process { request =>
-    client.getAliases(request.target).map { aliases =>
-      CerebroResponse(aliases.status, Aliases(aliases.body))
+    client.getAliases(request.target).map {
+      case Success(status, aliases) => CerebroResponse(status, Aliases(aliases))
+      case Error(status, error) => CerebroResponse(status, error)
     }
   }
 

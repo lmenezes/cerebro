@@ -23,11 +23,11 @@ object ClusterOverviewSpec extends Specification {
       return state of shard allocation       $shardAllocation
       """
 
-  val clusterWithoutData = ClusterWithoutData().json
-  val clusterWithData = ClusterWithData().json
-  val clusterInitializing = ClusterInitializingShards().json
-  val clusterRelocating = ClusterRelocatingShards().json
-  val clusterDiabledAllocation = ClusterDisabledAllocation().json
+  val clusterWithoutData = ClusterWithoutData()
+  val clusterWithData = ClusterWithData()
+  val clusterInitializing = ClusterInitializingShards()
+  val clusterRelocating = ClusterRelocatingShards()
+  val clusterDiabledAllocation = ClusterDisabledAllocation()
 
   def clusterName = {
     (clusterWithoutData \ "cluster_name").as[String] mustEqual "elasticsearch"

@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import elastic.ElasticClient
+import elastic.{ElasticClient, Error}
 import models.overview.ClusterOverview
 import models.{CerebroResponse, Hosts, ShardStats}
 
@@ -26,9 +26,24 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
         client.nodes(request.target),
         client.main(request.target)
       )
-    ).map { f =>
-      new ClusterOverview(f(0).body, f(1).body, f(2).body, f(3).body, f(4).body, f(5).body, f(6).body, f(7).body).json
-    }.map(CerebroResponse(200, _))
+    ).map { responses =>
+      val failed = responses.find(_.isInstanceOf[Error])
+      failed match {
+        case Some(f) => CerebroResponse(f.status, f.body)
+        case None =>
+          val overview = ClusterOverview(
+            responses(0).body,
+            responses(1).body,
+            responses(2).body,
+            responses(3).body,
+            responses(4).body,
+            responses(5).body,
+            responses(6).body,
+            responses(7).body
+          )
+          CerebroResponse(200, overview)
+      }
+    }
   }
 
   def disableShardAllocation = process { request =>
@@ -83,10 +98,21 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     val index = request.get("index")
     val shard = request.getInt("shard")
     val node = request.get("node")
-    client.getShardStats(index, request.target).zip(
-      client.getIndexRecovery(index, request.target)
-    ).map {
-      case (stats, recovery) => CerebroResponse(200, ShardStats(index, node, shard, stats.body, recovery.body))
+    Future.sequence(
+      Seq(
+        client.getShardStats(index, request.target),
+        client.getIndexRecovery(index, request.target)
+      )
+    ).map { responses =>
+      val failed = responses.find(_.isInstanceOf[Error])
+      failed match {
+        case None =>
+          val stats = responses(0).body
+          val recovery = responses(1).body
+          CerebroResponse(200, ShardStats(index, node, shard, stats, recovery))
+        case Some(f) =>
+          CerebroResponse(f.status, f.body)
+      }
     }
   }
 

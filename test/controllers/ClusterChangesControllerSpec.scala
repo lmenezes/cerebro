@@ -1,7 +1,7 @@
 package controllers
 
 import controllers.AnalysisControllerSpec.application
-import elastic.ElasticResponse
+import elastic.{ElasticResponse, Success}
 import models.ElasticServer
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -45,9 +45,9 @@ object ClusterChangesControllerSpec extends MockedServices {
       |]
       """.stripMargin
     )
-    client.main(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, mainResponse))
-    client.getNodes(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, nodesResponse))
-    client.getIndices(ElasticServer("somehost", None)) returns Future.successful(ElasticResponse(200, indicesResponse))
+    client.main(ElasticServer("somehost", None)) returns Future.successful(Success(200, mainResponse))
+    client.getNodes(ElasticServer("somehost", None)) returns Future.successful(Success(200, nodesResponse))
+    client.getIndices(ElasticServer("somehost", None)) returns Future.successful(Success(200, indicesResponse))
     val response = route(application, FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
