@@ -73,3 +73,13 @@ First cerebro release.
 
 #### New features
 - added authentication support
+
+###v0.5.1 - February 11th, 2017
+
+#### Enhancements
+- consistent node sorting on cluster overview
+- support host name on lists of known hosts
+
+#### Bug fixes
+- avoid parsing errors when ES requests fail
+- fixes select shard for relocation menu entry
