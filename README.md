@@ -49,7 +49,7 @@ bin/cerebro -Dconfig.resource=alternate.conf
 #### -Dconfig.file
 This will pick the specified file from a directory other than the apps dir.
 ```
-bin/cerebro -Dconfig.fiel=/some/other/dir/alternate.conf 
+bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf 
 ```
 
 
