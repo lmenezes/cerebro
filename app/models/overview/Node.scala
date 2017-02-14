@@ -11,6 +11,7 @@ object Node {
     // AWS nodes return no host/ip info
     val host = (info \ "host").asOpt[JsString].getOrElse(JsNull)
     val ip = (info \ "ip").asOpt[JsString].getOrElse(JsNull)
+    val jvmVersion = (info \ "jvm" \ "version").asOpt[JsString].getOrElse(JsNull)
 
     Json.obj(
       "id" -> JsString(id),
@@ -19,7 +20,7 @@ object Node {
       "host" -> host,
       "ip" -> ip,
       "es_version" -> (info \ "version").as[JsString],
-      "jvm_version" -> (info \ "jvm" \ "version").as[JsString],
+      "jvm_version" -> jvmVersion,
       "load_average" -> loadAverage(stats),
       "available_processors" -> (info \ "os" \ "available_processors").as[JsNumber],
       "cpu_percent" -> cpuPercent(stats),

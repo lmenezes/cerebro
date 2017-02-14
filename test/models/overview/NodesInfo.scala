@@ -63,7 +63,6 @@ object NodesInfo {
       |  },
       |  "jvm":{
       |    "pid":60238,
-      |    "version":"1.8.0_72",
       |    "vm_name":"Java HotSpot(TM) 64-Bit Server VM",
       |    "vm_version":"25.72-b15",
       |    "vm_vendor":"Oracle Corporation",

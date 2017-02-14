@@ -59,7 +59,7 @@ object NodeSpec extends Specification {
         |  "host": null,
         |  "ip": null,
         |  "es_version": "2.1.0",
-        |  "jvm_version": "1.8.0_72",
+        |  "jvm_version": null,
         |  "load_average": 3.17138671875,
         |  "available_processors": 8,
         |  "cpu_percent": 0,
