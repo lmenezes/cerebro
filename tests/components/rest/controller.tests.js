@@ -6,13 +6,13 @@ describe('RestController', function() {
         this.scope = $rootScope.$new();
         this.$http = $injector.get('$http');
         this.$sce = $injector.get('$sce');
-        this.DataService = $injector.get('DataService');
+        this.RestDataService = $injector.get('RestDataService');
         this.AlertService = $injector.get('AlertService');
         this.ModalService = $injector.get('ModalService');
         this.AceEditorService = $injector.get('AceEditorService');
         this.createController = function() {
             return $controller('RestController',
-                {$scope: this.scope}, this.$http, this.$window, this.DataService, this.AlertService, this.ModalService, this.AceEditorService);
+                {$scope: this.scope}, this.$http, this.$window, this.RestDataService, this.AlertService, this.ModalService, this.AceEditorService);
         };
         this._controller = this.createController();
     }));
@@ -37,13 +37,13 @@ describe('RestController', function() {
         it('loads mappings', function () {
             var fakeEditor = {setValue: function() {}};
             spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
-            this.DataService.getClusterMapping = function(success, error) {
+            this.RestDataService.load = function(success, error) {
               success({"mappings":"mappingsValue"});
             };
-            spyOn(this.DataService, "getClusterMapping").andCallThrough();
+            spyOn(this.RestDataService, "load").andCallThrough();
             spyOn(this.scope, "updateOptions").andReturn();
             this.scope.setup();
-            expect(this.DataService.getClusterMapping).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+            expect(this.RestDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
             expect(this.scope.mappings).toEqual({"mappings":"mappingsValue"});
             expect(this.scope.updateOptions).toHaveBeenCalled();
         });
@@ -51,10 +51,10 @@ describe('RestController', function() {
         it('alerts when loading mappings fail', function () {
             var fakeEditor = {setValue: function() {}};
             spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
-            this.DataService.getClusterMapping = function(success, error) {
+            this.RestDataService.load = function(success, error) {
                 error("some reason");
             };
-            spyOn(this.DataService, "getClusterMapping").andCallThrough();
+            spyOn(this.RestDataService, "load").andCallThrough();
             spyOn(this.AlertService, "error").andReturn();
             spyOn(this.scope, "updateOptions").andReturn();
             this.scope.setup();
@@ -72,7 +72,7 @@ describe('RestController', function() {
                     return "";
                 }
             };
-            spyOn(this.DataService, "getClusterMapping").andReturn();
+            spyOn(this.RestDataService, "load").andReturn();
             this.scope.execute();
             expect(this.scope.response).toEqual(undefined);
         });
@@ -83,9 +83,9 @@ describe('RestController', function() {
                     return "some value";
                 }
             };
-            spyOn(this.DataService, "execute").andReturn();
+            spyOn(this.RestDataService, "execute").andReturn();
             this.scope.execute();
-            expect(this.DataService.execute).toHaveBeenCalledWith("POST", "", "some value", jasmine.any(Function), jasmine.any(Function));
+            expect(this.RestDataService.execute).toHaveBeenCalledWith("POST", "", "some value", jasmine.any(Function), jasmine.any(Function));
         });
     });
 

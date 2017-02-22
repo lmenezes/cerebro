@@ -174,17 +174,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       request(config, success, error);
     };
 
-    // ---------- Rest ----------
-
-    this.getClusterMapping = function(success, error) {
-      clusterRequest('/rest/get_cluster_mapping', {}, success, error);
-    };
-
-    this.execute = function(method, path, data, success, error) {
-      var requestData = {method: method, data: data, path: path};
-      clusterRequest('/rest/request', requestData, success, error);
-    };
-
     // ---------- External API ----------
 
     this.send = function(path, data, success, error) {

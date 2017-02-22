@@ -7,7 +7,7 @@ POST        /aliases/update_aliases                   controllers.AliasesControl
 
 # Rest module
 POST        /rest/request                             controllers.RestController.request
-POST        /rest/get_cluster_mapping                 controllers.RestController.getClusterMapping
+POST        /rest                                     controllers.RestController.index
 
 # Overview module
 POST        /overview                                 controllers.ClusterOverviewController.index

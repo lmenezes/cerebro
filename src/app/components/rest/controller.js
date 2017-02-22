@@ -1,7 +1,7 @@
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
-  '$sce', 'DataService', 'AlertService', 'ModalService', 'AceEditorService',
+  '$sce', 'RestDataService', 'AlertService', 'ModalService', 'AceEditorService',
   'ClipboardService',
-  function($scope, $http, $sce, DataService, AlertService, ModalService,
+  function($scope, $http, $sce, RestDataService, AlertService, ModalService,
            AceEditorService, ClipboardService) {
 
     $scope.editor = undefined;
@@ -23,14 +23,15 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     $scope.execute = function() {
       var data = $scope.editor.getValue();
+      var method = $scope.method;
       $scope.response = undefined;
-      DataService.execute($scope.method, $scope.path, data, success, failure);
+      RestDataService.execute(method, $scope.path, data, success, failure);
     };
 
     $scope.setup = function() {
       $scope.editor = AceEditorService.init('rest-client-editor');
       $scope.editor.setValue('{}');
-      DataService.getClusterMapping(
+      RestDataService.load(
         function(response) {
           $scope.mappings = response;
           $scope.updateOptions($scope.path);
@@ -50,7 +51,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     $scope.copyAsCURLCommand = function() {
       var method = $scope.method;
-      var host = DataService.getHost();
+      var host = RestDataService.getHost();
       var path = encodeURI($scope.path);
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
