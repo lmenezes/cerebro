@@ -19,6 +19,9 @@ Some settings in cerebro can be set by specifying them as Java System properties
 
 For an extensive list of Java System properties accepted, check https://www.playframework.com/documentation/2.5.x/ProductionConfiguration
 
+### Secret
+Play uses the value of play.crypto.secret to sign session cookies, CSRF tokens and other builtin encryption utilities. It is highly recommended to change this value before running cerebro in production.
+
 ### HTTP server address and port
 You can run cerebro listening on a different port(9000) and host(0.0.0.0):
 ```
