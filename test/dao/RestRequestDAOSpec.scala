@@ -45,8 +45,8 @@ class RestRequestDAOSpec(implicit ee: ExecutionEnv) extends Specification {
     val dao: RestHistoryDAO = app.injector.instanceOf(classOf[RestHistoryDAO])
     val entries: Future[Seq[RestRequest]] = dao.all("admin")
     val expected: Seq[RestRequest] = Seq(
-      RestRequest("somePath", "someMethod", "theBody", "admin", new Date(123)),
-      RestRequest("otherPath", "otherMethod", "otherBody", "admin", new Date(currentTime + 100))
+      RestRequest("otherPath", "otherMethod", "otherBody", "admin", new Date(currentTime + 100)),
+      RestRequest("somePath", "someMethod", "theBody", "admin", new Date(123))
     )
     entries must beEqualTo(expected).await
   }

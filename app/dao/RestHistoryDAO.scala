@@ -31,7 +31,7 @@ class RestHistoryDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider) ext
   val requests = TableQuery[RestRequests]
 
   def all(username: String): Future[Seq[RestRequest]] = {
-    dbConfig.db.run(requests.filter(_.username === username).result).map { reqs =>
+    dbConfig.db.run(requests.filter(_.username === username).sortBy(_.createdAt.desc).take(50).result).map { reqs =>
       reqs.map { r => RestRequest(r.path, r.method, r.body, r.username, new Date(r.createdAt)) }
     }
   }
