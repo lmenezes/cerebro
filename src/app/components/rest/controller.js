@@ -42,6 +42,24 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       );
     };
 
+    $scope.loadRequest = function(request) {
+      $scope.method = request.method;
+      $scope.path = request.path;
+      $scope.editor.setValue(request.body);
+      $scope.editor.format();
+    };
+
+    $scope.loadHistory = function() {
+      RestDataService.history(
+        function(history) {
+          $scope.history = history;
+        },
+        function(error) {
+          AlertService.error('Error while loading request history', error);
+        }
+      );
+    };
+
     $scope.updateOptions = function(text) {
       if ($scope.mappings) {
         var autocomplete = new URLAutocomplete($scope.mappings);

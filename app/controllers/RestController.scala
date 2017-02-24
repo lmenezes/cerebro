@@ -1,15 +1,17 @@
 package controllers
 
 import java.sql.Date
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import dao.{RestHistoryDAO, RestRequest}
 import elastic.{ElasticClient, Error, Success}
 import models.{CerebroResponse, ClusterMapping, Hosts}
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsArray, JsString, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.control.NonFatal
 
 class RestController @Inject()(val authentication: AuthenticationModule,
                                val hosts: Hosts,
@@ -35,6 +37,26 @@ class RestController @Inject()(val authentication: AuthenticationModule,
     client.getClusterMapping(request.target).map {
       case Success(status, body) => CerebroResponse(status, ClusterMapping(body))
       case Error(status, error) => CerebroResponse(status, error)
+    }
+  }
+
+  def history = process { request =>
+    implicit val writes = Json.writes[RestRequest]
+    val dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss")
+    restHistoryDAO.all(request.user.map(_.name).getOrElse("")).map {
+      case requests =>
+        val body = requests.map { request =>
+          Json.obj(
+            "path" -> JsString(request.path),
+            "method" -> JsString(request.method),
+            "body" -> JsString(request.body),
+            "created_at" -> JsString(dateFormat.format(request.createdAt))
+          )
+        }
+        CerebroResponse(200, JsArray(body))
+    }.recover {
+      case NonFatal(e) =>
+        CerebroResponse(500, Json.obj("Error" -> JsString(s"Error while loading requests history: ${e.getMessage}")))
     }
   }
 

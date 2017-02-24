@@ -102,4 +102,41 @@ describe('RestController', function() {
         });
     });
 
+  describe('loadHistory', function() {
+    it('loads history of requests', function () {
+        var history = ['history entry 1'];
+        this.RestDataService.history = function(success, error) {
+          success(history);
+        };
+        spyOn(this.RestDataService, "history").andCallThrough();
+        this.scope.loadHistory();
+        expect(this.RestDataService.history).toHaveBeenCalled();
+        expect(this.scope.history).toEqual(history);
+    });
+    it('warns if requests cant be loaded', function () {
+      this.RestDataService.history = function(success, error) {
+        error('kaput');
+      };
+      spyOn(this.RestDataService, "history").andCallThrough();
+      spyOn(this.AlertService, 'error').andReturn();
+      this.scope.loadHistory();
+      expect(this.RestDataService.history).toHaveBeenCalled();
+      expect(this.scope.history).toEqual(undefined);
+      expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading request history', 'kaput');
+    });
+  });
+
+  describe('loadRequest', function() {
+    it('load given request into form', function () {
+      this.scope.editor = {setValue: function(some){}, format: function(){}};
+      spyOn(this.scope.editor, 'setValue').andReturn();
+      spyOn(this.scope.editor, 'format').andReturn();
+      this.scope.loadRequest({'path': '/somepath', 'body': 'somebody', 'method': 'DELETE'});
+      expect(this.scope.path).toEqual('/somepath');
+      expect(this.scope.method).toEqual('DELETE');
+      expect(this.scope.editor.setValue).toHaveBeenCalledWith('somebody');
+      expect(this.scope.editor.format).toHaveBeenCalled();
+    });
+  });
+
 });

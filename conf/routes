@@ -6,6 +6,7 @@ POST        /aliases/get_aliases                      controllers.AliasesControl
 POST        /aliases/update_aliases                   controllers.AliasesController.updateAliases
 
 # Rest module
+POST        /rest/history                             controllers.RestController.history
 POST        /rest/request                             controllers.RestController.request
 POST        /rest                                     controllers.RestController.index
 
