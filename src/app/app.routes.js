@@ -12,7 +12,7 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           controller: 'ConnectController'
         })
         .when('/rest', {
-          templateUrl: 'rest.html',
+          templateUrl: 'rest/index.html',
           controller: 'RestController'
         })
         .when('/aliases', {
