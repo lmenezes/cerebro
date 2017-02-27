@@ -5,12 +5,13 @@ import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
-import dao.{RestHistoryDAO, RestRequest}
+import dao.{DAOException, RestHistoryDAO, RestRequest}
 import elastic.{ElasticClient, Error, Success}
 import models.{CerebroResponse, ClusterMapping, Hosts}
 import play.api.libs.json.{JsArray, JsString, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
 import scala.util.control.NonFatal
 
 class RestController @Inject()(val authentication: AuthenticationModule,
@@ -26,7 +27,9 @@ class RestController @Inject()(val authentication: AuthenticationModule,
       case s: Success =>
         val bodyAsString = body.map(_.toString).getOrElse("{}")
         val username = request.user.map(_.name).getOrElse("")
-        restHistoryDAO.save(RestRequest(path, method, bodyAsString, username, new Date(System.currentTimeMillis)))
+        Try(restHistoryDAO.save(RestRequest(path, method, bodyAsString, username, new Date(System.currentTimeMillis)))).recover {
+          case DAOException(msg, e) => logger.error(msg, e)
+        }
         CerebroResponse(s.status, s.body)
 
       case e: Error => CerebroResponse(e.status, e.body)
