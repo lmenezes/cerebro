@@ -25,8 +25,8 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
-  def nodesStats(target: ElasticServer) = {
-    val path = "/_nodes/stats/jvm,fs,os,process"
+  def nodesStats(stats: Seq[String], target: ElasticServer) = {
+    val path = s"/_nodes/stats/${stats.mkString(",")}"
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
@@ -50,8 +50,8 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
-  def nodes(target: ElasticServer) = {
-    val path = "/_nodes/_all/os,jvm"
+  def nodes(flags: Seq[String], target: ElasticServer) = {
+    val path = s"/_nodes/_all/${flags.mkString(",")}"
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
@@ -69,7 +69,6 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val path = s"/$index/_refresh"
     execute(s"${target.host}$path", "POST", None, target.authentication)
   }
-
 
   def forceMerge(index: String, target: ElasticServer) = {
     val path = s"/$index/_forcemerge"

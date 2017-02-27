@@ -18,12 +18,12 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     Future.sequence(
       Seq(
         client.clusterState(request.target),
-        client.nodesStats(request.target),
+        client.nodesStats(Seq("jvm","fs","os","process"), request.target),
         client.indicesStats(request.target),
         client.clusterSettings(request.target),
         client.aliases(request.target),
         client.clusterHealth(request.target),
-        client.nodes(request.target),
+        client.nodes(Seq("os","jvm"), request.target),
         client.main(request.target)
       )
     ).map { responses =>

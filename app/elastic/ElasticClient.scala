@@ -13,7 +13,7 @@ trait ElasticClient {
 
   def indicesStats(target: ElasticServer): Future[ElasticResponse]
 
-  def nodesStats(target: ElasticServer): Future[ElasticResponse]
+  def nodesStats(stats: Seq[String], target: ElasticServer): Future[ElasticResponse]
 
   def nodeStats(node: String, target: ElasticServer): Future[ElasticResponse]
 
@@ -23,7 +23,7 @@ trait ElasticClient {
 
   def clusterHealth(target: ElasticServer): Future[ElasticResponse]
 
-  def nodes(target: ElasticServer): Future[ElasticResponse]
+  def nodes(flags: Seq[String], target: ElasticServer): Future[ElasticResponse]
 
   def closeIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
