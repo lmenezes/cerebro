@@ -15,6 +15,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     var success = function(response) {
       $scope.response = $sce.trustAsHtml(JSONTree.create(response));
+      $scope.loadHistory();
     };
 
     var failure = function(response) {
@@ -40,6 +41,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
           AlertService.error('Error while loading cluster mappings', error);
         }
       );
+      $scope.loadHistory();
     };
 
     $scope.loadRequest = function(request) {
