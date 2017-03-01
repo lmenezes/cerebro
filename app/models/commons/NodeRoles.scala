@@ -1,4 +1,4 @@
-package models.overview
+package models.commons
 
 import play.api.libs.json.{JsArray, JsString, JsValue}
 

@@ -1,5 +1,6 @@
 package models.overview
 
+import models.commons.NodeRoles
 import play.api.libs.json._
 
 object Node {
