@@ -332,7 +332,7 @@ angular.module('cerebro').factory('CatDataService', ['DataService',
   function(DataService) {
 
     this.get = function(api, success, error) {
-      DataService.send('/cat', {api: api}, success, error);
+      DataService.send('cat', {api: api}, success, error);
     };
 
     return this;
@@ -432,12 +432,12 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
   function(DataService) {
 
     this.getClusterSettings = function(success, error) {
-      DataService.send('/cluster_settings', {}, success, error);
+      DataService.send('cluster_settings', {}, success, error);
     };
 
     this.saveSettings = function(settings, success, error) {
       var body = {settings: settings};
-      DataService.send('/cluster_settings/save', body, success, error);
+      DataService.send('cluster_settings/save', body, success, error);
     };
 
     return this;
@@ -620,12 +620,12 @@ angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
   function(DataService) {
 
     this.get = function(index, success, error) {
-      DataService.send('/index_settings', {index: index}, success, error);
+      DataService.send('index_settings', {index: index}, success, error);
     };
 
     this.update = function(index, settings, success, error) {
       var body = {index: index, settings: settings};
-      DataService.send('/index_settings/update', body, success, error);
+      DataService.send('index_settings/update', body, success, error);
     };
 
     return this;
@@ -751,7 +751,7 @@ angular.module('cerebro').factory('NodesDataService', ['DataService',
   function(DataService) {
 
     this.load = function(success, error) {
-      DataService.send('/nodes', {}, success, error);
+      DataService.send('nodes', {}, success, error);
     };
 
     return this;
@@ -1166,7 +1166,7 @@ angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
   function(DataService) {
 
     this.load = function(success, error) {
-      DataService.send('/repositories', {}, success, error);
+      DataService.send('repositories', {}, success, error);
     };
 
     this.create = function(name, type, settings, success, error) {
@@ -1175,11 +1175,11 @@ angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
         type: type,
         settings: settings
       };
-      DataService.send('/repositories/create', data, success, error);
+      DataService.send('repositories/create', data, success, error);
     };
 
     this.delete = function(name, success, error) {
-      DataService.send('/repositories/delete', {name: name}, success, error);
+      DataService.send('repositories/delete', {name: name}, success, error);
     };
 
     return this;
@@ -1288,16 +1288,16 @@ angular.module('cerebro').factory('RestDataService', ['DataService',
   function(DataService) {
 
     this.load = function(success, error) {
-      DataService.send('/rest', {}, success, error);
+      DataService.send('rest', {}, success, error);
     };
 
     this.history = function(success, error) {
-      DataService.send('/rest/history', {}, success, error);
+      DataService.send('rest/history', {}, success, error);
     };
 
     this.execute = function(method, path, data, success, error) {
       var requestData = {method: method, data: data, path: path};
-      DataService.send('/rest/request', requestData, success, error);
+      DataService.send('rest/request', requestData, success, error);
     };
 
     this.getHost = function() {
@@ -1421,17 +1421,17 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
   function(DataService) {
 
     this.load = function(success, error) {
-      DataService.send('/snapshots', {}, success, error);
+      DataService.send('snapshots', {}, success, error);
     };
 
     this.loadSnapshots = function(repository, success, error) {
       var data = {repository: repository};
-      DataService.send('/snapshots/load', data, success, error);
+      DataService.send('snapshots/load', data, success, error);
     };
 
     this.delete = function(repository, snapshot, success, error) {
       var data = {repository: repository, snapshot: snapshot};
-      DataService.send('/snapshots/delete', data, success, error);
+      DataService.send('snapshots/delete', data, success, error);
     };
 
     this.create = function(repository, snapshot, ignoreUnavailable,
@@ -1443,7 +1443,7 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         includeGlobalState: includeGlobalState,
         indices: indices
       };
-      DataService.send('/snapshots/create', data, success, error);
+      DataService.send('snapshots/create', data, success, error);
     };
 
     this.restore = function(repository, snapshot, renamePattern,
@@ -1460,7 +1460,7 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         indices: indices
       };
       console.log(data);
-      DataService.send('/snapshots/restore', data, success, error);
+      DataService.send('snapshots/restore', data, success, error);
     };
 
     return this;
@@ -1578,16 +1578,16 @@ angular.module('cerebro').factory('TemplatesDataService', ['DataService',
   function(DataService) {
 
     this.getTemplates = function(success, error) {
-      DataService.send('/templates', {}, success, error);
+      DataService.send('templates', {}, success, error);
     };
 
     this.delete = function(name, success, error) {
-      DataService.send('/templates/delete', {name: name}, success, error);
+      DataService.send('templates/delete', {name: name}, success, error);
     };
 
     this.create = function(name, template, success, error) {
       var data = {name: name, template: template};
-      DataService.send('/templates/create', data, success, error);
+      DataService.send('templates/create', data, success, error);
     };
 
     return this;
@@ -1639,7 +1639,6 @@ function IndexTemplateFilter(name, pattern) {
 
 function AceEditor(target) {
   // ace editor
-  ace.config.set('basePath', '/');
   this.editor = ace.edit(target);
   this.editor.setFontSize('10px');
   this.editor.setTheme('ace/theme/cerebro');
@@ -2535,15 +2534,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     var password;
 
-    var buildBaseUrl = function() {
-      var protocol = $location.protocol();
-      var host = $location.host();
-      var port = $location.port();
-      return protocol + '://' + host + ':' + port;
-    };
-
-    var baseUrl = buildBaseUrl();
-
     this.getHost = function() {
       return host;
     };
@@ -2562,140 +2552,140 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     // ---------- Navbar ----------
     this.getNavbarData = function(success, error) {
-      clusterRequest('/navbar', {}, success, error);
+      clusterRequest('navbar', {}, success, error);
     };
 
     // ---------- Overview ----------
     this.getOverview = function(success, error) {
-      clusterRequest('/overview', {}, success, error);
+      clusterRequest('overview', {}, success, error);
     };
 
     this.closeIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/close_indices', data, success, error);
+      clusterRequest('overview/close_indices', data, success, error);
     };
 
     this.openIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/open_indices', data, success, error);
+      clusterRequest('overview/open_indices', data, success, error);
     };
 
     this.forceMerge = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/force_merge', data, success, error);
+      clusterRequest('overview/force_merge', data, success, error);
     };
 
     this.refreshIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/refresh_indices', data, success, error);
+      clusterRequest('overview/refresh_indices', data, success, error);
     };
 
     this.clearIndexCache = function(index, success, error) {
       var params = {indices: index};
-      clusterRequest('/overview/clear_indices_cache', params, success, error);
+      clusterRequest('overview/clear_indices_cache', params, success, error);
     };
 
     this.deleteIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/delete_indices', data, success, error);
+      clusterRequest('overview/delete_indices', data, success, error);
     };
 
     this.enableShardAllocation = function(success, error) {
-      clusterRequest('/overview/enable_shard_allocation', {}, success, error);
+      clusterRequest('overview/enable_shard_allocation', {}, success, error);
     };
 
     this.disableShardAllocation = function(success, error) {
-      clusterRequest('/overview/disable_shard_allocation', {}, success, error);
+      clusterRequest('overview/disable_shard_allocation', {}, success, error);
     };
 
     this.getShardStats = function(index, node, shard, success, error) {
       var data = {index: index, node: node, shard: shard};
-      clusterRequest('/overview/get_shard_stats', data, success, error);
+      clusterRequest('overview/get_shard_stats', data, success, error);
     };
 
     this.relocateShard = function(shard, index, from, to, success, error) {
       var data = {shard: shard, index: index, from: from, to: to};
-      clusterRequest('/overview/relocate_shard', data, success, error);
+      clusterRequest('overview/relocate_shard', data, success, error);
     };
 
     // ---------- Create index ----------
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};
-      clusterRequest('/create_index/create', data, success, error);
+      clusterRequest('create_index/create', data, success, error);
     };
 
     this.getIndexMetadata = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/create_index/get_index_metadata', data, success, error);
+      clusterRequest('create_index/get_index_metadata', data, success, error);
     };
 
     // ---------- Commons ----------
     this.getIndices = function(success, error) {
-      clusterRequest('/commons/indices', {}, success, error);
+      clusterRequest('commons/indices', {}, success, error);
     };
 
     this.getNodes = function(success, error) {
-      clusterRequest('/commons/nodes', {}, success, error);
+      clusterRequest('commons/nodes', {}, success, error);
     };
 
     this.getIndexSettings = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/commons/get_index_settings', data, success, error);
+      clusterRequest('commons/get_index_settings', data, success, error);
     };
 
     this.getIndexMapping = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/commons/get_index_mapping', data, success, error);
+      clusterRequest('commons/get_index_mapping', data, success, error);
     };
 
     this.nodeStats = function(node, success, error) {
-      clusterRequest('/commons/get_node_stats', {node: node}, success, error);
+      clusterRequest('commons/get_node_stats', {node: node}, success, error);
     };
 
     // ---------- Analysis ----------
     this.getOpenIndices = function(success, error) {
-      clusterRequest('/analysis/indices', {}, success, error);
+      clusterRequest('analysis/indices', {}, success, error);
     };
 
     this.getIndexAnalyzers = function(index, success, error) {
-      clusterRequest('/analysis/analyzers', {index: index}, success, error);
+      clusterRequest('analysis/analyzers', {index: index}, success, error);
     };
 
     this.getIndexFields = function(index, success, error) {
-      clusterRequest('/analysis/fields', {index: index}, success, error);
+      clusterRequest('analysis/fields', {index: index}, success, error);
     };
 
     this.analyzeByField = function(index, field, text, success, error) {
       var data = {index: index, field: field, text: text};
-      clusterRequest('/analysis/analyze/field', data, success, error);
+      clusterRequest('analysis/analyze/field', data, success, error);
     };
 
     this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
       var data = {index: index, analyzer: analyzer, text: text};
-      clusterRequest('/analysis/analyze/analyzer', data, success, error);
+      clusterRequest('analysis/analyze/analyzer', data, success, error);
     };
 
     // ---------- Aliases ----------
 
     this.getAliases = function(success, error) {
-      clusterRequest('/aliases/get_aliases', {}, success, error);
+      clusterRequest('aliases/get_aliases', {}, success, error);
     };
 
     this.updateAliases = function(changes, success, error) {
       var data = {changes: changes};
-      clusterRequest('/aliases/update_aliases', data, success, error);
+      clusterRequest('aliases/update_aliases', data, success, error);
     };
 
     // ---------- Cluster State Changes ----------
     this.clusterChanges = function(success, error) {
-      clusterRequest('/cluster_changes', {}, success, error);
+      clusterRequest('cluster_changes', {}, success, error);
     };
 
     // ---------- Connect ----------
     this.getHosts = function(success, error) {
       var config = {
         method: 'GET',
-        url: baseUrl + '/connect/hosts'
+        url: 'connect/hosts'
       };
       request(config, success, error);
     };
@@ -2717,7 +2707,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         };
         var config = {
           method: 'POST',
-          url: baseUrl + path,
+          url: path,
           data: angular.merge(data, defaultData) // adds host to data
         };
         request(config, success, error);

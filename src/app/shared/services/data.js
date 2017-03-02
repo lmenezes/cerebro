@@ -9,15 +9,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     var password;
 
-    var buildBaseUrl = function() {
-      var protocol = $location.protocol();
-      var host = $location.host();
-      var port = $location.port();
-      return protocol + '://' + host + ':' + port;
-    };
-
-    var baseUrl = buildBaseUrl();
-
     this.getHost = function() {
       return host;
     };
@@ -36,140 +27,140 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     // ---------- Navbar ----------
     this.getNavbarData = function(success, error) {
-      clusterRequest('/navbar', {}, success, error);
+      clusterRequest('navbar', {}, success, error);
     };
 
     // ---------- Overview ----------
     this.getOverview = function(success, error) {
-      clusterRequest('/overview', {}, success, error);
+      clusterRequest('overview', {}, success, error);
     };
 
     this.closeIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/close_indices', data, success, error);
+      clusterRequest('overview/close_indices', data, success, error);
     };
 
     this.openIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/open_indices', data, success, error);
+      clusterRequest('overview/open_indices', data, success, error);
     };
 
     this.forceMerge = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/force_merge', data, success, error);
+      clusterRequest('overview/force_merge', data, success, error);
     };
 
     this.refreshIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/refresh_indices', data, success, error);
+      clusterRequest('overview/refresh_indices', data, success, error);
     };
 
     this.clearIndexCache = function(index, success, error) {
       var params = {indices: index};
-      clusterRequest('/overview/clear_indices_cache', params, success, error);
+      clusterRequest('overview/clear_indices_cache', params, success, error);
     };
 
     this.deleteIndex = function(index, success, error) {
       var data = {indices: index};
-      clusterRequest('/overview/delete_indices', data, success, error);
+      clusterRequest('overview/delete_indices', data, success, error);
     };
 
     this.enableShardAllocation = function(success, error) {
-      clusterRequest('/overview/enable_shard_allocation', {}, success, error);
+      clusterRequest('overview/enable_shard_allocation', {}, success, error);
     };
 
     this.disableShardAllocation = function(success, error) {
-      clusterRequest('/overview/disable_shard_allocation', {}, success, error);
+      clusterRequest('overview/disable_shard_allocation', {}, success, error);
     };
 
     this.getShardStats = function(index, node, shard, success, error) {
       var data = {index: index, node: node, shard: shard};
-      clusterRequest('/overview/get_shard_stats', data, success, error);
+      clusterRequest('overview/get_shard_stats', data, success, error);
     };
 
     this.relocateShard = function(shard, index, from, to, success, error) {
       var data = {shard: shard, index: index, from: from, to: to};
-      clusterRequest('/overview/relocate_shard', data, success, error);
+      clusterRequest('overview/relocate_shard', data, success, error);
     };
 
     // ---------- Create index ----------
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};
-      clusterRequest('/create_index/create', data, success, error);
+      clusterRequest('create_index/create', data, success, error);
     };
 
     this.getIndexMetadata = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/create_index/get_index_metadata', data, success, error);
+      clusterRequest('create_index/get_index_metadata', data, success, error);
     };
 
     // ---------- Commons ----------
     this.getIndices = function(success, error) {
-      clusterRequest('/commons/indices', {}, success, error);
+      clusterRequest('commons/indices', {}, success, error);
     };
 
     this.getNodes = function(success, error) {
-      clusterRequest('/commons/nodes', {}, success, error);
+      clusterRequest('commons/nodes', {}, success, error);
     };
 
     this.getIndexSettings = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/commons/get_index_settings', data, success, error);
+      clusterRequest('commons/get_index_settings', data, success, error);
     };
 
     this.getIndexMapping = function(index, success, error) {
       var data = {index: index};
-      clusterRequest('/commons/get_index_mapping', data, success, error);
+      clusterRequest('commons/get_index_mapping', data, success, error);
     };
 
     this.nodeStats = function(node, success, error) {
-      clusterRequest('/commons/get_node_stats', {node: node}, success, error);
+      clusterRequest('commons/get_node_stats', {node: node}, success, error);
     };
 
     // ---------- Analysis ----------
     this.getOpenIndices = function(success, error) {
-      clusterRequest('/analysis/indices', {}, success, error);
+      clusterRequest('analysis/indices', {}, success, error);
     };
 
     this.getIndexAnalyzers = function(index, success, error) {
-      clusterRequest('/analysis/analyzers', {index: index}, success, error);
+      clusterRequest('analysis/analyzers', {index: index}, success, error);
     };
 
     this.getIndexFields = function(index, success, error) {
-      clusterRequest('/analysis/fields', {index: index}, success, error);
+      clusterRequest('analysis/fields', {index: index}, success, error);
     };
 
     this.analyzeByField = function(index, field, text, success, error) {
       var data = {index: index, field: field, text: text};
-      clusterRequest('/analysis/analyze/field', data, success, error);
+      clusterRequest('analysis/analyze/field', data, success, error);
     };
 
     this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
       var data = {index: index, analyzer: analyzer, text: text};
-      clusterRequest('/analysis/analyze/analyzer', data, success, error);
+      clusterRequest('analysis/analyze/analyzer', data, success, error);
     };
 
     // ---------- Aliases ----------
 
     this.getAliases = function(success, error) {
-      clusterRequest('/aliases/get_aliases', {}, success, error);
+      clusterRequest('aliases/get_aliases', {}, success, error);
     };
 
     this.updateAliases = function(changes, success, error) {
       var data = {changes: changes};
-      clusterRequest('/aliases/update_aliases', data, success, error);
+      clusterRequest('aliases/update_aliases', data, success, error);
     };
 
     // ---------- Cluster State Changes ----------
     this.clusterChanges = function(success, error) {
-      clusterRequest('/cluster_changes', {}, success, error);
+      clusterRequest('cluster_changes', {}, success, error);
     };
 
     // ---------- Connect ----------
     this.getHosts = function(success, error) {
       var config = {
         method: 'GET',
-        url: baseUrl + '/connect/hosts'
+        url: 'connect/hosts'
       };
       request(config, success, error);
     };
@@ -191,7 +182,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         };
         var config = {
           method: 'POST',
-          url: baseUrl + path,
+          url: path,
           data: angular.merge(data, defaultData) // adds host to data
         };
         request(config, success, error);
@@ -201,7 +192,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     var request = function(config, success, error) {
       var handleSuccess = function(data) {
         if (data.status === 303) {
-          $window.location.href = '/login';
+          $window.location.href = 'login';
         } else {
           if (data.status >= 200 && data.status < 300) {
             success(data.body);
