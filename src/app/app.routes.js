@@ -7,6 +7,14 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'overview.html',
           controller: 'OverviewController'
         })
+        .when('/nodes', {
+          templateUrl: 'nodes.html',
+          controller: 'NodesController'
+        })
+        .when('/indices', {
+          templateUrl: 'indices.html',
+          controller: 'IndicesController'
+        })
         .when('/connect', {
           templateUrl: 'connect.html',
           controller: 'ConnectController'

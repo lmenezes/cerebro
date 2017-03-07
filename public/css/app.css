@@ -54,6 +54,8 @@ table.shard-map { table-layout: fixed; }
 .node-badges { width: 20px; display: inline-block; float: left; }
 .node-info { margin-left: 20px; }
 .node-labels { padding-top: 5px; }
+.node-stat { font-size: 36px; font-weight: 300; float: left; line-height: 40px; min-width: 70px; margin-right: 15px; }
+.node-stat-detail { float: left; line-height: 20px; }
 
 .normal-action { cursor: pointer; }
 .table-control { line-height: 50px !important; }
