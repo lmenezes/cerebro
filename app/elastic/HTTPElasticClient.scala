@@ -8,6 +8,7 @@ import play.api.libs.json._
 import play.api.libs.ws.{WSAuthScheme, WSClient}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
@@ -301,4 +302,8 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     }
   }
 
+  override def catMaster(target: ElasticServer): Future[ElasticResponse] = {
+    val path = "/_cat/master"
+    execute(s"${target.host}$path?format=json", "GET", None, target.authentication)
+  }
 }

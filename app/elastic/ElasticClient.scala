@@ -110,6 +110,9 @@ trait ElasticClient {
   // Cat requests
   def catRequest(api: String, target: ElasticServer): Future[ElasticResponse]
 
+  // Cat master
+  def catMaster(target: ElasticServer): Future[ElasticResponse]
+
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer): Future[ElasticResponse]
 
 }
