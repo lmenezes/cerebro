@@ -7,6 +7,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
           templateUrl: 'overview.html',
           controller: 'OverviewController'
         })
+        .when('/nodes', {
+          templateUrl: 'nodes/index.html',
+          controller: 'NodesController'
+        })
         .when('/connect', {
           templateUrl: 'connect.html',
           controller: 'ConnectController'
@@ -675,6 +679,82 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
         );
       }
     );
+
+  }
+]);
+
+angular.module('cerebro').controller('NodesController', ['$scope',
+  'NodesDataService', 'AlertService', 'RefreshService',
+  function($scope, NodesDataService, AlertService, RefreshService) {
+
+    $scope._nodes = undefined; // keeps unfiltered list of nodes
+    $scope.nodes = undefined;
+
+    $scope.sortBy = 'name';
+    $scope.reverse = false;
+
+    $scope.filter = new NodeFilter('', true, true, true, 0);
+
+    $scope.$watch(
+      function() {
+        return RefreshService.lastUpdate();
+      },
+      function() {
+        $scope.refresh();
+      },
+      true
+    );
+
+    $scope.$watch('filter', function() {
+        $scope.refreshVisibleNodes();
+      },
+      true);
+
+    $scope.setSortBy = function(field) {
+      if ($scope.sortBy === field) {
+        $scope.reverse = !$scope.reverse;
+      }
+      $scope.sortBy = field;
+    };
+
+    $scope.refreshVisibleNodes = function() {
+      if ($scope._nodes) {
+        $scope.nodes = $scope._nodes.filter(function(node) {
+          return $scope.filter.matches(node);
+        });
+      } else {
+        $scope.nodes = undefined;
+      }
+    };
+
+    $scope.setNodes = function(nodes) {
+      $scope._nodes = nodes;
+      $scope.refreshVisibleNodes();
+    };
+
+    $scope.refresh = function() {
+      NodesDataService.load(
+        function(nodes) {
+          $scope.setNodes(nodes);
+        },
+        function(error) {
+          $scope.setNodes(undefined);
+          AlertService.error('Error while loading nodes data', error);
+        }
+      );
+    };
+
+  }]
+);
+
+angular.module('cerebro').factory('NodesDataService', ['DataService',
+  function(DataService) {
+
+    this.load = function(success, error) {
+      DataService.send('/nodes', {}, success, error);
+    };
+
+    return this;
 
   }
 ]);
@@ -2027,6 +2107,40 @@ angular.module('cerebro').filter('startsWith', function() {
   };
 });
 
+angular.module('cerebro').filter('timeInterval', function() {
+
+  var UNITS = ['yr', 'mo', 'd', 'h', 'min'];
+
+  var UNIT_MEASURE = {
+    yr: 31536000000,
+    mo: 2678400000,
+    wk: 604800000,
+    d: 86400000,
+    h: 3600000,
+    min: 60000
+  };
+
+  function stringify(seconds) {
+
+    var result = 'less than a minute';
+
+    for (var idx = 0; idx < UNITS.length; idx++) {
+      var amount = Math.floor(seconds / UNIT_MEASURE[UNITS[idx]]);
+      if (amount) {
+        result = amount + UNITS[idx] + '.';
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  return function(seconds) {
+    return stringify(seconds);
+  };
+
+});
+
 function URLAutocomplete(mappings) {
 
   var PATHS = [
@@ -2167,6 +2281,52 @@ angular.module('cerebro').directive('ngPlainInclude', function() {
     }
   };
 });
+
+angular.module('cerebro').directive('ngSortBy',
+  function() {
+
+    function updateSortingIcon(scope, elem, attrs) {
+      var sorts = scope.sortBy === attrs.property;
+      var sortIcon = elem.find('i');
+      sortIcon.removeClass('fa-sort-asc fa-sort-desc');
+      if (sorts) {
+        if (scope.reverse) {
+          sortIcon.addClass('fa-sort-desc');
+        } else {
+          sortIcon.addClass('fa-sort-asc');
+        }
+      }
+    }
+
+    function link(scope, elem, attrs) {
+      scope.$watch(
+        function() {
+          return scope.sortBy;
+        },
+        function() {
+          updateSortingIcon(scope, elem, attrs);
+        });
+
+      scope.$watch(
+        function() {
+          return scope.reverse;
+        },
+        function() {
+          updateSortingIcon(scope, elem, attrs);
+        }
+      );
+    }
+
+    return {
+      link: link,
+      template: function(elem, attrs) {
+        return '<a href="" target="_self" ng-click=setSortBy(\'' +
+          attrs.property + '\')>' + attrs.text +
+          '<i class="fa fa-fw fa-sort-asc"></i></a>';
+      }
+    };
+  }
+);
 
 angular.module('cerebro').factory('AceEditorService', function() {
 

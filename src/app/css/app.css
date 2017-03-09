@@ -108,3 +108,28 @@ table.shard-map { table-layout: fixed; }
 .info-text { color: #6F7579; }
 
 .noselect { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+.empty-stat {
+    font-size: 36px;
+    font-weight: 300;
+    text-align: center;
+    line-height: 40px;
+    min-width: 70px;
+    margin-right: 15px;
+}
+.main-stat {
+    font-size: 36px;
+    font-weight: 300;
+    float: left;
+    line-height: 40px;
+    min-width: 70px;
+    margin-right: 15px;
+}
+.detail-stat {
+    float: left;
+    line-height: 20px;
+}
+
+.checkbox inline {
+    padding-right: 6px;
+}

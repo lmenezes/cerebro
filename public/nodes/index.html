@@ -1,0 +1,126 @@
+<div class="row">
+  <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 form-group">
+    <input type="text" ng-model="filter.name"
+           class="form-control form-control-sm"
+           placeholder="filter nodes by name">
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 noselect">
+    <div class="checkbox">
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="filter.master">
+        <i class="fa fa-star"></i> master
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="filter.data">
+        <i class="fa fa-hdd-o"></i> data
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="filter.client">
+        <i class="fa fa-search"></i> client
+      </label>
+    </div>
+  </div>
+</div>
+
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th>
+      <ng-sort-by property="name" text="name"></ng-sort-by>
+    </th>
+    <th>
+      <ng-sort-by property="cpu.load" text="load"></ng-sort-by>
+    </th>
+    <th>
+      <ng-sort-by property="cpu.process" text="process cpu %"></ng-sort-by>
+    </th>
+    <th>
+      <ng-sort-by property="heap.percent" text="heap usage %"></ng-sort-by>
+    </th>
+    <th>
+      <ng-sort-by property="disk.percent" text="disk usage %"></ng-sort-by>
+    </th>
+    <th>
+      <ng-sort-by property="uptime" text="uptime"></ng-sort-by>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="node in nodes | orderBy:sortBy:reverse track by $index">
+    <td>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="node-badges title">
+            <div ng-show="node.master">
+              <i ng-show="node.current_master" class="fa fa-fw fa-star" title="current master"></i>
+              <i ng-show="!node.current_master" class="fa fa-fw fa-star-o" title="master eligible"></i>
+            </div>
+            <div ng-show="node.data">
+              <i class="fa fa-fw fa-hdd-o" title="data node"></i>
+            </div>
+            <div ng-show="node.client">
+              <i class="fa fa-fw fa-search" title="client node"></i>
+            </div>
+            <div ng-show="node.ingest">
+              <i class="fa fa-fw fa-crop" title="ingest node"></i>
+            </div>
+          </div>
+          <div class="node-info">
+            <div class="title">
+                  <span>
+                    {{node.name}}
+                  </span>
+            </div>
+            <div>
+              <small>{{node.host}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="node-labels">
+        <span class="label label-details">JVM: {{node.jvm}}</span>
+        <span class="label label-details">ES: {{node.version}}</span>
+      </div>
+    </td>
+    <td>
+      <div>
+        <span class="main-stat">{{node.cpu.load | number:2}}</span>
+      </div>
+    </td>
+    <td>
+      <div>
+        <span class="main-stat">{{node.cpu.process}}%</span>
+        <span class="detail-stat">
+          <div>os cpu: {{node.cpu.os}}%</div>
+        </span>
+      </div>
+    </td>
+    <td>
+      <div>
+        <span class="main-stat">{{node.heap.percent}}%</span>
+        <span class="detail-stat">
+          <div>used: {{node.heap.used}}</div>
+          <div>max: {{node.heap.max}}</div>
+        </span>
+      </div>
+    </td>
+    <td>
+      <div ng-show="node.disk.percent">
+        <span class="main-stat">{{node.disk.percent}}%</span>
+        <span class="detail-stat">
+          <div>available: {{node.disk.available | bytes}}</div>
+          <div>total: {{node.disk.total | bytes}}</div>
+        </span>
+      </div>
+      <div class="empty-stat" ng-hide="node.disk.percent">
+        -
+      </div>
+    </td>
+    <td>
+      <div>
+        <span class="main-stat">{{node.uptime | timeInterval}}</span>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
