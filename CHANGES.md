@@ -83,3 +83,16 @@ First cerebro release.
 #### Bug fixes
 - avoid parsing errors when ES requests fail
 - fixes select shard for relocation menu entry
+
+###v0.6.0 - March 9th, 2017
+
+#### Enhancements
+- support aws clusters
+- order list of clusters alphabetically
+- count primary and replicas on cluster overview
+- use password input field
+
+#### New features
+- support rest client history
+- nodes module
+
