@@ -27,7 +27,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   }
 
   def nodesStats(stats: Seq[String], target: ElasticServer) = {
-    val path = s"/_nodes/stats/${stats.mkString(",")}"
+    val path = s"/_nodes/stats/${stats.mkString(",")}?human=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
@@ -52,7 +52,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   }
 
   def nodes(flags: Seq[String], target: ElasticServer) = {
-    val path = s"/_nodes/_all/${flags.mkString(",")}"
+    val path = s"/_nodes/_all/${flags.mkString(",")}?human=true"
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 

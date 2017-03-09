@@ -23,6 +23,9 @@ POST        /overview/delete_indices                  controllers.ClusterOvervie
 POST        /overview/get_shard_stats                 controllers.ClusterOverviewController.getShardStats
 POST        /overview/relocate_shard                  controllers.ClusterOverviewController.relocateShard
 
+# Nodes module
+POST        /nodes                                    controllers.NodesController.index
+
 # Navbar module
 POST        /navbar                                   controllers.NavbarController.index
 
