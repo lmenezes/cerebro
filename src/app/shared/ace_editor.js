@@ -1,6 +1,5 @@
 function AceEditor(target) {
   // ace editor
-  ace.config.set('basePath', '/');
   this.editor = ace.edit(target);
   this.editor.setFontSize('10px');
   this.editor.setTheme('ace/theme/cerebro');
