@@ -96,3 +96,8 @@ First cerebro release.
 - support rest client history
 - nodes module
 
+###v0.6.1 - March 10th, 2017
+
+#### Bug fixes
+- correct play.i18n.langs format
+- set an application.home default
