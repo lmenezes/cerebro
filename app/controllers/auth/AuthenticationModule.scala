@@ -1,10 +1,11 @@
 package controllers.auth
 
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import controllers.auth.basic.BasicAuthService
 import controllers.auth.ldap.LDAPAuthService
 import play.api.Configuration
 
+@ImplementedBy(classOf[AuthenticationModuleImpl])
 trait AuthenticationModule {
 
   def authentication(username: String, password: String): Option[String]
@@ -13,6 +14,7 @@ trait AuthenticationModule {
 
 }
 
+@Singleton
 class AuthenticationModuleImpl @Inject()(config: Configuration) extends AuthenticationModule {
 
   val service = config.getString("auth.type") match {

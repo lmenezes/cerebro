@@ -1,10 +1,13 @@
 package elastic
 
+import com.google.inject.ImplementedBy
+import controllers.auth.AuthenticationModuleImpl
 import models.ElasticServer
 import play.api.libs.json._
 
 import scala.concurrent.Future
 
+@ImplementedBy(classOf[HTTPElasticClient])
 trait ElasticClient {
 
   def main(target: ElasticServer): Future[ElasticResponse]
