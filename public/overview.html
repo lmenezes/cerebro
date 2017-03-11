@@ -206,16 +206,36 @@
         </div>
         <div class="row row-condensed">
           <div class="col-lg-3 col-condensed">
-            <ng-progress value="node.heap.used_percent" max="100" text="'heap'"/>
+            <ng-progress
+              value="node.heap.used_percent"
+              max="100"
+              text="'heap'"
+              tooltip="'used: ' + (node.heap.used | bytes) + '\nmax: ' + (node.heap.max | bytes)"
+            />
           </div>
           <div class="col-lg-3 col-condensed">
-            <ng-progress value="node.disk.used_percent" max="100" text="'disk'"/>
+            <ng-progress
+              value="node.disk.used_percent"
+              max="100"
+              text="'disk'"
+              tooltip="'free: ' + (node.disk.free | bytes) + '\ntotal: ' + (node.disk.total | bytes)"
+            />
           </div>
           <div class="col-lg-3 col-condensed">
-            <ng-progress value="node.cpu_percent" max="100" text="'cpu'"/>
+            <ng-progress
+              value="node.cpu_percent"
+              max="100"
+              text="'cpu'"
+              tooltip="'process cpu: ' + node.cpu_percent + '%'"
+            />
           </div>
           <div class="col-lg-3 col-condensed">
-            <ng-progress value="node.load_average" max="node.available_processors" text="'load'"/>
+            <ng-progress
+              value="node.load_average"
+              max="node.available_processors"
+              text="'load'"
+              tooltip="'1min avg.: ' + (node.load_average | number:2)"
+            />
           </div>
         </div>
         <div ng-show="expandedView" class="node-labels">

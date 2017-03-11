@@ -38,8 +38,8 @@ object NodeSpec extends Specification {
         |    "max": 1037959168
         |  },
         |  "disk": {
-        |    "total_in_bytes": 249804886016,
-        |    "disk_free_in_bytes": 41567444992,
+        |    "total": 249804886016,
+        |    "free": 41567444992,
         |    "used_percent": 84
         |  }
         |}
@@ -74,8 +74,8 @@ object NodeSpec extends Specification {
         |    "max": 1037959168
         |  },
         |  "disk": {
-        |    "total_in_bytes": 249804886016,
-        |    "disk_free_in_bytes": 41567444992,
+        |    "total": 249804886016,
+        |    "free": 41567444992,
         |    "used_percent": 84
         |  }
         |}

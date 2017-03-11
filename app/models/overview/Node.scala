@@ -44,8 +44,8 @@ object Node {
     val freeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0l)
     val usedPercent = 100 - (100 * (freeInBytes.toFloat / totalInBytes.toFloat)).toInt
     Json.obj(
-      "total_in_bytes" -> JsNumber(totalInBytes),
-      "disk_free_in_bytes" -> JsNumber(freeInBytes),
+      "total" -> JsNumber(totalInBytes),
+      "free" -> JsNumber(freeInBytes),
       "used_percent" -> JsNumber(usedPercent)
     )
   }
