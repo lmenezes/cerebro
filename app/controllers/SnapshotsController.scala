@@ -4,8 +4,7 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.{ElasticClient, Error, Success}
-import models.commons.Indices
-import models.snapshot.{Repositories, Snapshots}
+import models.snapshot.{Repositories, Snapshots, Indices}
 import models.{CerebroResponse, Hosts}
 import play.api.libs.json.Json
 

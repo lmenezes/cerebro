@@ -21,11 +21,13 @@ describe('SnapshotController', function() {
       this.SnapshotsDataService.load = function(success, error) {
         success(data);
       }
+      spyOn(this.scope, 'refreshIndices').andCallThrough();
       spyOn(this.SnapshotsDataService, 'load').andCallThrough();
       this.scope.setup();
       expect(this.SnapshotsDataService.load).toHaveBeenCalled();
       expect(this.scope.repositories).toEqual(['repo 1', 'repo 2']);
       expect(this.scope.indices).toEqual(['idx 1', 'idx 2']);
+      expect(this.scope.refreshIndices).toHaveBeenCalled();
     });
     it('handles error while loading data', function() {
       this.SnapshotsDataService.load = function(success, error) {
@@ -170,6 +172,30 @@ describe('SnapshotController', function() {
       this.scope.repository = 'new value';
       this.scope.$digest();
       expect(this.scope.loadSnapshots).toHaveBeenCalled();
+    });
+  });
+
+  describe('watch showSpecialIndices', function() {
+    it('loads snapshots', function() {
+      spyOn(this.scope, 'refreshIndices').andReturn();
+      this.scope.showSpecialIndices = true;
+      this.scope.$digest();
+      expect(this.scope.refreshIndices).toHaveBeenCalled();
+    });
+  });
+
+  describe('refreshIndices', function() {
+    it('exclude special indices from visible indices', function() {
+      this.scope._indices = [{name: 'aaa', special: false}, {name: '.bbbb', special: true}];
+      this.scope.refreshIndices();
+      expect(this.scope.indices).toEqual([{name: 'aaa', special: false}]);
+    });
+    it('include special indices on list of visible indices', function() {
+      var indices = [{name: 'aaa', special: false}, {name: '.bbbb', special: true}];
+      this.scope._indices = indices;
+      this.scope.showSpecialIndices = true;
+      this.scope.refreshIndices();
+      expect(this.scope.indices).toEqual(indices);
     });
   });
 

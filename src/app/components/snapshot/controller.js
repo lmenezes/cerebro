@@ -2,8 +2,11 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
 'SnapshotsDataService', 'AlertService', 'ModalService',
   function($scope, SnapshotsDataService, AlertService, ModalService) {
 
+    $scope._indices = [];
     $scope.indices = [];
     $scope.repositories = [];
+
+    $scope.showSpecialIndices = false;
 
     $scope.repository = undefined;
     $scope.snapshots = [];
@@ -21,6 +24,10 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
       },
       true
     );
+
+    $scope.$watch('showSpecialIndices', function(current, previous) {
+      $scope.refreshIndices();
+    });
 
     $scope.loadSnapshots = function(repository) {
       if (repository) {
@@ -92,10 +99,21 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
       );
     };
 
+    $scope.refreshIndices = function() {
+      if (!$scope.showSpecialIndices) {
+        $scope.indices = $scope._indices.filter(function(i) {
+          return !i.special;
+        });
+      } else {
+        $scope.indices = $scope._indices;
+      }
+    };
+
     $scope.setup = function() {
       SnapshotsDataService.load(
         function(data) {
-          $scope.indices = data.indices;
+          $scope._indices = data.indices;
+          $scope.refreshIndices();
           $scope.repositories = data.repositories;
         },
         function(error) {
