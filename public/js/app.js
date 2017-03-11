@@ -1011,6 +1011,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       OverviewDataService.nodeStats(node, displayInfo, error);
     };
 
+    $scope.indexStats = function(index) {
+      OverviewDataService.indexStats(index, displayInfo, error);
+    };
+
     $scope.getIndexSettings = function(index) {
       OverviewDataService.getIndexSettings(index, displayInfo, error);
     };
@@ -1134,6 +1138,11 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
 
     this.nodeStats = function(node, success, error) {
       DataService.send('commons/get_node_stats', {node: node}, success, error);
+    };
+
+    this.indexStats = function(index, success, error) {
+      var data = {index: index};
+      DataService.send('commons/get_index_stats', data, success, error);
     };
 
     this.getIndexMapping = function(index, success, error) {

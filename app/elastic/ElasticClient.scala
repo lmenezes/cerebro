@@ -1,7 +1,6 @@
 package elastic
 
 import com.google.inject.ImplementedBy
-import controllers.auth.AuthenticationModuleImpl
 import models.ElasticServer
 import play.api.libs.json._
 
@@ -19,6 +18,8 @@ trait ElasticClient {
   def nodesStats(stats: Seq[String], target: ElasticServer): Future[ElasticResponse]
 
   def nodeStats(node: String, target: ElasticServer): Future[ElasticResponse]
+
+  def indexStats(index: String, target: ElasticServer): Future[ElasticResponse]
 
   def clusterSettings(target: ElasticServer): Future[ElasticResponse]
 

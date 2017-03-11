@@ -105,6 +105,9 @@
               <li ng-click="getIndexMapping(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-code"> </i> show mappings</a>
               </li>
+              <li ng-click="indexStats(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                <a target="_self"><i class="fa fa-fw fa-info"> </i> show stats</a>
+              </li>
               <li ng-show="index.closed" ng-click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog"
                   target="_self">
                 <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open index</a>

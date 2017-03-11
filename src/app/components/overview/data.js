@@ -57,6 +57,11 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
       DataService.send('commons/get_node_stats', {node: node}, success, error);
     };
 
+    this.indexStats = function(index, success, error) {
+      var data = {index: index};
+      DataService.send('commons/get_index_stats', data, success, error);
+    };
+
     this.getIndexMapping = function(index, success, error) {
       var data = {index: index};
       DataService.send('commons/get_index_mapping', data, success, error);

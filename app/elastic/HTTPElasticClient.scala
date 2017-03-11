@@ -31,6 +31,11 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(s"${target.host}$path", "GET", None, target.authentication)
   }
 
+  def indexStats(index: String, target: ElasticServer): Future[ElasticResponse] = {
+    val path = s"/$index/_stats?human=true"
+    execute(s"${target.host}$path", "GET", None, target.authentication)
+  }
+
   def nodeStats(node: String, target: ElasticServer) = {
     val path = s"/_nodes/$node/stats?human"
     execute(s"${target.host}$path", "GET", None, target.authentication)

@@ -262,4 +262,18 @@ describe('OverviewController', function() {
     );
   });
 
+  describe('indexStats', function() {
+    it('displays index stats',
+      function() {
+        spyOn(this.OverviewDataService, 'indexStats').andReturn();
+        this.scope.indexStats('idx');
+        expect(this.OverviewDataService.indexStats).toHaveBeenCalledWith(
+          'idx',
+          jasmine.any(Function),
+          jasmine.any(Function)
+        );
+      }
+    );
+  });
+
 });

@@ -45,4 +45,10 @@ class CommonsController @Inject()(val authentication: AuthenticationModule,
     }
   }
 
+  def getIndexStats = process { request =>
+    client.indexStats(request.get("index"), request.target).map { response =>
+      CerebroResponse(response.status, response.body)
+    }
+  }
+
 }

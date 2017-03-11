@@ -250,6 +250,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       OverviewDataService.nodeStats(node, displayInfo, error);
     };
 
+    $scope.indexStats = function(index) {
+      OverviewDataService.indexStats(index, displayInfo, error);
+    };
+
     $scope.getIndexSettings = function(index) {
       OverviewDataService.getIndexSettings(index, displayInfo, error);
     };
