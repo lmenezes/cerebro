@@ -30,59 +30,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       clusterRequest('navbar', {}, success, error);
     };
 
-    // ---------- Overview ----------
-    this.getOverview = function(success, error) {
-      clusterRequest('overview', {}, success, error);
-    };
-
-    this.closeIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/close_indices', data, success, error);
-    };
-
-    this.openIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/open_indices', data, success, error);
-    };
-
-    this.forceMerge = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/force_merge', data, success, error);
-    };
-
-    this.refreshIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/refresh_indices', data, success, error);
-    };
-
-    this.clearIndexCache = function(index, success, error) {
-      var params = {indices: index};
-      clusterRequest('overview/clear_indices_cache', params, success, error);
-    };
-
-    this.deleteIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/delete_indices', data, success, error);
-    };
-
-    this.enableShardAllocation = function(success, error) {
-      clusterRequest('overview/enable_shard_allocation', {}, success, error);
-    };
-
-    this.disableShardAllocation = function(success, error) {
-      clusterRequest('overview/disable_shard_allocation', {}, success, error);
-    };
-
-    this.getShardStats = function(index, node, shard, success, error) {
-      var data = {index: index, node: node, shard: shard};
-      clusterRequest('overview/get_shard_stats', data, success, error);
-    };
-
-    this.relocateShard = function(shard, index, from, to, success, error) {
-      var data = {shard: shard, index: index, from: from, to: to};
-      clusterRequest('overview/relocate_shard', data, success, error);
-    };
-
     // ---------- Create index ----------
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};
@@ -101,20 +48,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     this.getNodes = function(success, error) {
       clusterRequest('commons/nodes', {}, success, error);
-    };
-
-    this.getIndexSettings = function(index, success, error) {
-      var data = {index: index};
-      clusterRequest('commons/get_index_settings', data, success, error);
-    };
-
-    this.getIndexMapping = function(index, success, error) {
-      var data = {index: index};
-      clusterRequest('commons/get_index_mapping', data, success, error);
-    };
-
-    this.nodeStats = function(node, success, error) {
-      clusterRequest('commons/get_node_stats', {node: node}, success, error);
     };
 
     // ---------- Analysis ----------

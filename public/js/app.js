@@ -760,9 +760,9 @@ angular.module('cerebro').factory('NodesDataService', ['DataService',
 ]);
 
 angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
-  '$window', '$location', 'DataService', 'AlertService', 'ModalService',
+  '$window', '$location', 'OverviewDataService', 'AlertService', 'ModalService',
   'RefreshService',
-  function($scope, $http, $window, $location, DataService, AlertService,
+  function($scope, $http, $window, $location, OverviewDataService, AlertService,
            ModalService, RefreshService) {
 
     $scope.data = undefined;
@@ -809,7 +809,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     );
 
     $scope.refresh = function() {
-      DataService.getOverview(
+      OverviewDataService.getOverview(
         function(data) {
           $scope.data = data;
           $scope.setIndices(data.indices);
@@ -877,7 +877,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Open ' + index + '?',
         function() {
-          DataService.openIndex(index, success, error);
+          OverviewDataService.openIndex(index, success, error);
         }
       );
     };
@@ -886,7 +886,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Close ' + index + '?',
         function() {
-          DataService.closeIndex(index, success, error);
+          OverviewDataService.closeIndex(index, success, error);
         }
       );
     };
@@ -895,7 +895,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Delete ' + index + '?',
         function() {
-          DataService.deleteIndex(index, success, error);
+          OverviewDataService.deleteIndex(index, success, error);
         }
       );
     };
@@ -904,7 +904,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Clear ' + index + ' cache?',
         function() {
-          DataService.clearIndexCache(index, success, error);
+          OverviewDataService.clearIndexCache(index, success, error);
         }
       );
     };
@@ -913,7 +913,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Refresh index ' + index + '?',
         function() {
-          DataService.refreshIndex(index, success, error);
+          OverviewDataService.refreshIndex(index, success, error);
         }
       );
     };
@@ -922,7 +922,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Optimize index ' + index + '?',
         function() {
-          DataService.forceMerge(index, success, error);
+          OverviewDataService.forceMerge(index, success, error);
         }
       );
     };
@@ -936,7 +936,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Close all ' + indices.length + ' selected indices?',
         function() {
-          DataService.closeIndex(indices.join(','), success, error);
+          OverviewDataService.closeIndex(indices.join(','), success, error);
         }
       );
     };
@@ -948,7 +948,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Open all ' + indices.length + ' selected indices?',
         function() {
-          DataService.openIndex(indices.join(','), success, error);
+          OverviewDataService.openIndex(indices.join(','), success, error);
         }
       );
     };
@@ -960,7 +960,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Optimize all ' + indices.length + ' selected indices?',
         function() {
-          DataService.forceMerge(indices.join(','), success, error);
+          OverviewDataService.forceMerge(indices.join(','), success, error);
         }
       );
     };
@@ -972,7 +972,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Refresh all ' + indices.length + ' selected indices?',
         function() {
-          DataService.refreshIndex(indices.join(','), success, error);
+          OverviewDataService.refreshIndex(indices.join(','), success, error);
         }
       );
     };
@@ -984,7 +984,9 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Clear all ' + indices.length + ' selected indices cache?',
         function() {
-          DataService.clearIndexCache(indices.join(','), success, error);
+          OverviewDataService.clearIndexCache(
+            indices.join(','), success, error
+          );
         }
       );
     };
@@ -996,33 +998,33 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       ModalService.promptConfirmation(
         'Delete all ' + indices.length + ' selected indices?',
         function() {
-          DataService.deleteIndex(indices.join(','), success, error);
+          OverviewDataService.deleteIndex(indices.join(','), success, error);
         }
       );
     };
 
     $scope.shardStats = function(index, node, shard) {
-      DataService.getShardStats(index, node, shard, displayInfo, error);
+      OverviewDataService.getShardStats(index, node, shard, displayInfo, error);
     };
 
     $scope.nodeStats = function(node) {
-      DataService.nodeStats(node, displayInfo, error);
+      OverviewDataService.nodeStats(node, displayInfo, error);
     };
 
     $scope.getIndexSettings = function(index) {
-      DataService.getIndexSettings(index, displayInfo, error);
+      OverviewDataService.getIndexSettings(index, displayInfo, error);
     };
 
     $scope.getIndexMapping = function(index) {
-      DataService.getIndexMapping(index, displayInfo, error);
+      OverviewDataService.getIndexMapping(index, displayInfo, error);
     };
 
     $scope.disableShardAllocation = function() {
-      DataService.disableShardAllocation(success, error);
+      OverviewDataService.disableShardAllocation(success, error);
     };
 
     $scope.enableShardAllocation = function() {
-      DataService.enableShardAllocation(success, error);
+      OverviewDataService.enableShardAllocation(success, error);
     };
 
     $scope.showIndexSettings = function(index) {
@@ -1034,8 +1036,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.relocateShard = function(node) {
-      var shard = $scope.relocatingShard;
-      DataService.relocateShard(shard.shard, shard.index, shard.node, node.id,
+      var s = $scope.relocatingShard;
+      OverviewDataService.relocateShard(s.shard, s.index, s.node, node.id,
         function(response) {
           $scope.relocatingShard = undefined;
           RefreshService.refresh();
@@ -1074,6 +1076,80 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
   }]);
+
+angular.module('cerebro').factory('OverviewDataService', ['DataService',
+  function(DataService) {
+
+    this.getOverview = function(success, error) {
+      DataService.send('overview', {}, success, error);
+    };
+
+    this.closeIndex = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/close_indices', data, success, error);
+    };
+
+    this.openIndex = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/open_indices', data, success, error);
+    };
+
+    this.forceMerge = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/force_merge', data, success, error);
+    };
+
+    this.refreshIndex = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/refresh_indices', data, success, error);
+    };
+
+    this.clearIndexCache = function(index, success, error) {
+      var params = {indices: index};
+      DataService.send('overview/clear_indices_cache', params, success, error);
+    };
+
+    this.deleteIndex = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/delete_indices', data, success, error);
+    };
+
+    this.enableShardAllocation = function(success, error) {
+      DataService.send('overview/enable_shard_allocation', {}, success, error);
+    };
+
+    this.disableShardAllocation = function(success, error) {
+      DataService.send('overview/disable_shard_allocation', {}, success, error);
+    };
+
+    this.getShardStats = function(index, node, shard, success, error) {
+      var data = {index: index, node: node, shard: shard};
+      DataService.send('overview/get_shard_stats', data, success, error);
+    };
+
+    this.relocateShard = function(shard, index, from, to, success, error) {
+      var data = {shard: shard, index: index, from: from, to: to};
+      DataService.send('overview/relocate_shard', data, success, error);
+    };
+
+    this.nodeStats = function(node, success, error) {
+      DataService.send('commons/get_node_stats', {node: node}, success, error);
+    };
+
+    this.getIndexMapping = function(index, success, error) {
+      var data = {index: index};
+      DataService.send('commons/get_index_mapping', data, success, error);
+    };
+
+    this.getIndexSettings = function(index, success, error) {
+      var data = {index: index};
+      DataService.send('commons/get_index_settings', data, success, error);
+    };
+
+    return this;
+
+  }
+]);
 
 angular.module('cerebro').controller('RepositoriesController', ['$scope',
 'RepositoriesDataService', 'AlertService', 'ModalService',
@@ -2573,59 +2649,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       clusterRequest('navbar', {}, success, error);
     };
 
-    // ---------- Overview ----------
-    this.getOverview = function(success, error) {
-      clusterRequest('overview', {}, success, error);
-    };
-
-    this.closeIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/close_indices', data, success, error);
-    };
-
-    this.openIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/open_indices', data, success, error);
-    };
-
-    this.forceMerge = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/force_merge', data, success, error);
-    };
-
-    this.refreshIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/refresh_indices', data, success, error);
-    };
-
-    this.clearIndexCache = function(index, success, error) {
-      var params = {indices: index};
-      clusterRequest('overview/clear_indices_cache', params, success, error);
-    };
-
-    this.deleteIndex = function(index, success, error) {
-      var data = {indices: index};
-      clusterRequest('overview/delete_indices', data, success, error);
-    };
-
-    this.enableShardAllocation = function(success, error) {
-      clusterRequest('overview/enable_shard_allocation', {}, success, error);
-    };
-
-    this.disableShardAllocation = function(success, error) {
-      clusterRequest('overview/disable_shard_allocation', {}, success, error);
-    };
-
-    this.getShardStats = function(index, node, shard, success, error) {
-      var data = {index: index, node: node, shard: shard};
-      clusterRequest('overview/get_shard_stats', data, success, error);
-    };
-
-    this.relocateShard = function(shard, index, from, to, success, error) {
-      var data = {shard: shard, index: index, from: from, to: to};
-      clusterRequest('overview/relocate_shard', data, success, error);
-    };
-
     // ---------- Create index ----------
     this.createIndex = function(index, metadata, success, error) {
       var data = {index: index, metadata: metadata};
@@ -2644,20 +2667,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     this.getNodes = function(success, error) {
       clusterRequest('commons/nodes', {}, success, error);
-    };
-
-    this.getIndexSettings = function(index, success, error) {
-      var data = {index: index};
-      clusterRequest('commons/get_index_settings', data, success, error);
-    };
-
-    this.getIndexMapping = function(index, success, error) {
-      var data = {index: index};
-      clusterRequest('commons/get_index_mapping', data, success, error);
-    };
-
-    this.nodeStats = function(node, success, error) {
-      clusterRequest('commons/get_node_stats', {node: node}, success, error);
     };
 
     // ---------- Analysis ----------

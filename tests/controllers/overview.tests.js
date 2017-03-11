@@ -6,13 +6,13 @@ describe('OverviewController', function() {
     this.scope = $rootScope.$new();
     this.$http = $injector.get('$http');
     this.$window = $injector.get('$window');
-    this.DataService = $injector.get('DataService');
+    this.OverviewDataService = $injector.get('OverviewDataService');
     this.AlertService = $injector.get('AlertService');
     this.ModalService = $injector.get('ModalService');
     this.RefreshService = $injector.get('RefreshService');
     this.createController = function() {
       return $controller('OverviewController',
-        {$scope: this.scope}, this.$http, this.$window, this.DataService, this.AlertService, this.ModalService, this.RefreshService);
+        {$scope: this.scope}, this.$http, this.$window, this.OverviewDataService, this.AlertService, this.ModalService, this.RefreshService);
     };
     this._controller = this.createController();
   }));
@@ -47,7 +47,7 @@ describe('OverviewController', function() {
         };
         spyOn(this.RefreshService, 'lastUpdate').andCallThrough();
         spyOn(this.scope, 'refresh').andReturn(true);
-        spyOn(this.DataService, 'getOverview').andReturn();
+        spyOn(this.OverviewDataService, 'getOverview').andReturn();
         this.scope.$digest();
         expect(this.scope.refresh.callCount).toEqual(1);
         this.scope.$digest(); // lastUpdate didnt change
@@ -74,14 +74,14 @@ describe('OverviewController', function() {
           special_indices: 3,
           shard_allocation: true
         };
-        this.DataService.getOverview = function(success, error) {
+        this.OverviewDataService.getOverview = function(success, error) {
           success(data);
         }
-        spyOn(this.DataService, 'getOverview').andCallThrough();
+        spyOn(this.OverviewDataService, 'getOverview').andCallThrough();
         spyOn(this.scope, 'setIndices').andReturn(true);
         spyOn(this.scope, 'setNodes').andReturn(true);
         this.scope.refresh();
-        expect(this.DataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+        expect(this.OverviewDataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.unassigned_shards).toEqual(1);
         expect(this.scope.initializing_shards).toEqual(3);
         expect(this.scope.relocating_shards).toEqual(2);
@@ -96,13 +96,13 @@ describe('OverviewController', function() {
     
     it('cleans state and alerts users if refreshing data fails',
       function() {
-        this.DataService.getOverview = function(success, error) {
+        this.OverviewDataService.getOverview = function(success, error) {
           error('kaput');
         }
-        spyOn(this.DataService, 'getOverview').andCallThrough();
+        spyOn(this.OverviewDataService, 'getOverview').andCallThrough();
         spyOn(this.AlertService, 'error').andReturn();
         this.scope.refresh();
-        expect(this.DataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
+        expect(this.OverviewDataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.unassigned_shards).toEqual(0);
         expect(this.scope.closed_indices).toEqual(0);
         expect(this.scope.special_indices).toEqual(0);
@@ -116,7 +116,7 @@ describe('OverviewController', function() {
     it('updates data when index name filter changes',
       function() {
         this.scope.data = {indices: [], nodes: []};
-        spyOn(this.DataService, 'getOverview').andReturn(true);
+        spyOn(this.OverviewDataService, 'getOverview').andReturn(true);
         this.scope.$digest(); // loads data for the first time
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
@@ -130,7 +130,7 @@ describe('OverviewController', function() {
     it('refreshes list of indices when closed filter changes',
       function() {
         this.scope.data = {indices: [], nodes: []};
-        spyOn(this.DataService, 'getOverview').andReturn(true);
+        spyOn(this.OverviewDataService, 'getOverview').andReturn(true);
         this.scope.$digest(); // loads data for the first time
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
@@ -144,7 +144,7 @@ describe('OverviewController', function() {
     it('refreshes list of indices when special filter changes',
       function() {
         this.scope.data = {indices: [], nodes: []};
-        spyOn(this.DataService, 'getOverview').andReturn(true);
+        spyOn(this.OverviewDataService, 'getOverview').andReturn(true);
         this.scope.$digest(); // loads data for the first time
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
@@ -158,7 +158,7 @@ describe('OverviewController', function() {
     it('refreshes list of indices when healthy filter changes',
       function() {
         this.scope.data = {indices: [], nodes: []};
-        spyOn(this.DataService, 'getOverview').andReturn(true);
+        spyOn(this.OverviewDataService, 'getOverview').andReturn(true);
         this.scope.$digest(); // loads data for the first time
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
@@ -172,7 +172,7 @@ describe('OverviewController', function() {
     it('refreshes list of indices when sorting changes',
       function() {
         this.scope.data = {indices: [], nodes: []};
-        spyOn(this.DataService, 'getOverview').andReturn(true);
+        spyOn(this.OverviewDataService, 'getOverview').andReturn(true);
         this.scope.$digest(); // loads data for the first time
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
@@ -189,14 +189,14 @@ describe('OverviewController', function() {
     it('relocates selected shard',
       function() {
         this.scope.relocatingShard = {shard: 1, index: 'i', node: 'n'};
-        this.DataService.relocateShard = function(s, i, n, n2, success, e) {
+        this.OverviewDataService.relocateShard = function(s, i, n, n2, success, e) {
           success('ok');
         };
-        spyOn(this.DataService, 'relocateShard').andCallThrough();
+        spyOn(this.OverviewDataService, 'relocateShard').andCallThrough();
         spyOn(this.AlertService, 'info').andReturn(true);
         spyOn(this.RefreshService, 'refresh').andReturn(true);
         this.scope.relocateShard({id: 'n2'});
-        expect(this.DataService.relocateShard).toHaveBeenCalledWith(
+        expect(this.OverviewDataService.relocateShard).toHaveBeenCalledWith(
           1, 'i', 'n', 'n2', jasmine.any(Function), jasmine.any(Function)
         );
         expect(this.RefreshService.refresh).toHaveBeenCalled();
@@ -210,13 +210,13 @@ describe('OverviewController', function() {
       function() {
         var shard = {shard: 1, index: 'i', node: 'n'};
         this.scope.relocatingShard = shard;
-        this.DataService.relocateShard = function(s, i, n, n2, s2, error) {
+        this.OverviewDataService.relocateShard = function(s, i, n, n2, s2, error) {
           error('ko');
         };
-        spyOn(this.DataService, 'relocateShard').andCallThrough();
+        spyOn(this.OverviewDataService, 'relocateShard').andCallThrough();
         spyOn(this.AlertService, 'error').andReturn(true);
         this.scope.relocateShard({id: 'n2'});
-        expect(this.DataService.relocateShard).toHaveBeenCalledWith(
+        expect(this.OverviewDataService.relocateShard).toHaveBeenCalledWith(
           1, 'i', 'n', 'n2', jasmine.any(Function), jasmine.any(Function)
         );
         expect(this.AlertService.error).toHaveBeenCalledWith(
