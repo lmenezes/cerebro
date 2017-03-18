@@ -21,7 +21,11 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
     env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
     env.put(Context.PROVIDER_URL, s"${config.url}/${config.baseDN}")
     env.put(Context.SECURITY_AUTHENTICATION, config.method)
-    env.put(Context.SECURITY_PRINCIPAL, username)
+    if (username.endsWith(s"@${config.domain}")) {
+      env.put(Context.SECURITY_PRINCIPAL, username)
+    } else {
+      env.put(Context.SECURITY_PRINCIPAL, s"$username@${config.domain}")
+    }
     env.put(Context.SECURITY_CREDENTIALS, password)
 
     try {
