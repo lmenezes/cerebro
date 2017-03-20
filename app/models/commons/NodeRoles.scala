@@ -10,6 +10,10 @@ case class NodeRoles(master: Boolean, data: Boolean, ingest: Boolean) {
 
 object NodeRoles {
 
+  private def truthy(value: String): Boolean = {
+    value.equals("true") || value.equals("yes")
+  }
+
   def apply(nodeInfo: JsValue): NodeRoles = {
     (nodeInfo \ "roles").asOpt[JsArray] match {
       case Some(JsArray(roles)) => // 5.X
@@ -20,9 +24,9 @@ object NodeRoles {
         )
 
       case None => // 2.X
-        val master = (nodeInfo \ "attributes" \ "master").asOpt[String].getOrElse("true").equals("true")
-        val data = (nodeInfo \ "attributes" \ "data").asOpt[String].getOrElse("true").equals("true")
-        val client = (nodeInfo \ "attributes" \ "client").asOpt[String].getOrElse("false").equals("true")
+        val master = truthy((nodeInfo \ "attributes" \ "master").asOpt[String].getOrElse("true"))
+        val data = truthy((nodeInfo \ "attributes" \ "data").asOpt[String].getOrElse("true"))
+        val client = truthy((nodeInfo \ "attributes" \ "client").asOpt[String].getOrElse("false"))
 
         NodeRoles(
           master && !client,
