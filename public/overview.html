@@ -135,9 +135,9 @@
             </ul>
           </div>
           <div class="subtitle">
-            <span>
-              <i class="fa fa-tag" ng-show="index.aliases[0]"></i> {{index.aliases[0]}}&nbsp;
-            </span>
+            <div class="title" ng-repeat="alias in index.aliases | orderBy track by $index">
+              <i class="fa fa-tag"></i> {{alias}}
+            </div>
           </div>
           <div class="detail">
             <span ng-hide="index.closed">
