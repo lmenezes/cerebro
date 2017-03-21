@@ -101,3 +101,20 @@ First cerebro release.
 #### Bug fixes
 - correct play.i18n.langs format
 - set an application.home default
+
+###v0.6.2 - March 21st, 2017
+
+#### Bug fixes
+- consider initializing/relocating/unassigned shards as unhealthy
+- fixed showSpecialIndices toggle on snapshot
+- recognise roles set with yes/no
+
+#### Enhancements
+- moved internal play settings from config file
+- overview tooltips on node stats
+- do not require user-domain on LDAP login
+- shorter classpath for init script
+
+#### New features
+- support for custom base path
+- added index stats action to overview
