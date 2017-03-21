@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
 )
 
 lazy val root = (project in file(".")).
-  enablePlugins(PlayScala, BuildInfoPlugin).
+  enablePlugins(PlayScala, BuildInfoPlugin, LauncherJarPlugin).
   settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "models"
