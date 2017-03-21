@@ -13,6 +13,7 @@ import play.api.libs.json.{JsArray, JsString, Json}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 import scala.util.control.NonFatal
+import play.api.Logger
 
 class RestController @Inject()(val authentication: AuthenticationModule,
                                val hosts: Hosts,
@@ -28,7 +29,7 @@ class RestController @Inject()(val authentication: AuthenticationModule,
         val bodyAsString = body.map(_.toString).getOrElse("{}")
         val username = request.user.map(_.name).getOrElse("")
         Try(restHistoryDAO.save(RestRequest(path, method, bodyAsString, username, new Date(System.currentTimeMillis)))).recover {
-          case DAOException(msg, e) => logger.error(msg, e)
+          case DAOException(msg, e) => Logger.error(msg, e)
         }
         CerebroResponse(s.status, s.body)
 

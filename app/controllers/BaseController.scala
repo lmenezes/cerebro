@@ -1,10 +1,10 @@
 package controllers
 
-import controllers.auth.AuthenticationModule
+import controllers.auth.{AuthRequest, AuthenticationModule}
 import exceptions.MissingRequiredParamException
 import models.{CerebroRequest, CerebroResponse, Hosts}
 import play.api.Logger
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Controller, Result}
 
 import scala.concurrent.Future
@@ -16,8 +16,6 @@ trait BaseController extends Controller with AuthSupport {
 
   val hosts: Hosts
 
-  protected val logger = Logger("elastic")
-
   type RequestProcessor = (CerebroRequest) => Future[Result]
 
   final def process(processor: RequestProcessor) = AuthAction(authentication).async(parse.json) { request =>
@@ -25,10 +23,15 @@ trait BaseController extends Controller with AuthSupport {
       processor(CerebroRequest(request, hosts))
     } catch {
       case e: MissingRequiredParamException =>
-        Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage))) // FIXME: proper error handling
+        Future.successful(CerebroResponse(400, Json.obj("error" -> e.getMessage)))
       case NonFatal(e) =>
-        Future.successful(CerebroResponse(500, Json.obj("error" -> "Error"))) // FIXME: proper error handling
+        Logger.error(s"Error processing request [${formatRequest(request)}]", e)
+        Future.successful(CerebroResponse(500, Json.obj("error" -> e.getMessage)))
     }
+  }
+
+  private def formatRequest(request: AuthRequest[JsValue]): String = {
+    s"path: ${request.uri}, body: ${request.body.toString}"
   }
 
 }
