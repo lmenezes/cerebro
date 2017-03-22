@@ -118,3 +118,12 @@ First cerebro release.
 #### New features
 - support for custom base path
 - added index stats action to overview
+
+###v0.6.3 - March 22nd, 2017
+
+#### Bug fixes
+- fixed node stats danger indication in overview
+
+#### Enhancements
+- display all index aliases on overview
+- improved error messages
