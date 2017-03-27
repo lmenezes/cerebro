@@ -3,9 +3,7 @@ package models.commons
 import play.api.libs.json.{JsArray, JsString, JsValue}
 
 case class NodeRoles(master: Boolean, data: Boolean, ingest: Boolean) {
-
-  def client: Boolean = !master && !data && !ingest
-
+  def client: Boolean = !master && !data
 }
 
 object NodeRoles {
