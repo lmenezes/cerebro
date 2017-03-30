@@ -127,3 +127,11 @@ First cerebro release.
 #### Enhancements
 - display all index aliases on overview
 - improved error messages
+
+###v0.6.4 - March 30th, 2017
+
+#### Bug fixes
+- use relative path for authentication action
+
+#### Enhancements
+- support indices with special characters (for ES < 2.X))
