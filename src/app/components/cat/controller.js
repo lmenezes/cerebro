@@ -32,9 +32,14 @@ angular.module('cerebro').controller('CatController', ['$scope',
       CatDataService.get(
         api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
         function(data) {
-          $scope.headers = Object.keys(data[0]);
-          $scope.sort($scope.headers[0]);
-          $scope.data = data;
+          if (data.length) {
+            $scope.headers = Object.keys(data[0]);
+            $scope.sort($scope.headers[0]);
+            $scope.data = data;
+          } else {
+            $scope.headers = [];
+            $scope.data = [];
+          }
         },
         function(error) {
           AlertService.error('Error executing request', error);

@@ -73,6 +73,17 @@ describe('CatController', function() {
         jasmine.any(Function)
       );
     });
+    it('cleans up in case of empty response', function() {
+      this.scope.headers = [1, 2, 3];
+      this.scope.data = [1, 2, 3];
+      this.CatDataService.get = function(api, success, error) {
+        success([]);
+      };
+      spyOn(this.CatDataService, 'get').andCallThrough();
+      this.scope.get('foo');
+      expect(this.scope.headers).toEqual([]);
+      expect(this.scope.data).toEqual([]);
+    });
     it('alerts in case of failure', function() {
       this.CatDataService.get = function(api, success, error) {
         error('failed!');
