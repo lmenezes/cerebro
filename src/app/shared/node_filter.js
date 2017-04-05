@@ -1,12 +1,15 @@
-function NodeFilter(name, data, master, client, timestamp) {
+function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.name = name;
   this.data = data;
   this.master = master;
-  this.client = client;
+  this.ingest = ingest;
+  this.coordinating = coordinating;
   this.timestamp = timestamp;
 
   this.clone = function() {
-    return new NodeFilter(this.name, this.data, this.master, this.client);
+    return new NodeFilter(
+      this.name, this.data, this.master, this.ingest, this.coordinating
+    );
   };
 
   this.getSorting = function() {
@@ -19,13 +22,15 @@ function NodeFilter(name, data, master, client, timestamp) {
       this.name == other.name &&
       this.data == other.data &&
       this.master == other.master &&
-      this.client == other.client &&
+      this.ingest == other.ingest &&
+      this.coordinating == other.coordinating &&
       this.timestamp == other.timestamp
     );
   };
 
   this.isBlank = function() {
-    return !this.name && (this.data && this.master && this.client);
+    return !this.name &&
+      (this.data && this.master && this.ingest && this.coordinating);
   };
 
   this.matches = function(node) {
@@ -40,7 +45,8 @@ function NodeFilter(name, data, master, client, timestamp) {
     return (
       node.data && this.data ||
       node.master && this.master ||
-      node.client && this.client
+      node.ingest && this.ingest ||
+      node.coordinating && this.coordinating
     );
   };
 

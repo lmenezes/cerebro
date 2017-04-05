@@ -4,7 +4,7 @@ import play.api.libs.json.{JsArray, JsString, JsValue}
 
 case class NodeRoles(master: Boolean, data: Boolean, ingest: Boolean) {
 
-  def client: Boolean = !master && !data && !ingest
+  def coordinating: Boolean = !master && !data && !ingest
 
 }
 

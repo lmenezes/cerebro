@@ -693,7 +693,7 @@ angular.module('cerebro').controller('NodesController', ['$scope',
     $scope.sortBy = 'name';
     $scope.reverse = false;
 
-    $scope.filter = new NodeFilter('', true, true, true, 0);
+    $scope.filter = new NodeFilter('', true, true, true, true, 0);
 
     $scope.$watch(
       function() {
@@ -777,7 +777,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.shardAllocation = true;
 
     $scope.indices_filter = new IndexFilter('', true, false, true, true, 0);
-    $scope.nodes_filter = new NodeFilter('', true, false, false, 0);
+    $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
 
     $scope.getPageSize = function() {
       return Math.max(Math.round($window.innerWidth / 280), 1);
@@ -1974,15 +1974,18 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
 
 }
 
-function NodeFilter(name, data, master, client, timestamp) {
+function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.name = name;
   this.data = data;
   this.master = master;
-  this.client = client;
+  this.ingest = ingest;
+  this.coordinating = coordinating;
   this.timestamp = timestamp;
 
   this.clone = function() {
-    return new NodeFilter(this.name, this.data, this.master, this.client);
+    return new NodeFilter(
+      this.name, this.data, this.master, this.ingest, this.coordinating
+    );
   };
 
   this.getSorting = function() {
@@ -1995,13 +1998,15 @@ function NodeFilter(name, data, master, client, timestamp) {
       this.name == other.name &&
       this.data == other.data &&
       this.master == other.master &&
-      this.client == other.client &&
+      this.ingest == other.ingest &&
+      this.coordinating == other.coordinating &&
       this.timestamp == other.timestamp
     );
   };
 
   this.isBlank = function() {
-    return !this.name && (this.data && this.master && this.client);
+    return !this.name &&
+      (this.data && this.master && this.ingest && this.coordinating);
   };
 
   this.matches = function(node) {
@@ -2016,7 +2021,8 @@ function NodeFilter(name, data, master, client, timestamp) {
     return (
       node.data && this.data ||
       node.master && this.master ||
-      node.client && this.client
+      node.ingest && this.ingest ||
+      node.coordinating && this.coordinating
     );
   };
 

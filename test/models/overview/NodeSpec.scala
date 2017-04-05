@@ -29,7 +29,7 @@ object NodeSpec extends Specification {
         |  "cpu_percent": 0,
         |  "master": true,
         |  "data": true,
-        |  "client": false,
+        |  "coordinating": false,
         |  "ingest": false,
         |  "heap": {
         |    "used": 28420720,
@@ -65,7 +65,7 @@ object NodeSpec extends Specification {
         |  "cpu_percent": 0,
         |  "master": true,
         |  "data": true,
-        |  "client": false,
+        |  "coordinating": false,
         |  "ingest": false,
         |  "heap": {
         |    "used": 28420720,

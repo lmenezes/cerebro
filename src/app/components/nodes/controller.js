@@ -8,7 +8,7 @@ angular.module('cerebro').controller('NodesController', ['$scope',
     $scope.sortBy = 'name';
     $scope.reverse = false;
 
-    $scope.filter = new NodeFilter('', true, true, true, 0);
+    $scope.filter = new NodeFilter('', true, true, true, true, 0);
 
     $scope.$watch(
       function() {

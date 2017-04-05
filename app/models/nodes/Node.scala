@@ -22,7 +22,7 @@ object Node {
     val roles = NodeRoles(info)
     Json.obj(
       "master" -> JsBoolean(roles.master),
-      "client" -> JsBoolean(roles.client),
+      "coordinating" -> JsBoolean(roles.coordinating),
       "ingest" -> JsBoolean(roles.ingest),
       "data" -> JsBoolean(roles.data)
     )

@@ -27,7 +27,7 @@ object Node {
       "cpu_percent" -> cpuPercent(stats),
       "master" -> JsBoolean(nodeRoles.master),
       "data" -> JsBoolean(nodeRoles.data),
-      "client" -> JsBoolean(nodeRoles.client),
+      "coordinating" -> JsBoolean(nodeRoles.coordinating),
       "ingest" -> JsBoolean(nodeRoles.ingest),
       "heap" -> Json.obj(
         "used" -> (stats \ "jvm" \ "mem" \ "heap_used_in_bytes").as[JsNumber],
