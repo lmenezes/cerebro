@@ -7,13 +7,13 @@ cerebro is an open source(MIT License) elasticsearch web admin tool built using 
 
 cerebro needs Java 1.8 or newer to run.
 
-###Installation
+### Installation
 - Download from [https://github.com/lmenezes/cerebro/releases](https://github.com/lmenezes/cerebro/releases)
 - Extract files
 - Run bin/cerebro(or bin/cerebro.bat if on Windows)
 - Access on http://localhost:9000
 
-###Configuration
+### Configuration
 
 #### HTTP server address and port
 You can run cerebro listening on a different host and port(defaults to 0.0.0.0:9000):
@@ -29,5 +29,5 @@ Other settings are exposed through the **conf/application.conf** file found on t
 It is also possible to use an alternate configuration file defined on a different location:
 
 ```
-bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf 
+bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf
 ```
