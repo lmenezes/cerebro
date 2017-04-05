@@ -6,6 +6,12 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
     $scope.cluster_name = undefined;
     $scope.host = undefined;
     $scope.username = undefined;
+    $scope.refreshInterval = RefreshService.getInterval();
+
+    $scope.setRefreshInterval = function(interval) {
+      RefreshService.setInterval(interval);
+      $scope.refreshInterval = interval;
+    };
 
     $scope.$watch(
       function() {

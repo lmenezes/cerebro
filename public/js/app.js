@@ -696,6 +696,12 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
     $scope.cluster_name = undefined;
     $scope.host = undefined;
     $scope.username = undefined;
+    $scope.refreshInterval = RefreshService.getInterval();
+
+    $scope.setRefreshInterval = function(interval) {
+      RefreshService.setInterval(interval);
+      $scope.refreshInterval = interval;
+    };
 
     $scope.$watch(
       function() {
@@ -2250,7 +2256,7 @@ angular.module('cerebro').filter('startsWith', function() {
 
 angular.module('cerebro').filter('timeInterval', function() {
 
-  var UNITS = ['yr', 'mo', 'd', 'h', 'min'];
+  var UNITS = ['yr', 'mo', 'd', 'h', 'min', 'sec'];
 
   var UNIT_MEASURE = {
     yr: 31536000000,
@@ -2258,17 +2264,18 @@ angular.module('cerebro').filter('timeInterval', function() {
     wk: 604800000,
     d: 86400000,
     h: 3600000,
-    min: 60000
+    min: 60000,
+    sec: 1000
   };
 
   function stringify(seconds) {
 
-    var result = 'less than a minute';
+    var result = '0sec';
 
     for (var idx = 0; idx < UNITS.length; idx++) {
       var amount = Math.floor(seconds / UNIT_MEASURE[UNITS[idx]]);
       if (amount) {
-        result = amount + UNITS[idx] + '.';
+        result = amount + UNITS[idx];
         break;
       }
     }
@@ -2877,6 +2884,19 @@ angular.module('cerebro').factory('RefreshService',
 
     var timestamp = new Date().getTime();
 
+    var interval = 5000;
+
+    this.getInterval = function() {
+      return interval;
+    };
+
+    this.setInterval = function(newInterval) {
+      if (interval > newInterval) {
+        this.refresh(); // makes change apparent quicker
+      }
+      interval = newInterval;
+    };
+
     this.lastUpdate = function() {
       return timestamp;
     };
@@ -2887,7 +2907,7 @@ angular.module('cerebro').factory('RefreshService',
 
     var autoRefresh = function(instance) {
       instance.refresh();
-      $timeout(function() { autoRefresh(instance); }, 3000);
+      $timeout(function() { autoRefresh(instance); }, interval);
     };
 
     autoRefresh(this);

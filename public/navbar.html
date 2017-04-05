@@ -63,6 +63,18 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a target="_self" href="#" data-toggle="dropdown" class="dropdown-toggle">
+            <i class="fa fa-fw fa-refresh"></i> {{refreshInterval | timeInterval}} <i class="fa fa-fw fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu" style="min-width: 60px;">
+            <li ng-repeat="i in [3000, 5000, 10000, 15000, 30000, 60000] track by $index">
+              <a class="nav-item nav-link" ng-click="setRefreshInterval(i)">
+                {{i | timeInterval}}
+              </a>
+            </li>
+          </ul>
+        </li>
         <li class="hidden-xs">
           <a class="nav-item nav-link">
             <span ng-show="host">{{host}}</span>
