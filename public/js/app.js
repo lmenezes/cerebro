@@ -189,8 +189,8 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
 ]);
 
 angular.module('cerebro').controller('AnalysisController', ['$scope',
-  '$location', '$timeout', 'AlertService', 'DataService',
-  function($scope, $location, $timeout, AlertService, DataService) {
+  '$location', '$timeout', 'AlertService', 'AnalysisDataService',
+  function($scope, $location, $timeout, AlertService, AnalysisDataService) {
 
     $scope.analyzerAnalysis = {index: undefined, analyzer: undefined};
     $scope.propertyAnalysis = {index: undefined, field: undefined};
@@ -200,7 +200,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     $scope.analyzers = [];
 
     $scope.loadAnalyzers = function(index) {
-      DataService.getIndexAnalyzers(index,
+      AnalysisDataService.getIndexAnalyzers(index,
         function(analyzers) {
           $scope.analyzers = analyzers;
         },
@@ -212,7 +212,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.loadFields = function(index) {
-      DataService.getIndexFields(index,
+      AnalysisDataService.getIndexFields(index,
         function(fields) {
           $scope.fields = fields;
         },
@@ -232,7 +232,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
         var error = function(error) {
           AlertService.error('Error analyzing text by field', error);
         };
-        DataService.analyzeByField(index, field, text, success, error);
+        AnalysisDataService.analyzeByField(index, field, text, success, error);
       }
     };
 
@@ -245,12 +245,17 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
         var error = function(error) {
           AlertService.error('Error analyzing text by analyzer', error);
         };
-        DataService.analyzeByAnalyzer(index, analyzer, text, success, error);
+        AnalysisDataService.analyzeByAnalyzer(
+          index,
+          analyzer,
+          text,
+          success, error
+        );
       }
     };
 
     $scope.setup = function() {
-      DataService.getOpenIndices(
+      AnalysisDataService.getOpenIndices(
         function(indices) {
           $scope.indices = indices;
         },
@@ -259,6 +264,36 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
         }
       );
     };
+
+  }
+]);
+
+angular.module('cerebro').factory('AnalysisDataService', ['DataService',
+  function(DataService) {
+
+    this.getOpenIndices = function(success, error) {
+      DataService.send('analysis/indices', {}, success, error);
+    };
+
+    this.getIndexAnalyzers = function(index, success, error) {
+      DataService.send('analysis/analyzers', {index: index}, success, error);
+    };
+
+    this.getIndexFields = function(index, success, error) {
+      DataService.send('analysis/fields', {index: index}, success, error);
+    };
+
+    this.analyzeByField = function(index, field, text, success, error) {
+      var data = {index: index, field: field, text: text};
+      DataService.send('analysis/analyze/field', data, success, error);
+    };
+
+    this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
+      var data = {index: index, analyzer: analyzer, text: text};
+      DataService.send('analysis/analyze/analyzer', data, success, error);
+    };
+
+    return this;
 
   }
 ]);
@@ -2682,31 +2717,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       clusterRequest('commons/nodes', {}, success, error);
     };
 
-    // ---------- Analysis ----------
-    this.getOpenIndices = function(success, error) {
-      clusterRequest('analysis/indices', {}, success, error);
-    };
-
-    this.getIndexAnalyzers = function(index, success, error) {
-      clusterRequest('analysis/analyzers', {index: index}, success, error);
-    };
-
-    this.getIndexFields = function(index, success, error) {
-      clusterRequest('analysis/fields', {index: index}, success, error);
-    };
-
-    this.analyzeByField = function(index, field, text, success, error) {
-      var data = {index: index, field: field, text: text};
-      clusterRequest('analysis/analyze/field', data, success, error);
-    };
-
-    this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
-      var data = {index: index, analyzer: analyzer, text: text};
-      clusterRequest('analysis/analyze/analyzer', data, success, error);
-    };
-
     // ---------- Aliases ----------
-
     this.getAliases = function(success, error) {
       clusterRequest('aliases/get_aliases', {}, success, error);
     };

@@ -50,31 +50,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       clusterRequest('commons/nodes', {}, success, error);
     };
 
-    // ---------- Analysis ----------
-    this.getOpenIndices = function(success, error) {
-      clusterRequest('analysis/indices', {}, success, error);
-    };
-
-    this.getIndexAnalyzers = function(index, success, error) {
-      clusterRequest('analysis/analyzers', {index: index}, success, error);
-    };
-
-    this.getIndexFields = function(index, success, error) {
-      clusterRequest('analysis/fields', {index: index}, success, error);
-    };
-
-    this.analyzeByField = function(index, field, text, success, error) {
-      var data = {index: index, field: field, text: text};
-      clusterRequest('analysis/analyze/field', data, success, error);
-    };
-
-    this.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
-      var data = {index: index, analyzer: analyzer, text: text};
-      clusterRequest('analysis/analyze/analyzer', data, success, error);
-    };
-
     // ---------- Aliases ----------
-
     this.getAliases = function(success, error) {
       clusterRequest('aliases/get_aliases', {}, success, error);
     };

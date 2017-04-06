@@ -1,6 +1,6 @@
 angular.module('cerebro').controller('AnalysisController', ['$scope',
-  '$location', '$timeout', 'AlertService', 'DataService',
-  function($scope, $location, $timeout, AlertService, DataService) {
+  '$location', '$timeout', 'AlertService', 'AnalysisDataService',
+  function($scope, $location, $timeout, AlertService, AnalysisDataService) {
 
     $scope.analyzerAnalysis = {index: undefined, analyzer: undefined};
     $scope.propertyAnalysis = {index: undefined, field: undefined};
@@ -10,7 +10,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     $scope.analyzers = [];
 
     $scope.loadAnalyzers = function(index) {
-      DataService.getIndexAnalyzers(index,
+      AnalysisDataService.getIndexAnalyzers(index,
         function(analyzers) {
           $scope.analyzers = analyzers;
         },
@@ -22,7 +22,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.loadFields = function(index) {
-      DataService.getIndexFields(index,
+      AnalysisDataService.getIndexFields(index,
         function(fields) {
           $scope.fields = fields;
         },
@@ -42,7 +42,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
         var error = function(error) {
           AlertService.error('Error analyzing text by field', error);
         };
-        DataService.analyzeByField(index, field, text, success, error);
+        AnalysisDataService.analyzeByField(index, field, text, success, error);
       }
     };
 
@@ -55,12 +55,17 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
         var error = function(error) {
           AlertService.error('Error analyzing text by analyzer', error);
         };
-        DataService.analyzeByAnalyzer(index, analyzer, text, success, error);
+        AnalysisDataService.analyzeByAnalyzer(
+          index,
+          analyzer,
+          text,
+          success, error
+        );
       }
     };
 
     $scope.setup = function() {
-      DataService.getOpenIndices(
+      AnalysisDataService.getOpenIndices(
         function(indices) {
           $scope.indices = indices;
         },
