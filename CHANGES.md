@@ -135,3 +135,15 @@ First cerebro release.
 
 #### Enhancements
 - support indices with special characters (for ES < 2.X))
+
+###v0.6.5 - April 6th, 2017
+
+#### Bug fixes
+- logout action to use relative path
+- correctly handle an empty cat api response
+- consider both string and text types on field analysis
+
+#### Enhancements
+- updated known node types(included ingest, renamed client to coordinating)
+- support changing refresh interval
+
