@@ -300,7 +300,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
 
   protected def execute[T](uri: String, method: String, body: Option[String] = None, target: ElasticServer) = {
     val authentication = target.authentication
-    val url = s"${target.host}${uri}"
+    val url = s"${target.host.replaceAll("/+$", "")}$uri"
     val request = authentication.foldLeft(client.url(url).withMethod(method)) {
       case (request, auth) => request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }
