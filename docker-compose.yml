@@ -1,0 +1,67 @@
+version: "2.1"
+services:
+  cerebro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CEREBRO_VERSION: ${CEREBRO_VERSION}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      elasticsearch-data:
+        condition: service_started
+    links:
+      - elasticsearch
+      - elasticsearch-data
+    ports:
+      - "9000:9000"
+
+  elasticsearch:
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    command: -E node.name="master" -E discovery.zen.ping.unicast.hosts="elasticsearch-data:9300" -E transport.host="0.0.0.0" -E discovery.zen.minimum_master_nodes=1 -E node.master=true -E node.data=false -E node.ingest=false -E cluster.name=cerebro-test-cluster -E bootstrap.memory_lock=true
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/bin/wget -qO- http://localhost:9200/_cluster/health?pretty | grep -q green"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+    environment:
+      ES_JAVA_OPTS: -Xms256m -Xmx256m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 512g
+    cap_add:
+      - IPC_LOCK
+    expose:
+      - "9200"
+      - "9300"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  elasticsearch-data:
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    command: -E discovery.zen.ping.unicast.hosts="elasticsearch:9300" -E transport.host="0.0.0.0" -E discovery.zen.minimum_master_nodes=1 -E node.master=false -E cluster.name=cerebro-test-cluster -E bootstrap.memory_lock=true
+    environment:
+      ES_JAVA_OPTS: -Xms64m -Xmx64m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 128g
+    cap_add:
+      - IPC_LOCK
+    links:
+      - elasticsearch
+    expose:
+      - "9200"
+      - "9300"
