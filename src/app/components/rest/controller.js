@@ -23,9 +23,13 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     };
 
     $scope.execute = function() {
-      var data = $scope.editor.getValue();
+      var data = $scope.editor.getStringValue();
       var method = $scope.method;
       $scope.response = undefined;
+      try {
+        data = $scope.editor.getValue();
+      } catch (error) {
+      }
       RestDataService.execute(method, $scope.path, data, success, failure);
     };
 

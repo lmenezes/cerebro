@@ -295,8 +295,13 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(s"$path?format=json", "GET", None, target)
   }
 
-  def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) =
-    execute(s"/${path}", method, data.map(_.toString), target)
+  def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) = {
+    val body = data.map {
+      case JsString(value) => value // needed to handle non valid json requests(multisearch, bulk...)
+      case v: JsValue => v.toString
+    }
+    execute(s"/${path}", method, body, target)
+  }
 
   protected def execute[T](uri: String, method: String, body: Option[String] = None, target: ElasticServer) = {
     val authentication = target.authentication

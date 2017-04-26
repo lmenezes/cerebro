@@ -26,7 +26,10 @@ class RestController @Inject()(val authentication: AuthenticationModule,
     val body = request.getObjOpt("data")
     client.executeRequest(method, path, body, request.target).map {
       case s: Success =>
-        val bodyAsString = body.map(_.toString).getOrElse("{}")
+        val bodyAsString = body.map {
+          case JsString(str) => str
+          case other => other.toString()
+        }.getOrElse("{}")
         val username = request.user.map(_.name).getOrElse("")
         Try(restHistoryDAO.save(RestRequest(path, method, bodyAsString, username, new Date(System.currentTimeMillis)))).recover {
           case DAOException(msg, e) => Logger.error(msg, e)

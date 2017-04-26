@@ -23,6 +23,10 @@ function AceEditor(target) {
     }
   };
 
+  this.getStringValue = function() {
+    return this.editor.getValue();
+  };
+
   // formats the json content
   this.format = function() {
     try {
