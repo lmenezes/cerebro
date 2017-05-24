@@ -27,6 +27,7 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
     try {
       val context = LdapCtxFactory.getLdapCtxInstance(config.url, props)
       val renum = context.search(config.baseDN, "(& ("+config.userAttr+"="+username+"))", controls)
+      context.close()
       val check: Boolean = if (!renum.hasMore()) {
         log.info(s"Cannot locate user information for $username")
         false
