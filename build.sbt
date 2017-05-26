@@ -1,5 +1,7 @@
 name := "cerebro"
 
+maintainer := "Leonardo Menezes <leonardo.menezes@xing.com>"
+
 version := "0.6.5"
 
 scalaVersion := "2.11.8"
@@ -24,4 +26,12 @@ lazy val root = (project in file(".")).
 
 doc in Compile <<= target.map(_ / "none")
 
+enablePlugins(JavaServerAppPackaging)
+enablePlugins(SystemdPlugin)
+
 pipelineStages := Seq(digest, gzip)
+
+serverLoading := Some(ServerLoader.Systemd)
+systemdSuccessExitStatus in Debian += "143"
+systemdSuccessExitStatus in Rpm += "143"
+linuxPackageMappings += packageTemplateMapping(s"/var/lib/${packageName.value}")() withUser((daemonUser in Linux).value) withGroup((daemonGroup in Linux).value)
