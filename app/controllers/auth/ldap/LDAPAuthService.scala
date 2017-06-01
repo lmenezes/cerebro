@@ -45,7 +45,7 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
       }
       check
     } catch {
-      case authError:AuthenticationException => log.error(s"Authentification failed: $authError"); false
+      case authError:AuthenticationException => log.error(s"Authentication failed: $authError"); false
     }
   }
 
