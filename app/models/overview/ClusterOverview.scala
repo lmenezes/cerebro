@@ -30,8 +30,8 @@ object ClusterOverview {
       "docs_count" -> (indicesStats \ "_all" \ "primaries" \ "docs" \ "count").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "size_in_bytes" -> (indicesStats \ "_all" \ "total" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "total_indices" -> JsNumber(indices.size),
-      "closed_indices" -> JsNumber(indices.count { idx => (idx \ "closed").as[Boolean] }),
-      "special_indices" -> JsNumber(indices.count { idx => (idx \ "special").as[Boolean] }),
+      "closed_indices" -> JsBoolean(false),
+      "special_indices" -> JsBoolean(false),
       "indices" -> JsArray(indices),
       "nodes" -> buildNodes(masterNodeId, nodesInfo, nodesStats),
       "shard_allocation" -> JsBoolean(shardAllocation)
