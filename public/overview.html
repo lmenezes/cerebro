@@ -134,9 +134,10 @@
               </li>
             </ul>
           </div>
-          <div class="subtitle">
-            <div class="title" ng-repeat="alias in index.aliases | orderBy track by $index">
-              <i class="fa fa-tag"></i> {{alias}}
+          <div class="subtitle" ng-show="index.aliases.length">
+            <div class="title">
+              <i class="fa fa-tag"></i> {{index.aliases[0]}}
+              <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
             </div>
           </div>
           <div class="detail">
