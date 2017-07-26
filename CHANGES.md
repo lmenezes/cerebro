@@ -147,3 +147,17 @@ First cerebro release.
 - updated known node types(included ingest, renamed client to coordinating)
 - support changing refresh interval
 
+###v0.6.6 - July 26th, 2017
+
+#### Bug fixes
+- support non valid json requests through rest client
+- consistent icon for coordinating nodes
+
+#### Enhancements
+- remove trailing / from ES hosts
+- fix nodes tab to handle aws nodes
+- order indices alphabetically on aliases page
+- ensure unassigned shards ordering
+- max width to alerts
+- display single alias on overview
+- improve performance of overview index filtering
