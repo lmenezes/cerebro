@@ -5,6 +5,7 @@
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-group">
           <input type="text" ng-model="paginator.filter.name" class="form-control form-control-sm"
+                 ng-model-options='{ debounce: 250 }'
                  placeholder="filter indices by name or aliases">
         </div>
         <div class="col-lg-3 col-sm-3 col-xs-6 form-group">
