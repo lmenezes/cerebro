@@ -4,6 +4,7 @@ import java.net.URLEncoder
 import javax.inject.Singleton
 
 import com.google.inject.Inject
+import elastic.HTTPElasticClient._
 import models.ElasticServer
 import play.api.libs.json._
 import play.api.libs.ws.{WSAuthScheme, WSClient}
@@ -64,27 +65,27 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
 
   def closeIndex(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_close"
-    execute(path, "POST", None, target)
+    execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
   def openIndex(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_open"
-    execute(path, "POST", None, target)
+    execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
   def refreshIndex(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_refresh"
-    execute(path, "POST", None, target)
+    execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
   def forceMerge(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_forcemerge"
-    execute(path, "POST", None, target)
+    execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
   def clearIndexCache(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_cache/clear"
-    execute(path, "POST", None, target)
+    execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
   def deleteIndex(index: String, target: ElasticServer) = {
@@ -109,7 +110,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
 
   def putClusterSettings(settings: String, target: ElasticServer) = {
     val path = "/_cluster/settings"
-    execute(path, "PUT", Some(settings), target)
+    execute(path, "PUT", Some(settings), target, Seq(JsonContentType))
   }
 
   private def allocationSettings(value: String) =
@@ -143,7 +144,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
          |  ]
          |}
        """.stripMargin
-    execute(path, "POST", Some(commands), target)
+    execute(path, "POST", Some(commands), target, Seq(JsonContentType))
   }
 
   def getIndexRecovery(index: String, target: ElasticServer) = {
@@ -164,7 +165,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   def updateAliases(changes: Seq[JsValue], target: ElasticServer) = {
     val path = "/_aliases"
     val body = Json.obj("actions" -> JsArray(changes))
-    execute(path, "POST", Some(body.toString), target)
+    execute(path, "POST", Some(body.toString), target, Seq(JsonContentType))
   }
 
   def getIndexMetadata(index: String, target: ElasticServer) = {
@@ -174,7 +175,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
 
   def createIndex(index: String, metadata: JsValue, target: ElasticServer) = {
     val path = s"/${encoded(index)}"
-    execute(path, "PUT", Some(metadata.toString), target)
+    execute(path, "PUT", Some(metadata.toString), target, Seq(JsonContentType))
   }
 
   def getIndices(target: ElasticServer) = {
@@ -189,7 +190,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
 
   def createTemplate(name: String, template: JsValue, target: ElasticServer) = {
     val path = s"/_template/${encoded(name)}"
-    execute(path, "PUT", Some(template.toString), target)
+    execute(path, "PUT", Some(template.toString), target, Seq(JsonContentType))
   }
 
   def deleteTemplate(name: String, target: ElasticServer) = {
@@ -229,7 +230,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   def createRepository(name: String, repoType: String, settings: JsValue, target: ElasticServer) = {
     val path = s"/_snapshot/${encoded(name)}"
     val data = Json.obj("type" -> JsString(repoType), "settings" -> settings).toString
-    execute(path, "PUT", Some(data), target)
+    execute(path, "PUT", Some(data), target, Seq(JsonContentType))
   }
 
   def deleteRepository(name: String, target: ElasticServer) = {
@@ -259,7 +260,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
         ("includeGlobalState", JsBoolean(includeGlobalState))
       ) ++ indices.map { i => Seq(("indices", JsString(i))) }.getOrElse(Nil)
     ).toString
-    execute(path, "PUT", Some(data), target)
+    execute(path, "PUT", Some(data), target, Seq(JsonContentType))
   }
 
   def restoreSnapshot(repository: String, snapshot: String, renamePattern: Option[String],
@@ -276,17 +277,17 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
         renamePattern.map { r => Seq(("rename_pattern", JsString(r))) }.getOrElse(Nil) ++
         renameReplacement.map { r => Seq(("rename_replacement", JsString(r))) }.getOrElse(Nil)
     ).toString
-    execute(path, "POST", Some(data), target)
+    execute(path, "POST", Some(data), target, Seq(JsonContentType))
   }
 
   def saveClusterSettings(settings: JsValue, target: ElasticServer) = {
     val path = s"/_cluster/settings"
-    execute(path, "PUT", Some(settings.toString), target)
+    execute(path, "PUT", Some(settings.toString), target, Seq(JsonContentType))
   }
 
   def updateIndexSettings(index: String, settings: JsValue, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_settings"
-    execute(path, "PUT", Some(settings.toString), target)
+    execute(path, "PUT", Some(settings.toString), target, Seq(JsonContentType))
   }
 
   // Cat requests
@@ -296,18 +297,29 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   }
 
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer) = {
+    val headers = data.map {
+      case _: JsString => NdJsonContentType // if it's not a json, it is assumed that bulk or multi-search API is used
+      case _ => JsonContentType
+    }.toSeq
+    
     val body = data.map {
       case JsString(value) => value // needed to handle non valid json requests(multisearch, bulk...)
       case v: JsValue => v.toString
     }
-    execute(s"/${path}", method, body, target)
+    execute(s"/${path}", method, body, target, headers)
   }
 
-  protected def execute[T](uri: String, method: String, body: Option[String] = None, target: ElasticServer) = {
+  protected def execute[T](uri: String,
+                           method: String,
+                           body: Option[String] = None,
+                           target: ElasticServer,
+                           headers: Seq[(String, String)] = Seq()) = {
     val authentication = target.authentication
     val url = s"${target.host.replaceAll("/+$", "")}$uri"
-    val request = authentication.foldLeft(client.url(url).withMethod(method)) {
-      case (request, auth) => request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
+    val request =
+      authentication.foldLeft(client.url(url).withMethod(method).withHeaders(headers: _*)) {
+      case (request, auth) =>
+        request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }
 
     body.fold(request)(request.withBody((_))).execute.map { response =>
@@ -322,4 +334,10 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val path = "/_cat/master"
     execute(s"$path?format=json", "GET", None, target)
   }
+}
+
+object HTTPElasticClient {
+  val JsonContentType: (String, String) = ("Content-type", "application/json")
+
+  val NdJsonContentType: (String, String) = ("Content-type", "application/x-ndjson")
 }
