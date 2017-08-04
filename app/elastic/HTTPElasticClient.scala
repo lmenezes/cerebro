@@ -28,17 +28,18 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   }
 
   def nodesStats(stats: Seq[String], target: ElasticServer) = {
-    val path = s"/_nodes/stats/${stats.mkString(",")}?human=true"
+    val includeFileSizes = if (stats.contains("indices")) "&include_segment_file_sizes=true" else ""
+    val path = s"/_nodes/stats/${stats.mkString(",")}?human=true$includeFileSizes"
     execute(path, "GET", None, target)
   }
 
   def indexStats(index: String, target: ElasticServer): Future[ElasticResponse] = {
-    val path = s"/${encoded(index)}/_stats?human=true"
+    val path = s"/${encoded(index)}/_stats?human=true&include_segment_file_sizes=true"
     execute(path, "GET", None, target)
   }
 
   def nodeStats(node: String, target: ElasticServer) = {
-    val path = s"/_nodes/${encoded(node)}/stats?human"
+    val path = s"/_nodes/${encoded(node)}/stats?human&include_segment_file_sizes=true"
     execute(path, "GET", None, target)
   }
 
@@ -122,7 +123,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     putClusterSettings(allocationSettings("none"), target)
 
   def getShardStats(index: String, target: ElasticServer) = {
-    val path = s"/${encoded(index)}/_stats?level=shards&human=true"
+    val path = s"/${encoded(index)}/_stats?level=shards&human=true&include_segment_file_sizes=true"
     execute(path, "GET", None, target)
   }
 
