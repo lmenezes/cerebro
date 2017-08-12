@@ -19,6 +19,9 @@ object OverviewControllerSpec extends MockedServices {
       should correctly refresh index                     $refreshIndex
       should validate existence of index parameter       $missingIndicesToRefresh
 
+      should correctly flush index                       $flushIndex
+      should validate existence of index parameter       $missingIndicesToFlush
+
       should correctly clear index cache                 $clearIndexCache
       should validate existence of index parameter       $missingIndicesToClearCache
 
@@ -82,6 +85,30 @@ object OverviewControllerSpec extends MockedServices {
   def missingIndicesToRefresh = {
     val body = Json.obj("host" -> "somehost")
     val result = route(application, FakeRequest(POST, "/overview/refresh_indices").withBody(body)).get
+    ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
+  }
+
+  def flushIndex = {
+    val expectedResponse = Json.parse(
+      """
+        |{
+        |  "_shards": {
+        |    "total": 10,
+        |    "successful": 5,
+        |    "failed": 0
+        |  }
+        |}
+      """.stripMargin
+    )
+    val body = Json.obj("host" -> "somehost", "indices" -> "a,b,c")
+    client.flushIndex("a,b,c", ElasticServer("somehost", None)) returns Future.successful(Success(200, expectedResponse))
+    val result = route(application, FakeRequest(POST, "/overview/flush_indices").withBody(body)).get
+    ensure(result, 200, expectedResponse)
+  }
+
+  def missingIndicesToFlush = {
+    val body = Json.obj("host" -> "somehost")
+    val result = route(application, FakeRequest(POST, "/overview/flush_indices").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter indices"))
   }
 

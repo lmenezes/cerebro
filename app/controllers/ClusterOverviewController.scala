@@ -88,6 +88,12 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     }
   }
 
+  def flushIndex = process { request =>
+    client.flushIndex(request.get("indices"), request.target).map { response =>
+      CerebroResponse(response.status, response.body)
+    }
+  }
+
   def deleteIndex = process { request =>
     client.deleteIndex(request.get("indices"), request.target).map { response =>
       CerebroResponse(response.status, response.body)

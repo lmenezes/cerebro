@@ -25,6 +25,11 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
       DataService.send('overview/refresh_indices', data, success, error);
     };
 
+    this.flushIndex = function(index, success, error) {
+      var data = {indices: index};
+      DataService.send('overview/flush_indices', data, success, error);
+    };
+
     this.clearIndexCache = function(index, success, error) {
       var params = {indices: index};
       DataService.send('overview/clear_indices_cache', params, success, error);

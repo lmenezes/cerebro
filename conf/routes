@@ -19,6 +19,7 @@ POST        /overview/open_indices                    controllers.ClusterOvervie
 POST        /overview/force_merge                     controllers.ClusterOverviewController.forceMerge
 POST        /overview/clear_indices_cache             controllers.ClusterOverviewController.clearIndexCache
 POST        /overview/refresh_indices                 controllers.ClusterOverviewController.refreshIndex
+POST        /overview/flush_indices                   controllers.ClusterOverviewController.refreshIndex
 POST        /overview/delete_indices                  controllers.ClusterOverviewController.deleteIndex
 POST        /overview/get_shard_stats                 controllers.ClusterOverviewController.getShardStats
 POST        /overview/relocate_shard                  controllers.ClusterOverviewController.relocateShard

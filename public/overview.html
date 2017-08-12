@@ -79,6 +79,9 @@
                 <li ng-click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh selected</a>
                 </li>
+                <li ng-click="flushIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-gavel"> </i> flush selected</a>
+                </li>
                 <li ng-click="clearIndicesCache()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear selected caches</a>
                 </li>
@@ -122,6 +125,9 @@
               </li>
               <li ng-click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh index</a>
+              </li>
+              <li ng-click="flushIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+                <a target="_self"><i class="fa fa-fw fa-gavel"> </i> flush index</a>
               </li>
               <li ng-click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear cache</a>

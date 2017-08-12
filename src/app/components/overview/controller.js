@@ -157,6 +157,15 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       );
     };
 
+    $scope.flushIndex = function(index) {
+      ModalService.promptConfirmation(
+        'Flush index ' + index + '?',
+        function() {
+          OverviewDataService.flushIndex(index, success, error);
+        }
+      );
+    };
+
     $scope.forceMerge = function(index) {
       ModalService.promptConfirmation(
         'Optimize index ' + index + '?',
@@ -212,6 +221,18 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         'Refresh all ' + indices.length + ' selected indices?',
         function() {
           OverviewDataService.refreshIndex(indices.join(','), success, error);
+        }
+      );
+    };
+
+    $scope.flushIndices = function() {
+      var indices = $scope.paginator.getResults().map(function(index) {
+        return index.name;
+      });
+      ModalService.promptConfirmation(
+        'Flush all ' + indices.length + ' selected indices?',
+        function() {
+          OverviewDataService.flushIndex(indices.join(','), success, error);
         }
       );
     };

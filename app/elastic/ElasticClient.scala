@@ -35,6 +35,8 @@ trait ElasticClient {
 
   def refreshIndex(index: String, target: ElasticServer): Future[ElasticResponse]
 
+  def flushIndex(index: String, target: ElasticServer): Future[ElasticResponse]
+
   def forceMerge(index: String, target: ElasticServer): Future[ElasticResponse]
 
   def clearIndexCache(index: String, target: ElasticServer): Future[ElasticResponse]

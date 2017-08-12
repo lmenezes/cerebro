@@ -78,6 +78,11 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(path, "POST", None, target, Seq(JsonContentType))
   }
 
+  def flushIndex(index: String, target: ElasticServer) = {
+    val path = s"/${encoded(index)}/_flush"
+    execute(path, "POST", None, target, Seq(JsonContentType))
+  }
+
   def forceMerge(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_forcemerge"
     execute(path, "POST", None, target, Seq(JsonContentType))
