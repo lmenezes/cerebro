@@ -29,7 +29,7 @@ describe('OverviewController', function() {
     expect(this.scope.shardAllocation).toEqual(true);
     // index filter
     expect(this.scope.indices_filter.name).toEqual('');
-    expect(this.scope.indices_filter.closed).toEqual(true);
+    expect(this.scope.indices_filter.closed).toEqual(false);
     expect(this.scope.indices_filter.special).toEqual(false);
     expect(this.scope.indices_filter.healthy).toEqual(true);
     expect(this.scope.indices_filter.sort).toEqual('name');
@@ -135,7 +135,7 @@ describe('OverviewController', function() {
         spyOn(this.scope, 'setIndices').andReturn(true);
         this.scope.$digest(); // nothing has changed here
         expect(this.scope.setIndices).not.toHaveBeenCalled();
-        this.scope.indices_filter.closed = false;
+        this.scope.indices_filter.closed = true;
         this.scope.$digest(); // closed changed, should trigger refresh
         expect(this.scope.setIndices).toHaveBeenCalledWith([]);
       }
