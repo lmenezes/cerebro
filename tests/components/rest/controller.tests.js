@@ -37,20 +37,21 @@ describe('RestController', function() {
       expect(this.scope.editor).toEqual(fakeEditor);
     });
 
-    it('loads mappings', function() {
+    it('loads mappings & host', function() {
       var fakeEditor = {
         setValue: function() {
         }
       };
       spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
       this.RestDataService.load = function(success, error) {
-        success({"mappings": "mappingsValue"});
+        success({"mappings": "mappingsValue", "host": "somehost"});
       };
       spyOn(this.RestDataService, "load").andCallThrough();
       spyOn(this.scope, "updateOptions").andReturn();
       this.scope.setup();
       expect(this.RestDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.mappings).toEqual({"mappings": "mappingsValue"});
+      expect(this.scope.mappings).toEqual("mappingsValue");
+      expect(this.scope.host).toEqual("somehost");
       expect(this.scope.updateOptions).toHaveBeenCalled();
     });
 

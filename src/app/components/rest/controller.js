@@ -8,6 +8,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.response = undefined;
 
     $scope.mappings = undefined;
+    $scope.host = undefined;
 
     $scope.method = 'POST';
     $scope.path = '';
@@ -38,7 +39,8 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       $scope.editor.setValue('{}');
       RestDataService.load(
         function(response) {
-          $scope.mappings = response;
+          $scope.host = response.host;
+          $scope.mappings = response.mappings;
           $scope.updateOptions($scope.path);
         },
         function(error) {
@@ -75,13 +77,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     $scope.copyAsCURLCommand = function() {
       var method = $scope.method;
-      var host = RestDataService.getHost();
       var path = encodeURI($scope.path);
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
       }
       var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
-      var curl = 'curl -X' + method + ' \'' + host + path + '\'';
+      var curl = 'curl -X' + method + ' \'' + $scope.host + path + '\'';
       if (['POST', 'PUT'].indexOf(method) >= 0) {
         curl += ' -d \'' + body + '\'';
       }

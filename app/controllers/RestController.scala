@@ -42,8 +42,15 @@ class RestController @Inject()(val authentication: AuthenticationModule,
 
   def index = process { request =>
     client.getClusterMapping(request.target).map {
-      case Success(status, body) => CerebroResponse(status, ClusterMapping(body))
-      case Error(status, error) => CerebroResponse(status, error)
+      case Success(status, body) =>
+        val data = Json.obj(
+          "mapping" -> ClusterMapping(body),
+          "host"    -> request.target.host
+        )
+        CerebroResponse(status, data)
+
+      case Error(status, error) =>
+        CerebroResponse(status, error)
     }
   }
 
