@@ -4,14 +4,20 @@ import play.api.libs.json._
 
 object Index {
 
-  def apply(name: String, stats: JsValue, shards: JsValue, aliases: JsObject): JsValue = {
+  def apply(name: String, stats: JsValue, shards: JsValue, aliases: JsObject, routingNodes: JsValue): JsValue = {
 
-    val shardsAllocation = (shards \ "shards").as[JsObject].values.flatMap {
-      case JsArray(shards) => shards.map { shard =>
-        (shard \ "node").asOpt[String].getOrElse("unassigned") -> shard
-      }
+    val unassignedShards = (shards \ "shards").as[JsObject].values.flatMap {
+      case JsArray(shards) =>
+        shards.filter { shard =>
+          (shard \ "node").asOpt[String].isEmpty
+        }
       case _ => Nil
-    }.groupBy(_._1).mapValues { shards => JsArray(shards.map(_._2).toSeq) }.toSeq
+    }
+
+    val shardsAllocation = routingNodes.as[JsObject].value.mapValues {
+      case JsArray(shards) => JsArray(shards.filter { shard => (shard \ "index").as[String].equals(name) })
+      case _ => JsArray()
+    }.toSeq ++ Seq("unassigned" -> JsArray(unassignedShards.toSeq))
 
     val numShards = (shards \ "shards").as[JsObject].keys.size
     val numReplicas = (shards \ "shards" \ "0").as[JsArray].value.size - 1

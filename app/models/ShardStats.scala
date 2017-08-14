@@ -19,7 +19,7 @@ object ShardStats {
 
 
   private def getShardRecovery(index: String, node: String, shard: Int, recovery: JsValue): Option[JsValue] =
-    (recovery \ "index" \ "shards").asOpt[JsArray] match {
+    (recovery \ index \ "shards").asOpt[JsArray] match {
       case Some(JsArray(recoveries)) => recoveries.collectFirst {
         case r if (r \ "target" \ "id").as[String].equals(node) && (r \ "id").as[Int].equals(shard) => r
       }
