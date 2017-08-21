@@ -3,6 +3,7 @@ angular.module('cerebro').controller('ConnectController', [
   function($scope, $location, DataService, AlertService) {
 
     $scope.hosts = undefined;
+    $scope.searchHost = '';
 
     $scope.connecting = false;
 
