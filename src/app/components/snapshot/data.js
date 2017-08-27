@@ -40,7 +40,6 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         includeGlobalState: includeGlobalState,
         indices: indices
       };
-      console.log(data);
       DataService.send('snapshots/restore', data, success, error);
     };
 

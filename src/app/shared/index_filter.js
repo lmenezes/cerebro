@@ -83,8 +83,8 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       catch (err) { // if not valid regexp, still try normal matching
         matches = index.name.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
-          for (var idx = 0; idx < index.aliases.length; idx++) {
-            var alias = index.aliases[idx].toLowerCase();
+          for (var _idx = 0; _idx < index.aliases.length; _idx++) {
+            var alias = index.aliases[_idx].toLowerCase();
             matches = true;
             if ((matches = (alias.indexOf(this.name.toLowerCase()) != -1))) {
               break;

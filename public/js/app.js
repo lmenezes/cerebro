@@ -1639,7 +1639,6 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         includeGlobalState: includeGlobalState,
         indices: indices
       };
-      console.log(data);
       DataService.send('snapshots/restore', data, success, error);
     };
 
@@ -2040,8 +2039,8 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       catch (err) { // if not valid regexp, still try normal matching
         matches = index.name.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
-          for (var idx = 0; idx < index.aliases.length; idx++) {
-            var alias = index.aliases[idx].toLowerCase();
+          for (var _idx = 0; _idx < index.aliases.length; _idx++) {
+            var alias = index.aliases[_idx].toLowerCase();
             matches = true;
             if ((matches = (alias.indexOf(this.name.toLowerCase()) != -1))) {
               break;
@@ -2369,6 +2368,7 @@ function URLAutocomplete(mappings) {
     /**
      * Replaces the variables on suggestedPathTokens({index}, {type}...) for
      * actual values extracted from pathTokens
+     *
      * @param {Array} pathTokens tokens for the path to be suggested
      * @param {Array} suggestedPathTokens tokens for the suggested path
      * @returns {Array} a new array with the variables from suggestedPathTokens

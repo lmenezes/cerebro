@@ -43,6 +43,7 @@ function URLAutocomplete(mappings) {
     /**
      * Replaces the variables on suggestedPathTokens({index}, {type}...) for
      * actual values extracted from pathTokens
+     *
      * @param {Array} pathTokens tokens for the path to be suggested
      * @param {Array} suggestedPathTokens tokens for the suggested path
      * @returns {Array} a new array with the variables from suggestedPathTokens
