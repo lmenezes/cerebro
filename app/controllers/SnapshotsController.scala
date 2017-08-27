@@ -63,7 +63,7 @@ class SnapshotsController @Inject()(val authentication: AuthenticationModule,
     val ignoreUnavailable = request.getBoolean("ignoreUnavailable")
     val includeAliases = request.getBoolean("includeAliases")
     val includeGlobalState = request.getBoolean("includeGlobalState")
-    val indices = request.getAsStringArray("indices").map(_.mkString)
+    val indices = request.getAsStringArray("indices").map(_.mkString(","))
     client.restoreSnapshot(repository, snapshot, renamePattern,
       renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
       indices, request.target).map {
