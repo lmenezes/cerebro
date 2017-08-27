@@ -48,8 +48,8 @@ describe('CatController', function() {
       this.CatDataService.get = function(api, success, error) {
         success(data);
       }
-      spyOn(this.CatDataService, 'get').andCallThrough();
-      spyOn(this.scope, 'sort').andReturn();
+      spyOn(this.CatDataService, 'get').and.callThrough();
+      spyOn(this.scope, 'sort').and.returnValue();
       this.scope.get('aliases');
       expect(this.CatDataService.get).toHaveBeenCalledWith(
         'aliases',
@@ -65,7 +65,7 @@ describe('CatController', function() {
       this.CatDataService.get = function(api, success, error) {
         success(data);
       }
-      spyOn(this.CatDataService, 'get').andCallThrough();
+      spyOn(this.CatDataService, 'get').and.callThrough();
       this.scope.get('thread pool');
       expect(this.CatDataService.get).toHaveBeenCalledWith(
         'thread_pool',
@@ -79,7 +79,7 @@ describe('CatController', function() {
       this.CatDataService.get = function(api, success, error) {
         success([]);
       };
-      spyOn(this.CatDataService, 'get').andCallThrough();
+      spyOn(this.CatDataService, 'get').and.callThrough();
       this.scope.get('foo');
       expect(this.scope.headers).toEqual([]);
       expect(this.scope.data).toEqual([]);
@@ -88,8 +88,8 @@ describe('CatController', function() {
       this.CatDataService.get = function(api, success, error) {
         error('failed!');
       }
-      spyOn(this.AlertService, 'error').andCallThrough();
-      spyOn(this.CatDataService, 'get').andCallThrough();
+      spyOn(this.AlertService, 'error').and.callThrough();
+      spyOn(this.CatDataService, 'get').and.callThrough();
       this.scope.get('foo');
       expect(this.AlertService.error).toHaveBeenCalledWith('Error executing request', 'failed!');
     });

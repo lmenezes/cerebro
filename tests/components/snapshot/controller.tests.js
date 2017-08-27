@@ -21,8 +21,8 @@ describe('SnapshotController', function() {
       this.SnapshotsDataService.load = function(success, error) {
         success(data);
       }
-      spyOn(this.scope, 'refreshIndices').andCallThrough();
-      spyOn(this.SnapshotsDataService, 'load').andCallThrough();
+      spyOn(this.scope, 'refreshIndices').and.callThrough();
+      spyOn(this.SnapshotsDataService, 'load').and.callThrough();
       this.scope.setup();
       expect(this.SnapshotsDataService.load).toHaveBeenCalled();
       expect(this.scope.repositories).toEqual(['repo 1', 'repo 2']);
@@ -33,8 +33,8 @@ describe('SnapshotController', function() {
       this.SnapshotsDataService.load = function(success, error) {
         error("kaput");
       }
-      spyOn(this.SnapshotsDataService, 'load').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.SnapshotsDataService, 'load').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.setup();
       expect(this.SnapshotsDataService.load).toHaveBeenCalled();
       expect(this.scope.repositories).toEqual([]);
@@ -58,8 +58,8 @@ describe('SnapshotController', function() {
         error) {
         success('ack');
       }
-      spyOn(this.SnapshotsDataService, 'restore').andCallThrough();
-      spyOn(this.AlertService, 'info').andReturn();
+      spyOn(this.SnapshotsDataService, 'restore').and.callThrough();
+      spyOn(this.AlertService, 'info').and.returnValue();
       var form = {includeAliases: false, includeGlobalState: true, ignoreUnavailable: true};
       this.scope.restore('repo name', 'the snap', form);
       expect(this.SnapshotsDataService.restore).toHaveBeenCalledWith('repo name', 'the snap', undefined, undefined, true, false, true, undefined, jasmine.any(Function), jasmine.any(Function));
@@ -80,8 +80,8 @@ describe('SnapshotController', function() {
         error) {
         error('kaput');
       }
-      spyOn(this.SnapshotsDataService, 'restore').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.SnapshotsDataService, 'restore').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       var form = {includeAliases: false, includeGlobalState: true, ignoreUnavailable: true};
       this.scope.restore('repo name', 'the snap', form);
       expect(this.SnapshotsDataService.restore).toHaveBeenCalledWith('repo name', 'the snap', undefined, undefined, true, false, true, undefined, jasmine.any(Function), jasmine.any(Function));
@@ -102,9 +102,9 @@ describe('SnapshotController', function() {
         success('ack');
       }
       this.scope.repository = 'currentRepo';
-      spyOn(this.SnapshotsDataService, 'create').andCallThrough();
-      spyOn(this.AlertService, 'info').andReturn();
-      spyOn(this.scope, 'loadSnapshots').andReturn();
+      spyOn(this.SnapshotsDataService, 'create').and.callThrough();
+      spyOn(this.AlertService, 'info').and.returnValue();
+      spyOn(this.scope, 'loadSnapshots').and.returnValue();
       this.scope.create('repo name', 'the snap', false, true, []);
       expect(this.SnapshotsDataService.create).toHaveBeenCalledWith('repo name', 'the snap', false, true, [], jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.loadSnapshots).toHaveBeenCalledWith('currentRepo');
@@ -122,8 +122,8 @@ describe('SnapshotController', function() {
         error) {
         error('kaput!');
       }
-      spyOn(this.SnapshotsDataService, 'create').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.SnapshotsDataService, 'create').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.create('repo name', 'the snap', false, true, []);
       expect(this.SnapshotsDataService.create).toHaveBeenCalledWith('repo name', 'the snap', false, true, [], jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error creating snapshot', 'kaput!');
@@ -139,14 +139,14 @@ describe('SnapshotController', function() {
           error) {
           success(snaps);
         }
-        spyOn(this.SnapshotsDataService, 'loadSnapshots').andCallThrough();
+        spyOn(this.SnapshotsDataService, 'loadSnapshots').and.callThrough();
         this.scope.loadSnapshots('repo name');
         expect(this.SnapshotsDataService.loadSnapshots).toHaveBeenCalledWith('repo name', jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.snapshots).toEqual(snaps);
       });
 
       it('skip loading snapshots if no repository selected', function() {
-        spyOn(this.SnapshotsDataService, 'loadSnapshots').andCallThrough();
+        spyOn(this.SnapshotsDataService, 'loadSnapshots').and.callThrough();
         this.scope.loadSnapshots();
         expect(this.SnapshotsDataService.loadSnapshots).not.toHaveBeenCalled();
       });
@@ -158,8 +158,8 @@ describe('SnapshotController', function() {
           error) {
           error('pff');
         }
-        spyOn(this.SnapshotsDataService, 'loadSnapshots').andCallThrough();
-        spyOn(this.AlertService, 'error').andReturn();
+        spyOn(this.SnapshotsDataService, 'loadSnapshots').and.callThrough();
+        spyOn(this.AlertService, 'error').and.returnValue();
         this.scope.loadSnapshots('repo name');
         expect(this.SnapshotsDataService.loadSnapshots).toHaveBeenCalledWith('repo name', jasmine.any(Function), jasmine.any(Function));
         expect(this.AlertService.error).toHaveBeenCalledWith('Error loading snapshots', 'pff');
@@ -168,7 +168,7 @@ describe('SnapshotController', function() {
 
   describe('watch repository', function() {
     it('loads snapshots', function() {
-      spyOn(this.scope, 'loadSnapshots').andReturn();
+      spyOn(this.scope, 'loadSnapshots').and.returnValue();
       this.scope.repository = 'new value';
       this.scope.$digest();
       expect(this.scope.loadSnapshots).toHaveBeenCalled();
@@ -177,7 +177,7 @@ describe('SnapshotController', function() {
 
   describe('watch showSpecialIndices', function() {
     it('loads snapshots', function() {
-      spyOn(this.scope, 'refreshIndices').andReturn();
+      spyOn(this.scope, 'refreshIndices').and.returnValue();
       this.scope.showSpecialIndices = true;
       this.scope.$digest();
       expect(this.scope.refreshIndices).toHaveBeenCalled();

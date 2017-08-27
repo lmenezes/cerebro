@@ -26,7 +26,7 @@ module.exports = function(config) {
     logLevel: config.LOG_DEBUG, // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     autoWatch: true, // enable / disable watching file and executing tests whenever any file changes
     usePolling: true,
-    transports: ['xhr-polling', 'jsonp-polling'],
+    transports: ['websocket', 'polling'],
     browsers: ['PhantomJS'],
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000,

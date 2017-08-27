@@ -45,8 +45,8 @@ describe('NavbarController', function() {
         this.DataService.getNavbarData = function(success, error) {
           success(data);
         };
-        spyOn(this.DataService, 'getHost').andReturn('somehost');
-        spyOn(this.DataService, 'getNavbarData').andCallThrough();
+        spyOn(this.DataService, 'getHost').and.returnValue('somehost');
+        spyOn(this.DataService, 'getNavbarData').and.callThrough();
         this.scope.$digest();
         expect(this.DataService.getNavbarData).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.status).toEqual('green');
@@ -60,7 +60,7 @@ describe('NavbarController', function() {
         this.DataService.getNavbarData = function(success, error) {
           error('kaput');
         };
-        spyOn(this.DataService, 'getNavbarData').andCallThrough();
+        spyOn(this.DataService, 'getNavbarData').and.callThrough();
         this.scope.$digest();
         expect(this.DataService.getNavbarData).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.status).toEqual(undefined);

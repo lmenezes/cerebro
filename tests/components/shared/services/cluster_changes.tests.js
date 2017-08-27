@@ -23,9 +23,9 @@ describe("ClusterChangesService", function() {
     this.DataService.clusterChanges = function(success, error) {
       success({cluster_name: 'es', indices: indices, nodes: nodes});
     };
-    spyOn(this.DataService, 'clusterChanges').andCallThrough();
-    spyOn(this.AlertService, 'warn').andReturn();
-    spyOn(this.AlertService, 'info').andReturn();
+    spyOn(this.DataService, 'clusterChanges').and.callThrough();
+    spyOn(this.AlertService, 'warn').and.returnValue();
+    spyOn(this.AlertService, 'info').and.returnValue();
     this.$rootScope.$digest();
     expect(this.DataService.clusterChanges).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     expect(this.AlertService.warn).not.toHaveBeenCalled();
@@ -42,9 +42,9 @@ describe("ClusterChangesService", function() {
     this.DataService.clusterChanges = function(success, error) {
       success({cluster_name: 'es', indices: indices, nodes: nodes});
     };
-    spyOn(this.DataService, 'clusterChanges').andCallThrough();
-    spyOn(this.AlertService, 'warn').andReturn();
-    spyOn(this.AlertService, 'info').andReturn();
+    spyOn(this.DataService, 'clusterChanges').and.callThrough();
+    spyOn(this.AlertService, 'warn').and.returnValue();
+    spyOn(this.AlertService, 'info').and.returnValue();
     this.$rootScope.$digest(); // will store initial data
     indices = ['index2']; // changes list of indices
     nodes = ['node2']; // changes list of nodes
@@ -68,9 +68,9 @@ describe("ClusterChangesService", function() {
     this.DataService.clusterChanges = function(success, error) {
       success({cluster_name: clusterName, indices: indices, nodes: nodes});
     };
-    spyOn(this.DataService, 'clusterChanges').andCallThrough();
-    spyOn(this.AlertService, 'warn').andReturn();
-    spyOn(this.AlertService, 'info').andReturn();
+    spyOn(this.DataService, 'clusterChanges').and.callThrough();
+    spyOn(this.AlertService, 'warn').and.returnValue();
+    spyOn(this.AlertService, 'info').and.returnValue();
     this.$rootScope.$digest(); // will store initial data
     indices = ['index2']; // changes list of indices
     nodes = ['node2']; // changes list of nodes

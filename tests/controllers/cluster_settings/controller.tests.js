@@ -30,7 +30,7 @@ describe('ClusterSettingsController', function() {
       this.ClusterSettingsDataService.getClusterSettings = function(success, error) {
         success(settings);
       };
-      spyOn(this.ClusterSettingsDataService, "getClusterSettings").andCallThrough();
+      spyOn(this.ClusterSettingsDataService, "getClusterSettings").and.callThrough();
       this.scope.setup();
       expect(this.ClusterSettingsDataService.getClusterSettings).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.settings).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
@@ -42,8 +42,8 @@ describe('ClusterSettingsController', function() {
       this.ClusterSettingsDataService.getClusterSettings = function(success, error) {
         error('kaput');
       };
-      spyOn(this.ClusterSettingsDataService, "getClusterSettings").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn(true);
+      spyOn(this.ClusterSettingsDataService, "getClusterSettings").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
       this.scope.setup();
       expect(this.ClusterSettingsDataService.getClusterSettings).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error loading cluster settings', 'kaput');
@@ -60,9 +60,9 @@ describe('ClusterSettingsController', function() {
       this.ClusterSettingsDataService.saveSettings = function(settings, success, error) {
         success({ok: 'value'});
       };
-      spyOn(this.ClusterSettingsDataService, "saveSettings").andCallThrough();
-      spyOn(this.AlertService, "info").andReturn(true);
-      spyOn(this.scope, "setup").andReturn(true);
+      spyOn(this.ClusterSettingsDataService, "saveSettings").and.callThrough();
+      spyOn(this.AlertService, "info").and.returnValue(true);
+      spyOn(this.scope, "setup").and.returnValue(true);
       this.scope.save();
       expect(this.ClusterSettingsDataService.saveSettings).toHaveBeenCalledWith(
         {transient: {some_property: 'some value'}, persistent: {some_other_property: 'some other value'}},
@@ -81,8 +81,8 @@ describe('ClusterSettingsController', function() {
       this.ClusterSettingsDataService.saveSettings = function(settings, success, error) {
         error('boom!');
       };
-      spyOn(this.ClusterSettingsDataService, "saveSettings").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn(true);
+      spyOn(this.ClusterSettingsDataService, "saveSettings").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
       this.scope.save();
       expect(this.ClusterSettingsDataService.saveSettings).toHaveBeenCalledWith(
         {transient: {some_property: 'some value'}, persistent: {some_other_property: 'some other value'}},
@@ -97,7 +97,7 @@ describe('ClusterSettingsController', function() {
     it('reverts change', function () {
       this.scope.settings = {some_setting: 'new value'};
       this.scope.originalSettings = {some_setting: 'old value'};
-      spyOn(this.scope, "removeChange").andReturn(true);
+      spyOn(this.scope, "removeChange").and.returnValue(true);
       this.scope.revert('some_setting');
       expect(this.scope.removeChange).toHaveBeenCalled();
       expect(this.scope.settings['some_setting']).toEqual('old value')
@@ -107,13 +107,13 @@ describe('ClusterSettingsController', function() {
   describe('removeChange', function() {
     it('remove an existing change', function () {
       this.scope.changes = {some_setting: {value: 'new value'}};
-      spyOn(this.scope, "removeChange").andCallThrough();
+      spyOn(this.scope, "removeChange").and.callThrough();
       this.scope.removeChange('some_setting');
       expect(this.scope.changes).toEqual({});
     });
     it('remove a non existing change', function () {
       this.scope.changes = {some_setting: {value: 'new value'}};
-      spyOn(this.scope, "removeChange").andCallThrough();
+      spyOn(this.scope, "removeChange").and.callThrough();
       this.scope.removeChange('random_setting');
       expect(this.scope.changes).toEqual({some_setting: {value: 'new value'}});
     });

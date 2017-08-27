@@ -31,16 +31,16 @@ describe('NodesController', function() {
         this.RefreshService.lastUpdate = function() {
           return lastUpdate;
         };
-        spyOn(this.RefreshService, 'lastUpdate').andCallThrough();
-        spyOn(this.scope, 'refresh').andReturn(true);
-        spyOn(this.NodesDataService, 'load').andReturn();
+        spyOn(this.RefreshService, 'lastUpdate').and.callThrough();
+        spyOn(this.scope, 'refresh').and.returnValue(true);
+        spyOn(this.NodesDataService, 'load').and.returnValue();
         this.scope.$digest();
-        expect(this.scope.refresh.callCount).toEqual(1);
+        expect(this.scope.refresh.calls.count()).toEqual(1);
         this.scope.$digest(); // lastUpdate didnt change
-        expect(this.scope.refresh.callCount).toEqual(1);
+        expect(this.scope.refresh.calls.count()).toEqual(1);
         lastUpdate = 2;
         this.scope.$digest();
-        expect(this.scope.refresh.callCount).toEqual(2);
+        expect(this.scope.refresh.calls.count()).toEqual(2);
       }
     );
   });
@@ -52,9 +52,9 @@ describe('NodesController', function() {
         this.NodesDataService.load = function(success, error) {
           success(nodes);
         };
-        spyOn(this.NodesDataService, 'load').andCallThrough();
-        spyOn(this.scope, 'setNodes').andCallThrough();
-        spyOn(this.scope, 'refreshVisibleNodes').andCallThrough();
+        spyOn(this.NodesDataService, 'load').and.callThrough();
+        spyOn(this.scope, 'setNodes').and.callThrough();
+        spyOn(this.scope, 'refreshVisibleNodes').and.callThrough();
         this.scope.refresh();
         expect(this.NodesDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.setNodes).toHaveBeenCalled();
@@ -68,9 +68,9 @@ describe('NodesController', function() {
         this.NodesDataService.load = function(success, error) {
           error('pown');
         };
-        spyOn(this.NodesDataService, 'load').andCallThrough();
-        spyOn(this.scope, 'refreshVisibleNodes').andCallThrough();
-        spyOn(this.scope, 'setNodes').andCallThrough();
+        spyOn(this.NodesDataService, 'load').and.callThrough();
+        spyOn(this.scope, 'refreshVisibleNodes').and.callThrough();
+        spyOn(this.scope, 'setNodes').and.callThrough();
         this.scope.refresh();
         expect(this.NodesDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
         expect(this.scope.refreshVisibleNodes).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('NodesController', function() {
     it('stores the new list of nodes and refreshes the visible nodes',
       function() {
       var nodes = ['someValue'];
-        spyOn(this.scope, 'refreshVisibleNodes').andReturn(true);
+        spyOn(this.scope, 'refreshVisibleNodes').and.returnValue(true);
         this.scope.setNodes(nodes);
         expect(this.scope._nodes).toEqual(nodes);
         expect(this.scope.refreshVisibleNodes).toHaveBeenCalled();
@@ -135,15 +135,15 @@ describe('NodesController', function() {
         this.RefreshService.lastUpdate = function() {
           return lastUpdate;
         };
-        spyOn(this.RefreshService, 'lastUpdate').andCallThrough();
-        spyOn(this.scope, 'refreshVisibleNodes').andReturn();
+        spyOn(this.RefreshService, 'lastUpdate').and.callThrough();
+        spyOn(this.scope, 'refreshVisibleNodes').and.returnValue();
         this.scope.$digest();
-        expect(this.scope.refreshVisibleNodes.callCount).toEqual(1);
+        expect(this.scope.refreshVisibleNodes.calls.count()).toEqual(1);
         this.scope.$digest(); // nothing changed
-        expect(this.scope.refreshVisibleNodes.callCount).toEqual(1);
+        expect(this.scope.refreshVisibleNodes.calls.count()).toEqual(1);
         this.scope.filter.name = 'b';
         this.scope.$digest();
-        expect(this.scope.refreshVisibleNodes.callCount).toEqual(2);
+        expect(this.scope.refreshVisibleNodes.calls.count()).toEqual(2);
       }
     );
   });

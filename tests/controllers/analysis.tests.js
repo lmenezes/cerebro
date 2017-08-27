@@ -29,7 +29,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getOpenIndices = function(success, error) {
         success(indices);
       };
-      spyOn(this.AnalysisDataService, "getOpenIndices").andCallThrough();
+      spyOn(this.AnalysisDataService, "getOpenIndices").and.callThrough();
       this.scope.setup();
       expect(this.AnalysisDataService.getOpenIndices).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.indices).toEqual(indices);
@@ -39,8 +39,8 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getOpenIndices = function(success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "getOpenIndices").andCallThrough();
-      spyOn(this.AlertService, "error").andCallThrough();
+      spyOn(this.AnalysisDataService, "getOpenIndices").and.callThrough();
+      spyOn(this.AlertService, "error").and.callThrough();
       this.scope.setup();
       expect(this.AnalysisDataService.getOpenIndices).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error loading indices', 'kaput');
@@ -53,7 +53,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getIndexAnalyzers = function(index, success, error) {
         success(analyzers);
       };
-      spyOn(this.AnalysisDataService, "getIndexAnalyzers").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexAnalyzers").and.callThrough();
       this.scope.loadAnalyzers('some index');
       expect(this.AnalysisDataService.getIndexAnalyzers).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzers).toEqual(analyzers);
@@ -63,8 +63,8 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getIndexAnalyzers = function(index, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "getIndexAnalyzers").andCallThrough();
-      spyOn(this.AlertService, "error").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexAnalyzers").and.callThrough();
+      spyOn(this.AlertService, "error").and.callThrough();
       this.scope.loadAnalyzers('some index');
       expect(this.AnalysisDataService.getIndexAnalyzers).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error loading index analyzers', 'kaput');
@@ -75,7 +75,7 @@ describe('AnalysisController', function() {
         error('kaput');
       };
       this.scope.analyzers = ['one'];
-      spyOn(this.AnalysisDataService, "getIndexAnalyzers").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexAnalyzers").and.callThrough();
       this.scope.loadAnalyzers('some index');
       expect(this.AnalysisDataService.getIndexAnalyzers).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzers).toEqual([]);
@@ -88,7 +88,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getIndexFields = function(index, success, error) {
         success(fields);
       };
-      spyOn(this.AnalysisDataService, "getIndexFields").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexFields").and.callThrough();
       this.scope.loadFields('some index');
       expect(this.AnalysisDataService.getIndexFields).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.fields).toEqual(fields);
@@ -98,8 +98,8 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.getIndexFields = function(index, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "getIndexFields").andCallThrough();
-      spyOn(this.AlertService, "error").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexFields").and.callThrough();
+      spyOn(this.AlertService, "error").and.callThrough();
       this.scope.loadFields('some index');
       expect(this.AnalysisDataService.getIndexFields).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error loading index fields', 'kaput');
@@ -110,7 +110,7 @@ describe('AnalysisController', function() {
         error('kaput');
       };
       this.scope.analyzers = ['one'];
-      spyOn(this.AnalysisDataService, "getIndexFields").andCallThrough();
+      spyOn(this.AnalysisDataService, "getIndexFields").and.callThrough();
       this.scope.loadFields('some index');
       expect(this.AnalysisDataService.getIndexFields).toHaveBeenCalledWith('some index', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.fields).toEqual([]);
@@ -123,7 +123,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByField = function(index, field, text, success, error) {
         success(tokens);
       };
-      spyOn(this.AnalysisDataService, "analyzeByField").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
       this.scope.analyzeByField('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.field_tokens).toEqual(tokens);
@@ -133,8 +133,8 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByField = function(index, field, text, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "analyzeByField").andCallThrough();
-      spyOn(this.AlertService, "error").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
+      spyOn(this.AlertService, "error").and.callThrough();
       this.scope.analyzeByField('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error analyzing text by field', 'kaput');
@@ -144,7 +144,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByField = function(index, field, text, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "analyzeByField").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
       this.scope.analyzeByField('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.field_tokens).toEqual(undefined);
@@ -157,7 +157,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
         success(tokens);
       };
-      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
       this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzer_tokens).toEqual(tokens);
@@ -167,8 +167,8 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").andCallThrough();
-      spyOn(this.AlertService, "error").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
+      spyOn(this.AlertService, "error").and.callThrough();
       this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error analyzing text by analyzer', 'kaput');
@@ -178,7 +178,7 @@ describe('AnalysisController', function() {
       this.AnalysisDataService.analyzeByAnalyzer = function(index, analyzer, text, success, error) {
         error('kaput');
       };
-      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").andCallThrough();
+      spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
       this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
       expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzer_tokens).toEqual(undefined);

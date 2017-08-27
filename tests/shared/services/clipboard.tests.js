@@ -49,12 +49,12 @@ describe("ClipboardService", function() {
         return element;
       }
     };
-    spyOn(angular, 'element').andReturn(element);
-    spyOn(element, 'css').andCallThrough();
-    spyOn(element, 'val').andCallThrough();
-    spyOn(element, 'select').andCallThrough();
-    spyOn(element, 'attr').andCallThrough();
-    spyOn(document[0], 'createElement').andCallThrough();
+    spyOn(angular, 'element').and.returnValue(element);
+    spyOn(element, 'css').and.callThrough();
+    spyOn(element, 'val').and.callThrough();
+    spyOn(element, 'select').and.callThrough();
+    spyOn(element, 'attr').and.callThrough();
+    spyOn(document[0], 'createElement').and.callThrough();
 
   });
 
@@ -94,8 +94,8 @@ describe("ClipboardService", function() {
           success: function() {},
           failure: function() {},
         }
-        spyOn($document[0], 'execCommand').andReturn(true);
-        spyOn(callbacks, 'success').andReturn(true);
+        spyOn($document[0], 'execCommand').and.returnValue(true);
+        spyOn(callbacks, 'success').and.returnValue(true);
         service.copy('text to be copied', callbacks.success, callbacks.failure);
         expect(element.val).toHaveBeenCalledWith('text to be copied');
         expect(element.select).toHaveBeenCalled();
@@ -110,8 +110,8 @@ describe("ClipboardService", function() {
           success: function() { throw 'error' },
           failure: function() {},
         }
-        spyOn($document[0], 'execCommand').andReturn(true);
-        spyOn(callbacks, 'failure').andReturn(true);
+        spyOn($document[0], 'execCommand').and.returnValue(true);
+        spyOn(callbacks, 'failure').and.returnValue(true);
         service.copy('text to be copied', callbacks.success, callbacks.failure);
         expect(element.val).toHaveBeenCalledWith('text to be copied');
         expect(element.select).toHaveBeenCalled();

@@ -21,7 +21,7 @@ describe('RepositoriesController', function() {
       this.RepositoriesDataService.load = function(success, error) {
         success(repos);
       }
-      spyOn(this.RepositoriesDataService, 'load').andCallThrough();
+      spyOn(this.RepositoriesDataService, 'load').and.callThrough();
       this.scope.setup();
       expect(this.RepositoriesDataService.load).toHaveBeenCalled();
       expect(this.scope.repositories).toEqual(repos);
@@ -30,8 +30,8 @@ describe('RepositoriesController', function() {
       this.RepositoriesDataService.load = function(success, error) {
         error("kaput");
       }
-      spyOn(this.RepositoriesDataService, 'load').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.RepositoriesDataService, 'load').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.setup();
       expect(this.RepositoriesDataService.load).toHaveBeenCalled();
       expect(this.scope.repositories).toEqual([]);
@@ -56,9 +56,9 @@ describe('RepositoriesController', function() {
       this.RepositoriesDataService.create = function(name, type, settings, success, error) {
         success('success');
       }
-      spyOn(this.RepositoriesDataService, 'create').andCallThrough();
-      spyOn(this.AlertService, 'info').andReturn();
-      spyOn(this.scope, 'setup').andReturn();
+      spyOn(this.RepositoriesDataService, 'create').and.callThrough();
+      spyOn(this.AlertService, 'info').and.returnValue();
+      spyOn(this.scope, 'setup').and.returnValue();
       this.scope.create('new repo', 'and type', {some: 'setting'});
       expect(this.RepositoriesDataService.create).toHaveBeenCalledWith(
         'new repo',
@@ -74,8 +74,8 @@ describe('RepositoriesController', function() {
       this.RepositoriesDataService.create = function(name, type, settings, success, error) {
         error('boom!');
       }
-      spyOn(this.RepositoriesDataService, 'create').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.RepositoriesDataService, 'create').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.create('new repo', 'and type', {some: 'setting'});
       expect(this.RepositoriesDataService.create).toHaveBeenCalledWith(
         'new repo',

@@ -35,7 +35,7 @@ describe('IndexSettingsController', function() {
       this.IndexSettingsDataService.get = function(index, success, error) {
         success(settings);
       };
-      spyOn(this.IndexSettingsDataService, "get").andCallThrough();
+      spyOn(this.IndexSettingsDataService, "get").and.callThrough();
       this.scope.setup();
       expect(this.IndexSettingsDataService.get).toHaveBeenCalledWith('foo', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.settings).toEqual({setting: 'some value', setting_2: 'other value'});
@@ -48,8 +48,8 @@ describe('IndexSettingsController', function() {
       this.IndexSettingsDataService.get = function(index, success, error) {
         error('kaput');
       };
-      spyOn(this.IndexSettingsDataService, "get").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn(true);
+      spyOn(this.IndexSettingsDataService, "get").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
       this.scope.setup();
       expect(this.scope.index).toEqual('foo');
       expect(this.IndexSettingsDataService.get).toHaveBeenCalledWith('foo', jasmine.any(Function), jasmine.any(Function));
@@ -68,9 +68,9 @@ describe('IndexSettingsController', function() {
       this.IndexSettingsDataService.update = function(index, settings, success, error) {
         success({ok: 'value'});
       };
-      spyOn(this.IndexSettingsDataService, "update").andCallThrough();
-      spyOn(this.AlertService, "info").andReturn(true);
-      spyOn(this.scope, "setup").andReturn(true);
+      spyOn(this.IndexSettingsDataService, "update").and.callThrough();
+      spyOn(this.AlertService, "info").and.returnValue(true);
+      spyOn(this.scope, "setup").and.returnValue(true);
       this.scope.save();
       expect(this.IndexSettingsDataService.update).toHaveBeenCalledWith(
         'foo',
@@ -91,8 +91,8 @@ describe('IndexSettingsController', function() {
       this.IndexSettingsDataService.update = function(index, settings, success, error) {
         error('boom!');
       };
-      spyOn(this.IndexSettingsDataService, "update").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn(true);
+      spyOn(this.IndexSettingsDataService, "update").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
       this.scope.save();
       expect(this.IndexSettingsDataService.update).toHaveBeenCalledWith(
         'foo',
@@ -108,7 +108,7 @@ describe('IndexSettingsController', function() {
     it('reverts change', function () {
       this.scope.settings = {some_setting: 'new value'};
       this.scope.originalSettings = {some_setting: 'old value'};
-      spyOn(this.scope, "removeChange").andReturn(true);
+      spyOn(this.scope, "removeChange").and.returnValue(true);
       this.scope.revert('some_setting');
       expect(this.scope.removeChange).toHaveBeenCalled();
       expect(this.scope.settings['some_setting']).toEqual('old value')
@@ -118,13 +118,13 @@ describe('IndexSettingsController', function() {
   describe('removeChange', function() {
     it('remove an existing change', function () {
       this.scope.changes = {some_setting: {value: 'new value'}};
-      spyOn(this.scope, "removeChange").andCallThrough();
+      spyOn(this.scope, "removeChange").and.callThrough();
       this.scope.removeChange('some_setting');
       expect(this.scope.changes).toEqual({});
     });
     it('remove a non existing change', function () {
       this.scope.changes = {some_setting: {value: 'new value'}};
-      spyOn(this.scope, "removeChange").andCallThrough();
+      spyOn(this.scope, "removeChange").and.callThrough();
       this.scope.removeChange('random_setting');
       expect(this.scope.changes).toEqual({some_setting: {value: 'new value'}});
     });

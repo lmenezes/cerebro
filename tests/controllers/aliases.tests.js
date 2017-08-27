@@ -31,9 +31,9 @@ describe('AliasesController', function() {
 
   describe('setup', function() {
     it('loads aliases and indices, and initializes ace editor', function () {
-      spyOn(this.scope, 'loadIndices').andReturn();
-      spyOn(this.scope, 'loadAliases').andReturn();
-      spyOn(this.scope, 'initEditor').andReturn();
+      spyOn(this.scope, 'loadIndices').and.returnValue();
+      spyOn(this.scope, 'loadAliases').and.returnValue();
+      spyOn(this.scope, 'initEditor').and.returnValue();
       this.scope.setup();
       expect(this.scope.loadIndices).toHaveBeenCalled();
       expect(this.scope.loadAliases).toHaveBeenCalled();
@@ -64,9 +64,9 @@ describe('AliasesController', function() {
       this.DataService.getAliases = function(success, error) {
         success(aliases)
       };
-      spyOn(this.DataService, 'getAliases').andCallThrough();
-      spyOn(this.scope.paginator, 'setCollection').andReturn();
-      spyOn(this.scope.paginator, 'getPage').andReturn(123);
+      spyOn(this.DataService, 'getAliases').and.callThrough();
+      spyOn(this.scope.paginator, 'setCollection').and.returnValue();
+      spyOn(this.scope.paginator, 'getPage').and.returnValue(123);
       this.scope.loadAliases();
       expect(this.DataService.getAliases).toHaveBeenCalled();
       expect(this.scope.paginator.setCollection).toHaveBeenCalledWith(aliases);
@@ -78,7 +78,7 @@ describe('AliasesController', function() {
       this.DataService.getAliases = function(success, error) {
         error(response)
       };
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.loadAliases();
       expect(this.AlertService.error).toHaveBeenCalledWith('Error while fetching aliases', response);
     });
@@ -99,9 +99,9 @@ describe('AliasesController', function() {
       this.DataService.updateAliases = function(changes, success, error) {
         success(response)
       };
-      spyOn(this.DataService, 'updateAliases').andCallThrough(true);
-      spyOn(this.scope, 'loadAliases').andReturn(true);
-      spyOn(this.AlertService, 'success').andReturn(true);
+      spyOn(this.DataService, 'updateAliases').and.callThrough(true);
+      spyOn(this.scope, 'loadAliases').and.returnValue(true);
+      spyOn(this.AlertService, 'success').and.returnValue(true);
       this.scope.changes = [ 1, 2, 3 ];
       this.scope.saveChanges();
       expect(this.DataService.updateAliases).toHaveBeenCalledWith([ 1, 2, 3 ], jasmine.any(Function), jasmine.any(Function));
@@ -114,9 +114,9 @@ describe('AliasesController', function() {
       this.DataService.updateAliases = function(changes, success, error) {
         success(response)
       };
-      spyOn(this.DataService, 'updateAliases').andCallThrough(true);
-      spyOn(this.scope, 'loadAliases').andReturn(true);
-      spyOn(this.AlertService, 'success').andReturn(true);
+      spyOn(this.DataService, 'updateAliases').and.callThrough(true);
+      spyOn(this.scope, 'loadAliases').and.returnValue(true);
+      spyOn(this.AlertService, 'success').and.returnValue(true);
       this.scope.changes = [
           {remove: {index: 'a', alias: 'b', other: 'ko'}},
           {add: {index: 'a2', alias: 'b2', other: 'ok'}}
@@ -139,8 +139,8 @@ describe('AliasesController', function() {
       this.DataService.updateAliases = function(changes, success, error) {
         error(response)
       };
-      spyOn(this.DataService, 'updateAliases').andCallThrough(true);
-      spyOn(this.AlertService, 'error').andReturn(true);
+      spyOn(this.DataService, 'updateAliases').and.callThrough(true);
+      spyOn(this.AlertService, 'error').and.returnValue(true);
       this.scope.changes = [ 1, 2, 3 ];
       this.scope.saveChanges();
       expect(this.DataService.updateAliases).toHaveBeenCalledWith([ 1, 2, 3 ], jasmine.any(Function), jasmine.any(Function));
@@ -155,8 +155,8 @@ describe('AliasesController', function() {
       alias.index = 'someindex';
       var filter = {filter: 'value'};
       this.scope.editor = {getValue: function() { return filter;}};
-      spyOn(this.scope.editor, 'getValue').andCallThrough();
-      spyOn(alias, 'validate').andReturn(true);
+      spyOn(this.scope.editor, 'getValue').and.callThrough();
+      spyOn(alias, 'validate').and.returnValue(true);
       this.scope.addAlias();
       expect(alias.filter).toEqual(filter);
       var expected = {
@@ -175,14 +175,14 @@ describe('AliasesController', function() {
     it('validates alias before creation', function () {
       var filter = {filter: 'value'};
       this.scope.editor = {getValue: function() { return filter;}};
-      spyOn(this.AlertService, 'error').andReturn(true);
+      spyOn(this.AlertService, 'error').and.returnValue(true);
       this.scope.addAlias();
       expect(this.AlertService.error).toHaveBeenCalledWith('Alias must have a non empty name');
     });
     it('validates filter before creation', function () {
       var filter = {filter: 'value'};
       this.scope.editor = {getValue: function() { throw 'wtf this broke';}};
-      spyOn(this.AlertService, 'error').andReturn(true);
+      spyOn(this.AlertService, 'error').and.returnValue(true);
       this.scope.addAlias();
       expect(this.AlertService.error).toHaveBeenCalledWith('Malformed filter', 'wtf this broke');
     });
@@ -191,14 +191,14 @@ describe('AliasesController', function() {
 
   describe('initEditor', function() {
     it('initializes AceEditor', function () {
-      spyOn(this.AceEditorService, 'init').andReturn('editor');
+      spyOn(this.AceEditorService, 'init').and.returnValue('editor');
       this.scope.initEditor();
       expect(this.AceEditorService.init).toHaveBeenCalledWith('alias-filter-editor');
       expect(this.scope.editor).toEqual('editor');
     });
     it('initializes AceEditor only once', function () {
       this.scope.editor = 'already initialized';
-      spyOn(this.AceEditorService, 'init').andReturn(true);
+      spyOn(this.AceEditorService, 'init').and.returnValue(true);
       this.scope.initEditor();
       expect(this.AceEditorService.init).not.toHaveBeenCalled();
     });
@@ -210,7 +210,7 @@ describe('AliasesController', function() {
       this.DataService.getIndices = function(success, error) {
         success([8, 9, 1])
       };
-      spyOn(this.DataService, 'getIndices').andCallThrough();
+      spyOn(this.DataService, 'getIndices').and.callThrough();
       this.scope.loadIndices();
       expect(this.scope.indices).toEqual([8, 9, 1]);
     });
@@ -219,7 +219,7 @@ describe('AliasesController', function() {
   describe('pagination', function() {
     it('refreshes page when paginator/filter information changes', function() {
       var elements = [8, 9, 1];
-      spyOn(this.scope.paginator, 'getPage').andReturn(elements);
+      spyOn(this.scope.paginator, 'getPage').and.returnValue(elements);
       this.scope.$digest();
       expect(this.scope.page).toEqual([8, 9, 1]);
       this.scope.page = []; // resets value

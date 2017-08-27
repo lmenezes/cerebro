@@ -25,7 +25,7 @@ describe('ConnectController', function() {
       this.DataService.getHosts = function(success, error) {
         success(hosts);
       };
-      spyOn(this.DataService, "getHosts").andCallThrough();
+      spyOn(this.DataService, "getHosts").and.callThrough();
       this.scope.setup();
       expect(this.DataService.getHosts).toHaveBeenCalled();
       expect(this.scope.hosts).toEqual(hosts);
@@ -35,8 +35,8 @@ describe('ConnectController', function() {
       this.DataService.getHosts = function(success, error) {
         error(msg);
       };
-      spyOn(this.DataService, 'getHosts').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn(true);
+      spyOn(this.DataService, 'getHosts').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue(true);
       this.scope.setup();
       expect(this.DataService.getHosts).toHaveBeenCalled();
       expect(this.scope.hosts).toEqual(undefined);
@@ -46,8 +46,8 @@ describe('ConnectController', function() {
 
   describe('connect', function() {
     it('connects to valid host', function() {
-      spyOn(this.DataService, "setHost").andReturn();
-      spyOn(this.$location, 'path').andReturn(true);
+      spyOn(this.DataService, "setHost").and.returnValue();
+      spyOn(this.$location, 'path').and.returnValue(true);
       this.scope.connect('http://localhost:9200');
       expect(this.DataService.setHost).toHaveBeenCalledWith(
         'http://localhost:9200', undefined, undefined
@@ -57,8 +57,8 @@ describe('ConnectController', function() {
     });
 
     it('connects to valid host passing username/password', function() {
-      spyOn(this.DataService, "setHost").andReturn();
-      spyOn(this.$location, 'path').andReturn(true);
+      spyOn(this.DataService, "setHost").and.returnValue();
+      spyOn(this.$location, 'path').and.returnValue(true);
       this.scope.connect('http://localhost:9200', 'admin', '1234');
       expect(this.DataService.setHost).toHaveBeenCalledWith(
         'http://localhost:9200',

@@ -18,8 +18,8 @@ describe('TemplatesController', function() {
 
   describe('setup', function() {
     it('loads aliases and indices, and initializes ace editor', function() {
-      spyOn(this.scope, 'loadTemplates').andReturn();
-      spyOn(this.scope, 'initEditor').andReturn();
+      spyOn(this.scope, 'loadTemplates').and.returnValue();
+      spyOn(this.scope, 'initEditor').and.returnValue();
       this.scope.setup();
       expect(this.scope.loadTemplates).toHaveBeenCalled();
       expect(this.scope.initEditor).toHaveBeenCalled();
@@ -32,9 +32,9 @@ describe('TemplatesController', function() {
       this.TemplatesDataService.getTemplates = function(success, error) {
         success(templates);
       };
-      spyOn(this.TemplatesDataService, 'getTemplates').andCallThrough();
-      spyOn(this.scope.paginator, 'setCollection').andCallThrough();
-      spyOn(this.scope.paginator, 'getPage').andReturn('page!');
+      spyOn(this.TemplatesDataService, 'getTemplates').and.callThrough();
+      spyOn(this.scope.paginator, 'setCollection').and.callThrough();
+      spyOn(this.scope.paginator, 'getPage').and.returnValue('page!');
       this.scope.loadTemplates();
       expect(this.TemplatesDataService.getTemplates).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.paginator.setCollection).toHaveBeenCalledWith(templates);
@@ -45,8 +45,8 @@ describe('TemplatesController', function() {
       this.TemplatesDataService.getTemplates = function(success, error) {
         error('failed!');
       };
-      spyOn(this.AlertService, 'error').andReturn();
-      spyOn(this.TemplatesDataService, 'getTemplates').andCallThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
+      spyOn(this.TemplatesDataService, 'getTemplates').and.callThrough();
       this.scope.loadTemplates();
       expect(this.TemplatesDataService.getTemplates).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading templates', 'failed!');
@@ -62,9 +62,9 @@ describe('TemplatesController', function() {
         getValue: function() {
         }
       };
-      spyOn(this.TemplatesDataService, 'create').andCallThrough();
-      spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
-      spyOn(this.AlertService, 'info').andReturn();
+      spyOn(this.TemplatesDataService, 'create').and.callThrough();
+      spyOn(this.scope.editor, 'getValue').and.returnValue({key: 'value'});
+      spyOn(this.AlertService, 'info').and.returnValue();
       this.scope.create('someTemplate');
       expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.info).toHaveBeenCalledWith('Template successfully created');
@@ -78,9 +78,9 @@ describe('TemplatesController', function() {
          getValue: function() {
          }
        };
-       spyOn(this.TemplatesDataService, 'create').andCallThrough();
-       spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
-       spyOn(this.AlertService, 'info').andReturn();
+       spyOn(this.TemplatesDataService, 'create').and.callThrough();
+       spyOn(this.scope.editor, 'getValue').and.returnValue({key: 'value'});
+       spyOn(this.AlertService, 'info').and.returnValue();
        this.scope.create('someTemplate');
        expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
        expect(this.AlertService.info).toHaveBeenCalledWith('Template successfully updated');
@@ -91,8 +91,8 @@ describe('TemplatesController', function() {
           throw 'pffff';
         }
       };
-      spyOn(this.TemplatesDataService, 'create').andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.TemplatesDataService, 'create').and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.create('someTemplate');
       expect(this.TemplatesDataService.create).not.toHaveBeenCalled();
       expect(this.AlertService.error).toHaveBeenCalledWith('Malformed template', 'pffff');
@@ -105,9 +105,9 @@ describe('TemplatesController', function() {
         getValue: function() {
         }
       };
-      spyOn(this.TemplatesDataService, 'create').andCallThrough();
-      spyOn(this.scope.editor, 'getValue').andReturn({key: 'value'});
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.TemplatesDataService, 'create').and.callThrough();
+      spyOn(this.scope.editor, 'getValue').and.returnValue({key: 'value'});
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.create('someTemplate');
       expect(this.TemplatesDataService.create).toHaveBeenCalledWith('someTemplate', {key: 'value'}, jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error creating template', 'ko');
@@ -117,7 +117,7 @@ describe('TemplatesController', function() {
   describe('pagination', function() {
     it('refreshes page when paginator/filter information changes', function() {
       var elements = [8, 9, 1];
-      spyOn(this.scope.paginator, 'getPage').andReturn(elements);
+      spyOn(this.scope.paginator, 'getPage').and.returnValue(elements);
       this.scope.$digest();
       expect(this.scope.page).toEqual([8, 9, 1]);
       this.scope.page = []; // resets value
@@ -144,14 +144,14 @@ describe('TemplatesController', function() {
   describe('editMode', function() {
     it('enables editMode when name changes to existing template', function() {
       var templates = [{name: 'tmp'}, {name: 'tmp2'}];
-      spyOn(this.scope.paginator, 'getCollection').andReturn(templates);
+      spyOn(this.scope.paginator, 'getCollection').and.returnValue(templates);
       this.scope.name = 'tmp';
       this.scope.$digest();
       expect(this.scope.editMode).toEqual(true);
     });
     it('disables editMode when name changes to non existing template', function() {
       var templates = [{name: 'tmp'}, {name: 'tmp2'}];
-      spyOn(this.scope.paginator, 'getCollection').andReturn(templates);
+      spyOn(this.scope.paginator, 'getCollection').and.returnValue(templates);
       this.scope.name = 'tm';
       this.scope.$digest();
       expect(this.scope.editMode).toEqual(false);
@@ -161,7 +161,7 @@ describe('TemplatesController', function() {
   describe('edit', function() {
     it('loads templates into form', function() {
       this.scope.editor = {setValue: function(){}};
-      spyOn(this.scope.editor, 'setValue').andReturn();
+      spyOn(this.scope.editor, 'setValue').and.returnValue();
       this.scope.edit('some name', {some: 'obj'});
       expect(this.scope.name).toEqual('some name');
       expect(this.scope.editor.setValue).toHaveBeenCalledWith('{\n  "some": "obj"\n}');

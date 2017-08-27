@@ -31,7 +31,7 @@ describe('RestController', function() {
         setValue: function() {
         }
       };
-      spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
+      spyOn(this.AceEditorService, "init").and.returnValue(fakeEditor);
       this.scope.setup();
       expect(this.AceEditorService.init).toHaveBeenCalledWith('rest-client-editor');
       expect(this.scope.editor).toEqual(fakeEditor);
@@ -42,12 +42,12 @@ describe('RestController', function() {
         setValue: function() {
         }
       };
-      spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
+      spyOn(this.AceEditorService, "init").and.returnValue(fakeEditor);
       this.RestDataService.load = function(success, error) {
         success({"mappings": "mappingsValue", "host": "somehost"});
       };
-      spyOn(this.RestDataService, "load").andCallThrough();
-      spyOn(this.scope, "updateOptions").andReturn();
+      spyOn(this.RestDataService, "load").and.callThrough();
+      spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.RestDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.mappings).toEqual("mappingsValue");
@@ -60,13 +60,13 @@ describe('RestController', function() {
         setValue: function() {
         }
       };
-      spyOn(this.AceEditorService, "init").andReturn(fakeEditor);
+      spyOn(this.AceEditorService, "init").and.returnValue(fakeEditor);
       this.RestDataService.load = function(success, error) {
         error("some reason");
       };
-      spyOn(this.RestDataService, "load").andCallThrough();
-      spyOn(this.AlertService, "error").andReturn();
-      spyOn(this.scope, "updateOptions").andReturn();
+      spyOn(this.RestDataService, "load").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue();
+      spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.scope.updateOptions).not.toHaveBeenCalled();
       expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster mappings', 'some reason');
@@ -85,8 +85,8 @@ describe('RestController', function() {
           return 'raw string';
         }
       };
-      spyOn(this.RestDataService, "load").andReturn();
-      spyOn(this.RestDataService, "execute").andReturn();
+      spyOn(this.RestDataService, "load").and.returnValue();
+      spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
       expect(this.RestDataService.execute).toHaveBeenCalledWith('POST', '', '', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.response).toEqual(undefined);
@@ -103,8 +103,8 @@ describe('RestController', function() {
           return 'raw string';
         }
       };
-      spyOn(this.RestDataService, "load").andReturn();
-      spyOn(this.RestDataService, "execute").andReturn();
+      spyOn(this.RestDataService, "load").and.returnValue();
+      spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
       expect(this.RestDataService.execute).toHaveBeenCalledWith('POST', '', 'raw string', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.response).toEqual(undefined);
@@ -119,7 +119,7 @@ describe('RestController', function() {
           return "";
         }
       };
-      spyOn(this.RestDataService, "execute").andReturn();
+      spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
       expect(this.RestDataService.execute).toHaveBeenCalledWith("POST", "", "some value", jasmine.any(Function), jasmine.any(Function));
     });
@@ -144,7 +144,7 @@ describe('RestController', function() {
       this.RestDataService.history = function(success, error) {
         success(history);
       };
-      spyOn(this.RestDataService, "history").andCallThrough();
+      spyOn(this.RestDataService, "history").and.callThrough();
       this.scope.loadHistory();
       expect(this.RestDataService.history).toHaveBeenCalled();
       expect(this.scope.history).toEqual(history);
@@ -153,8 +153,8 @@ describe('RestController', function() {
       this.RestDataService.history = function(success, error) {
         error('kaput');
       };
-      spyOn(this.RestDataService, "history").andCallThrough();
-      spyOn(this.AlertService, 'error').andReturn();
+      spyOn(this.RestDataService, "history").and.callThrough();
+      spyOn(this.AlertService, 'error').and.returnValue();
       this.scope.loadHistory();
       expect(this.RestDataService.history).toHaveBeenCalled();
       expect(this.scope.history).toEqual(undefined);
@@ -169,8 +169,8 @@ describe('RestController', function() {
         }, format: function() {
         }
       };
-      spyOn(this.scope.editor, 'setValue').andReturn();
-      spyOn(this.scope.editor, 'format').andReturn();
+      spyOn(this.scope.editor, 'setValue').and.returnValue();
+      spyOn(this.scope.editor, 'format').and.returnValue();
       this.scope.loadRequest({
         'path': '/somepath',
         'body': 'somebody',

@@ -32,8 +32,8 @@ describe('CreateIndexController', function() {
             this.DataService.getIndices = function(success, error) {
                 success(indices);
             };
-            spyOn(this.DataService, 'getIndices').andCallThrough();
-            spyOn(this.AceEditorService, 'init').andReturn(editor);
+            spyOn(this.DataService, 'getIndices').and.callThrough();
+            spyOn(this.AceEditorService, 'init').and.returnValue(editor);
             this.scope.setup();
             expect(this.DataService.getIndices).toHaveBeenCalled();
             expect(this.AceEditorService.init).toHaveBeenCalled();
@@ -50,8 +50,8 @@ describe('CreateIndexController', function() {
                 success(metadata);
             };
             this.scope.editor = {setValue: function(){}};
-            spyOn(this.DataService, 'getIndexMetadata').andCallThrough();
-            spyOn(this.scope.editor, 'setValue').andReturn(true);
+            spyOn(this.DataService, 'getIndexMetadata').and.callThrough();
+            spyOn(this.scope.editor, 'setValue').and.returnValue(true);
             this.scope.loadIndexMetadata('indexName');
             expect(this.DataService.getIndexMetadata).toHaveBeenCalledWith(
                 'indexName',
@@ -66,8 +66,8 @@ describe('CreateIndexController', function() {
             this.DataService.getIndexMetadata = function(index, success, error) {
                 error('some error');
             };
-            spyOn(this.DataService, 'getIndexMetadata').andCallThrough();
-            spyOn(this.AlertService, 'error').andReturn(true);
+            spyOn(this.DataService, 'getIndexMetadata').and.callThrough();
+            spyOn(this.AlertService, 'error').and.returnValue(true);
             this.scope.loadIndexMetadata('indexName');
             expect(this.DataService.getIndexMetadata).toHaveBeenCalledWith(
                 'indexName',
@@ -85,9 +85,9 @@ describe('CreateIndexController', function() {
             this.DataService.createIndex = function(name, metadata, success, error) {
                 success('success');
             };
-            spyOn(this.DataService, 'createIndex').andCallThrough();
-            spyOn(this.RefreshService, 'refresh').andReturn(true);
-            spyOn(this.AlertService, 'success').andReturn(true);
+            spyOn(this.DataService, 'createIndex').and.callThrough();
+            spyOn(this.RefreshService, 'refresh').and.returnValue(true);
+            spyOn(this.AlertService, 'success').and.returnValue(true);
             this.scope.createIndex();
             expect(this.DataService.createIndex).toHaveBeenCalledWith('someIndex', {settings: {index: {}}}, jasmine.any(Function), jasmine.any(Function));
             expect(this.RefreshService.refresh).toHaveBeenCalled();
@@ -100,8 +100,8 @@ describe('CreateIndexController', function() {
             this.DataService.createIndex = function(name, metadata, success, error) {
                 error('boom!');
             };
-            spyOn(this.DataService, 'createIndex').andCallThrough();
-            spyOn(this.AlertService, 'error').andReturn(true);
+            spyOn(this.DataService, 'createIndex').and.callThrough();
+            spyOn(this.AlertService, 'error').and.returnValue(true);
             this.scope.createIndex();
             expect(this.DataService.createIndex).toHaveBeenCalledWith('someIndex', {settings: {index: {}}}, jasmine.any(Function), jasmine.any(Function));
             expect(this.AlertService.error).toHaveBeenCalledWith('Error while creating index', 'boom!');
@@ -115,9 +115,9 @@ describe('CreateIndexController', function() {
             this.DataService.createIndex = function(name, metadata, success, error) {
                 success('success');
             };
-            spyOn(this.DataService, 'createIndex').andCallThrough();
-            spyOn(this.RefreshService, 'refresh').andReturn(true);
-            spyOn(this.AlertService, 'success').andReturn(true);
+            spyOn(this.DataService, 'createIndex').and.callThrough();
+            spyOn(this.RefreshService, 'refresh').and.returnValue(true);
+            spyOn(this.AlertService, 'success').and.returnValue(true);
             this.scope.createIndex();
             expect(this.DataService.createIndex).toHaveBeenCalledWith('someIndex', {settings: {index: {number_of_shards: '18', number_of_replicas: '10'}}}, jasmine.any(Function), jasmine.any(Function));
             expect(this.RefreshService.refresh).toHaveBeenCalled();
@@ -126,7 +126,7 @@ describe('CreateIndexController', function() {
 
         it('prevents creation when name is empty', function () {
             this.scope.name = '';
-            spyOn(this.AlertService, 'error').andReturn(true);
+            spyOn(this.AlertService, 'error').and.returnValue(true);
             this.scope.createIndex();
             expect(this.AlertService.error).toHaveBeenCalledWith('You must specify a valid index name');
         });
@@ -134,8 +134,8 @@ describe('CreateIndexController', function() {
         it('prevents creation when settings is not valid json', function () {
             this.scope.name = 'someName';
             this.scope.editor = {getValue: function(){ throw 'boooom!';}};
-            spyOn(this.AlertService, 'error').andReturn(true);
-            spyOn(this.scope.editor, 'getValue').andCallThrough();
+            spyOn(this.AlertService, 'error').and.returnValue(true);
+            spyOn(this.scope.editor, 'getValue').and.callThrough();
             this.scope.createIndex();
             expect(this.AlertService.error).toHaveBeenCalledWith('Malformed settings', 'boooom!');
         });
