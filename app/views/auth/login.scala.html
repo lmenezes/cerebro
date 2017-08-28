@@ -43,7 +43,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-5"></div>
-                    <div class="col-md-3">
+                    <div class="col-md-9">
                         @flash.get(controllers.AuthController.LOGIN_MSG).fold(Html("")) { msg =>
                             <div class="alert alert-warning" role="alert">@msg</div>
                         }

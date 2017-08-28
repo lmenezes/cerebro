@@ -9,9 +9,17 @@
       </div>
     </div>
     <div style="padding-top: 60px;">
+      <form>
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+            <input class="form-control" placeholder="Search for host" ng-model="searchHost">
+          </div>
+        </div>
+      </form>
       <h6>HOSTS</h6>
       <table class="table">
-        <tr ng-repeat="host in hosts | orderBy track by $index">
+        <tr ng-repeat="host in hosts | orderBy track by $index | filter:searchHost">
           <td class="normal-action" ng-click="connect(host)">
             <span>{{host}}</span>
           </td>
