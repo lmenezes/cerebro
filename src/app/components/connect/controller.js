@@ -4,6 +4,8 @@ angular.module('cerebro').controller('ConnectController', [
 
     $scope.hosts = undefined;
 
+    $scope.searchHost = '';
+
     $scope.connecting = false;
 
     $scope.setup = function() {
