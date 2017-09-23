@@ -109,14 +109,14 @@
       </div>
     </td>
     <td>
-      <div ng-show="node.disk.percent">
+      <div ng-show="node.disk">
         <span class="main-stat">{{node.disk.percent}}%</span>
         <span class="detail-stat">
           <div>available: {{node.disk.available | bytes}}</div>
           <div>total: {{node.disk.total | bytes}}</div>
         </span>
       </div>
-      <div class="empty-stat" ng-hide="node.disk.percent">
+      <div class="empty-stat" ng-hide="node.disk">
         -
       </div>
     </td>

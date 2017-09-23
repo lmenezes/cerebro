@@ -56,12 +56,7 @@ object Node {
           "available" -> JsNumber(a),
           "percent" -> JsNumber(percent)
         )
-      case _ =>
-        Json.obj(
-          "total" -> JsNull,
-          "available" -> JsNull,
-          "percent" -> JsNull
-        )
+      case _ => JsNull
     }
   }
 
