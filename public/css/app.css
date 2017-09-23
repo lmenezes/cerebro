@@ -61,7 +61,7 @@ table.shard-map { table-layout: fixed; }
 /* Bootstrap tweaking **/
 .table-header { font-size: 15px; font-weight: 400; }
 .pager { margin: 0px 0px !important; }
-.alerts { padding-top: 40px; position: fixed; padding-left: 50px; right: 25px; width: 50%; max-width: 700px; top: 30px; z-index: 1000000; }
+.alerts { padding-top: 40px; position: fixed; padding-left: 50px; right: 25px; width: 50%; max-width: 700px; top: 30px; z-index: 1000; }
 .alert-block { opacity: 0.90; }
 .radio, .checkbox { position: relative; display: block; margin-top: 7px; margin-bottom: 7px; }
 .radio+.radio, .checkbox+.checkbox { margin-top: 7px; }
