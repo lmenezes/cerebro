@@ -5,7 +5,7 @@
       <div class="form-inline form-group pull-right">
         <div class="form-group">
           <select class="form-control" ng-model="repository"
-                  ng-options="r for r in repositories| orderBy:'r'">
+                  ng-options="r for r in repositories| orderBy:r">
             <option value="">select repository</option>
           </select>
         </div>
@@ -69,7 +69,7 @@
               <input type="checkbox" ng-model="showSpecialIndices" ng-true-value="true"> show special indices
             </label>
           </label>
-          <select multiple ng-model="form.indices" ng-options="index.name for index in indices | orderBy:'name'"
+          <select multiple ng-model="form.indices" ng-options="index.name for index in indices | orderBy:name"
                   class="form-control" size="13">
           </select>
         </div>

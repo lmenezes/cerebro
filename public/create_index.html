@@ -28,7 +28,7 @@
           <div class="col-xs-12">
             <div class="form-group">
               <label class="form-label">load settings from existing index</label>
-              <select ng-model="index" ng-options="i as i for i in indices | orderBy:'i'" class="form-control" ng-change="loadIndexMetadata(index)">
+              <select ng-model="index" ng-options="i as i for i in indices | orderBy:i" class="form-control" ng-change="loadIndexMetadata(index)">
               </select>
             </div>
           </div>
