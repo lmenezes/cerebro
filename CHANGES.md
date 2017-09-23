@@ -161,3 +161,19 @@ First cerebro release.
 - max width to alerts
 - display single alias on overview
 - improve performance of overview index filtering
+
+###v0.6.7 - September 23rd, 2017
+
+#### Bug fixes
+- use correct host when copying rest request for curl
+- fixed restore snapshot with multiple selected indices
+
+
+#### Enhancements
+- send content-type to ES
+- hide closed indices by default on cluster overview
+- display both source and target for relocating shards
+- confirmation dialogs displayed over alert notifications
+
+#### New features
+- support flush index from cluster overview
