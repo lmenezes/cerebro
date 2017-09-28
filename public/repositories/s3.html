@@ -31,6 +31,14 @@
   <input ng-model="settings.max_retries" class="form-control" placeholder="Number of retries in case of S3 errors. Defaults to 3.">
 </div>
 <div class="form-group col-md-6">
+  <label class="form-label">max_restore_bytes_per_sec</label>
+  <input ng-model="settings.max_restore_bytes_per_sec" class="form-control" placeholder="Throttles per node restore rate. Defaults to 20mb per second.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">max_snapshot_bytes_per_sec</label>
+  <input ng-model="settings.max_snapshot_bytes_per_sec" class="form-control" placeholder="Throttles per node snapshot rate. Defaults to 20mb per second.">
+</div>
+<div class="form-group col-md-6">
   <label class="form-label">compress snapshot files(defaults to false)</label>
 
   <div class="row">
