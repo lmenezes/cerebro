@@ -19,9 +19,35 @@
         <table class="table">
           <tr ng-repeat="alias in page.elements track by $index" ng-show="alias">
             <td>
-              <i class="fa fa-tag"></i> {{alias.alias}} <span class="info-text"> assigned to index</span> {{alias.index}}
-              <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="removeIndexAlias(alias)" ng-hide="alias.removed"></i>
-              <i class="fa fa-trash alert-danger pull-right disabled" ng-show="alias.removed"></i>
+              <span class="normal-action" data-toggle="collapse" data-target="#aliasDetails{{$index}}">
+                <i class="fa fa-tag"></i> {{alias.alias}} <span class="info-text"> assigned to index</span> {{alias.index}}
+                <span ng-show="alias.search_routing">
+                  <span class="info-text">with search routing</span> {{alias.search_routing}}
+                </span>
+                <span ng-show="alias.index_routing">
+                  <span class="info-text">
+                    <span ng-show="alias.search_routing">and</span>
+                    <span ng-hide="alias.search_routing">with</span>
+                    index routing
+                  </span>
+                  {{alias.index_routing}}
+                </span>
+                <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="removeIndexAlias(alias)" ng-hide="alias.removed"></i>
+                <i class="fa fa-trash alert-danger pull-right disabled" ng-show="alias.removed"></i>
+              </span>
+              <div class="col-xs-12 collapse " id="aliasDetails{{$index}}">
+                <div class="row" ng-show="alias.filter">
+                  <div class="col-xs-12">
+                    <span class="info-text">with filter:</span>
+                    <pre>{{alias.filter | json}}</pre>
+                  </div>
+                </div>
+                <div>
+                  <div class="col-xs-12" ng-hide="alias.filter">
+                    <span class="info-text">no filter set</span>
+                  </div>
+                </div>
+              </div>
             </td>
           </tr>
         </table>
