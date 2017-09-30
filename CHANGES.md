@@ -168,7 +168,6 @@ First cerebro release.
 - use correct host when copying rest request for curl
 - fixed restore snapshot with multiple selected indices
 
-
 #### Enhancements
 - send content-type to ES
 - hide closed indices by default on cluster overview
@@ -177,3 +176,16 @@ First cerebro release.
 
 #### New features
 - support flush index from cluster overview
+
+###v0.6.8 - September 30th, 2017
+
+#### Bug fixes
+- fixed heading text on cat apis page
+- fixed ordering for a few select components
+- correctly display 0% disk usage
+- fixed rendering of escaped content in rest client
+
+#### Enhancements
+- add missing settings for s3 repositories
+- display alias filter/routing on aliases listing
+- support linux aarch64 (https://github.com/lmenezes/cerebro/issues/207)
