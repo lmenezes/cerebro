@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ws"                 % "2.5.10",
   "com.typesafe.play" %% "play-slick"              % "2.0.2",
   "com.typesafe.play" %% "play-slick-evolutions"   % "2.0.2",
-  "org.xerial"        %  "sqlite-jdbc"             % "3.16.1",
+  "org.xerial"        %  "sqlite-jdbc"             % "3.20.0",
   "org.specs2"        %% "specs2-junit"  % "3.8.4" % "test",
   "org.specs2"        %% "specs2-core"   % "3.8.4" % "test",
   "org.specs2"        %% "specs2-mock"   % "3.8.4" % "test"
