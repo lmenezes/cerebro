@@ -4,7 +4,7 @@ maintainer := "Leonardo Menezes <leonardo.menezes@xing.com>"
 
 version := "0.6.8"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play"                    % "2.5.10",
