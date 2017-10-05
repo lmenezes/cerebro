@@ -11,6 +11,7 @@ class LDAPAuthConfig(config: Configuration) extends AuthConfig {
   final val baseDN = getSetting("base-dn")
   final val bindDN = getSetting("bind-dn")
   final val bindPW = getSetting("bind-pw")
+  final val userDomain = getSetting("user-domain")
   final val userAttr = getSetting("userAttr")
   final val userGroup = getSetting("userGroup")
 }

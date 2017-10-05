@@ -17,9 +17,9 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
 
   private final val config = new LDAPAuthConfig(globalConfig.getConfig("auth.settings").get)
 
-  def checkGroupMembership(username: String, password: String): Boolean = {
+  def checkGroupMembership(username: String): Boolean = {
     val props = new Hashtable[String, String]()
-    props.put(Context.SECURITY_PRINCIPAL, config.bindDN)
+    props.put(Context.SECURITY_PRINCIPAL, config.bindDN + "@" + config.userDomain)
     props.put(Context.SECURITY_CREDENTIALS, config.bindPW)
     props.put(Context.REFERRAL, "follow")
     val controls = new SearchControls()
@@ -49,10 +49,26 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
     }
   }
 
+  def checkUserAuth(username: String, password: String): Boolean = {
+    val props = new Hashtable[String, String]()
+    props.put(Context.SECURITY_PRINCIPAL, username + "@" + config.userDomain)
+    props.put(Context.SECURITY_CREDENTIALS, password)
+    try {
+      LdapCtxFactory.getLdapCtxInstance(config.url, props)
+      true
+    } catch {
+      case _: AuthenticationException => false
+    }
+  }
+
   def auth(username: String, password: String): Option[String] = {
-    val verify = checkGroupMembership(username, password)
-    if(verify) {
-      Some(username)
+    if(checkUserAuth(username, password)) {
+      if (checkGroupMembership(username)) {
+        Some(username)
+      } else {
+        log.error(s"User $username not in allowed group!")
+        None
+      }
     } else {
       log.error(s"login of $username failed")
       None
