@@ -17,6 +17,8 @@ libraryDependencies ++= Seq(
   "org.specs2"        %% "specs2-mock"   % "3.8.4" % "test"
 )
 
+libraryDependencies += filters
+
 lazy val root = (project in file(".")).
   enablePlugins(PlayScala, BuildInfoPlugin, LauncherJarPlugin).
   settings(
