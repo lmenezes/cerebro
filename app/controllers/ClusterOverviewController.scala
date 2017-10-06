@@ -4,45 +4,20 @@ import javax.inject.Inject
 
 import controllers.auth.AuthenticationModule
 import elastic.{ElasticClient, Error}
-import models.overview.ClusterOverview
 import models.{CerebroResponse, Hosts, ShardStats}
+import services.overview.DataService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ClusterOverviewController @Inject()(val authentication: AuthenticationModule,
                                           val hosts: Hosts,
-                                          client: ElasticClient) extends BaseController {
+                                          client: ElasticClient,
+                                          data: DataService) extends BaseController {
 
   def index = process { request =>
-    Future.sequence(
-      Seq(
-        client.clusterState(request.target),
-        client.nodesStats(Seq("jvm","fs","os","process"), request.target),
-        client.indicesStats(request.target),
-        client.clusterSettings(request.target),
-        client.aliases(request.target),
-        client.clusterHealth(request.target),
-        client.nodes(Seq("os","jvm"), request.target),
-        client.main(request.target)
-      )
-    ).map { responses =>
-      val failed = responses.find(_.isInstanceOf[Error])
-      failed match {
-        case Some(f) => CerebroResponse(f.status, f.body)
-        case None =>
-          val overview = ClusterOverview(
-            responses(0).body,
-            responses(1).body,
-            responses(2).body,
-            responses(3).body,
-            responses(4).body,
-            responses(5).body,
-            responses(6).body,
-            responses(7).body
-          )
-          CerebroResponse(200, overview)
-      }
+    data.getOverviewData(request.target).map { overview =>
+      CerebroResponse(200, overview)
     }
   }
 
@@ -102,7 +77,7 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
 
   def getShardStats = process { request =>
     val index = request.get("index")
-    val shard = request.getInt("shard")
+    val shard = request.get("shard").toInt // TODO ES return as Int?
     val node = request.get("node")
     Future.sequence(
       Seq(
@@ -124,7 +99,7 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
 
   def relocateShard = process { request =>
     val index = request.get("index")
-    val shard = request.getInt("shard")
+    val shard = request.get("shard").toInt // TODO ES return as Int?
     val from = request.get("from")
     val to = request.get("to")
     val server = request.target

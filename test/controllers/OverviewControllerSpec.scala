@@ -201,7 +201,7 @@ object OverviewControllerSpec extends MockedServices {
   }
 
   def shardStats = {
-    val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> 1)
+    val body = Json.obj("host" -> "somehost", "index" -> "someIndex", "node" -> "MCGlWc6ERF2N9pO0uh7-tA", "shard" -> "1")
     client.getShardStats("someIndex", ElasticServer("somehost", None)) returns Future.successful(Success(200, expectedStats))
     client.getIndexRecovery("someIndex", ElasticServer("somehost", None)) returns Future.successful(Success(200, expectedRecovery))
     val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
@@ -209,19 +209,19 @@ object OverviewControllerSpec extends MockedServices {
   }
 
   def missingIndexToFetchShardStats = {
-    val body = Json.obj("host" -> "somehost")
+    val body = Json.obj("host" -> "somehost", "shard" -> "1", "node" -> "MCGlWc6ERF2N9pO0uh7-tA")
     val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter index"))
   }
 
   def missingShardToFetchShardStats = {
-    val body = Json.obj("host" -> "somehost", "index" -> "foo")
+    val body = Json.obj("host" -> "somehost", "index" -> "foo", "node" -> "MCGlWc6ERF2N9pO0uh7-tA")
     val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter shard"))
   }
 
   def missingNodeToFetchShardStats = {
-    val body = Json.obj("host" -> "somehost", "index" -> "foo", "shard" -> 1)
+    val body = Json.obj("host" -> "somehost", "index" -> "foo", "shard" -> "1")
     val result = route(application, FakeRequest(POST, "/overview/get_shard_stats").withBody(body)).get
     ensure(result, 400, Json.obj("error" -> "Missing required parameter node"))
   }

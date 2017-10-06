@@ -18,14 +18,9 @@ describe('OverviewController', function() {
   }));
 
   it('should have intial state correctly set', function() {
+    expect(this.scope.data).toEqual(undefined);
     expect(this.scope.indices).toEqual(undefined);
     expect(this.scope.nodes).toEqual(undefined);
-    expect(this.scope.unassigned_shards).toEqual(0);
-    expect(this.scope.initializing_shards).toEqual(0);
-    expect(this.scope.relocating_shards).toEqual(0);
-    expect(this.scope.shardAllocation).toEqual(true);
-    expect(this.scope.closed_indices).toEqual(0);
-    expect(this.scope.special_indices).toEqual(0);
     expect(this.scope.shardAllocation).toEqual(true);
     // index filter
     expect(this.scope.indices_filter.name).toEqual('');
@@ -82,11 +77,7 @@ describe('OverviewController', function() {
         spyOn(this.scope, 'setNodes').and.returnValue(true);
         this.scope.refresh();
         expect(this.OverviewDataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-        expect(this.scope.unassigned_shards).toEqual(1);
-        expect(this.scope.initializing_shards).toEqual(3);
-        expect(this.scope.relocating_shards).toEqual(2);
-        expect(this.scope.closed_indices).toEqual(2);
-        expect(this.scope.special_indices).toEqual(3);
+        expect(this.scope.data).toEqual(data);
         expect(this.scope.shardAllocation).toEqual(true);
         expect(this.scope.setIndices).toHaveBeenCalledWith(indices);
         expect(this.scope.setNodes).toHaveBeenCalledWith(nodes);
@@ -98,14 +89,12 @@ describe('OverviewController', function() {
       function() {
         this.OverviewDataService.getOverview = function(success, error) {
           error('kaput');
-        }
+        };
         spyOn(this.OverviewDataService, 'getOverview').and.callThrough();
         spyOn(this.AlertService, 'error').and.returnValue();
         this.scope.refresh();
         expect(this.OverviewDataService.getOverview).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-        expect(this.scope.unassigned_shards).toEqual(0);
-        expect(this.scope.closed_indices).toEqual(0);
-        expect(this.scope.special_indices).toEqual(0);
+        expect(this.scope.data).toEqual(undefined);
         expect(this.scope.shardAllocation).toEqual(true);
         expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading data', 'kaput');
       }
@@ -195,7 +184,7 @@ describe('OverviewController', function() {
         spyOn(this.OverviewDataService, 'relocateShard').and.callThrough();
         spyOn(this.AlertService, 'info').and.returnValue(true);
         spyOn(this.RefreshService, 'refresh').and.returnValue(true);
-        this.scope.relocateShard({id: 'n2'});
+        this.scope.relocateShard({name: 'n2'});
         expect(this.OverviewDataService.relocateShard).toHaveBeenCalledWith(
           1, 'i', 'n', 'n2', jasmine.any(Function), jasmine.any(Function)
         );
@@ -215,7 +204,7 @@ describe('OverviewController', function() {
         };
         spyOn(this.OverviewDataService, 'relocateShard').and.callThrough();
         spyOn(this.AlertService, 'error').and.returnValue(true);
-        this.scope.relocateShard({id: 'n2'});
+        this.scope.relocateShard({name: 'n2'});
         expect(this.OverviewDataService.relocateShard).toHaveBeenCalledWith(
           1, 'i', 'n', 'n2', jasmine.any(Function), jasmine.any(Function)
         );
@@ -230,33 +219,33 @@ describe('OverviewController', function() {
   describe('canReceiveShard', function() {
     it('can receive if same index and different node',
       function() {
-        var index = {name: 'i', shards: {n: [{shard: 1}]}};
+        var index = {index: 'i', shards: {n: [{shard: 1}]}};
         this.scope.relocatingShard = {shard: 1, index: 'i', node: 'n'};
-        var receive = this.scope.canReceiveShard(index, {id: 'n2'});
+        var receive = this.scope.canReceiveShard(index, {name: 'n2'});
         expect(receive).toEqual(true);
       }
     );
     it('cannot receive if same index and different node but containing shard',
       function() {
-        var index = {name: 'i', shards: {n: [{shard: 1}], n2: [{shard: 1}]}};
+        var index = {index: 'i', shards: {n: [{shard: 1}], n2: [{shard: 1}]}};
         this.scope.relocatingShard = {shard: 1, index: 'i', node: 'n'};
-        var receive = this.scope.canReceiveShard(index, {id: 'n2'});
+        var receive = this.scope.canReceiveShard(index, {name: 'n2'});
         expect(receive).toEqual(false);
       }
     );
     it('cannot receive if same node',
       function() {
-        var index = {name: 'i', shards: {n: [{shard: 1}]}};
+        var index = {index: 'i', shards: {n: [{shard: 1}]}};
         this.scope.relocatingShard = {shard: 1, index: 'i2', node: 'n'};
-        var receive = this.scope.canReceiveShard(index, {id: 'n'});
+        var receive = this.scope.canReceiveShard(index, {name: 'n'});
         expect(receive).toEqual(false);
       }
     );
     it('cannot receive if different index',
       function() {
-        var index = {name: 'i2', shards: {n: [{shard: 1}]}};
+        var index = {index: 'i2', shards: {n: [{shard: 1}]}};
         this.scope.relocatingShard = {shard: 1, index: 'i', node: 'n'};
-        var receive = this.scope.canReceiveShard(index, {id: 'n2'});
+        var receive = this.scope.canReceiveShard(index, {name: 'n2'});
         expect(receive).toEqual(false);
       }
     );

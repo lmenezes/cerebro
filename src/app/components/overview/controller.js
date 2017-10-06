@@ -4,19 +4,17 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
   function($scope, $http, $window, $location, OverviewDataService, AlertService,
            ModalService, RefreshService) {
 
-    $scope.data = undefined;
-
-    $scope.indices = undefined;
-    $scope.nodes = undefined;
-    $scope.unassigned_shards = 0;
-    $scope.relocating_shards = 0;
-    $scope.initializing_shards = 0;
-    $scope.closed_indices = 0;
-    $scope.special_indices = 0;
+    $scope.data = undefined; // raw response
+    $scope.indices = undefined; // visible indices
+    $scope.nodes = undefined; // visible nodes
     $scope.shardAllocation = true;
 
     $scope.indices_filter = new IndexFilter('', false, false, true, true, 0);
     $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
+
+    $scope.shardAsInt = function(shard) { // TODO if ES returned shard as Int...
+      return parseInt(shard.shard);
+    };
 
     $scope.getPageSize = function() {
       return Math.max(Math.round($window.innerWidth / 280), 1);
@@ -26,8 +24,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       1,
       $scope.getPageSize(),
       [],
-      $scope.indices_filter)
-    ;
+      $scope.indices_filter
+    );
 
     $scope.page = $scope.paginator.getPage();
 
@@ -53,11 +51,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.data = data;
           $scope.setIndices(data.indices);
           $scope.setNodes(data.nodes);
-          $scope.unassigned_shards = data.unassigned_shards;
-          $scope.relocating_shards = data.relocating_shards;
-          $scope.initializing_shards = data.initializing_shards;
-          $scope.closed_indices = data.closed_indices;
-          $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
         },
         function(error) {
@@ -65,11 +58,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.data = undefined;
           $scope.indices = undefined;
           $scope.nodes = undefined;
-          $scope.unassigned_shards = 0;
-          $scope.relocating_shards = 0;
-          $scope.initializing_shards = 0;
-          $scope.closed_indices = 0;
-          $scope.special_indices = 0;
           $scope.shardAllocation = true;
         }
       );
@@ -301,7 +289,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.relocateShard = function(node) {
       var s = $scope.relocatingShard;
-      OverviewDataService.relocateShard(s.shard, s.index, s.node, node.id,
+      OverviewDataService.relocateShard(s.shard, s.index, s.node, node.name,
         function(response) {
           $scope.relocatingShard = undefined;
           RefreshService.refresh();
@@ -322,8 +310,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.canReceiveShard = function(index, node) {
       var shard = $scope.relocatingShard;
       if (shard && index) { // in case num indices < num columns
-        if (shard.node !== node.id && shard.index === index.name) {
-          var shards = index.shards[node.id];
+        if (shard.node !== node.name && shard.index === index.index) {
+          var shards = index.shards[node.name];
           if (shards) {
             var sameShard = function(s) {
               return s.shard === shard.shard;

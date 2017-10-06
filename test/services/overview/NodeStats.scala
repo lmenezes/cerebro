@@ -1,4 +1,4 @@
-package models.overview
+package services.overview
 
 import play.api.libs.json.Json
 

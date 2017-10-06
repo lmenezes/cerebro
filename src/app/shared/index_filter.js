@@ -13,9 +13,9 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       case 'name':
         return function(a, b) {
           if (asc) {
-            return a.name.localeCompare(b.name);
+            return a.index.localeCompare(b.index);
           } else {
-            return b.name.localeCompare(a.name);
+            return b.index.localeCompare(a.index);
           }
         };
       default:
@@ -58,10 +58,10 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
 
   this.matches = function(index) {
     var matches = true;
-    if (!this.special && index.special) {
+    if (!this.special && index.index.indexOf('.') === 0) {
       matches = false;
     }
-    if (!this.closed && index.closed) {
+    if (!this.closed && index.status === 'close') {
       matches = false;
     }
     // Hide healthy == show unhealthy only
@@ -71,7 +71,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     if (matches && this.name) {
       try {
         var regExp = new RegExp(this.name.trim(), 'i');
-        matches = regExp.test(index.name);
+        matches = regExp.test(index.index);
         if (!matches && index.aliases) {
           for (var idx = 0; idx < index.aliases.length; idx++) {
             if ((matches = regExp.test(index.aliases[idx]))) {
@@ -81,7 +81,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
         }
       }
       catch (err) { // if not valid regexp, still try normal matching
-        matches = index.name.indexOf(this.name.toLowerCase()) != -1;
+        matches = index.index.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
           for (var _idx = 0; _idx < index.aliases.length; _idx++) {
             var alias = index.aliases[_idx].toLowerCase();

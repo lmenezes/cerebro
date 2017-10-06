@@ -5,14 +5,14 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{data.cluster_name}}
+            {{data.health.cluster_name}}
         </span>
       </span>
         </div>
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{data.number_of_nodes | number:0}}
+            {{data.health.number_of_nodes | number:0}}
         </span>
         <span>
           nodes
@@ -32,7 +32,7 @@
         <div class="col-lg-2">
       <span class="stat">
         <span class="stat-value">
-            {{data.active_shards + data.initializing_shards + data.relocating_shards + data.unassigned_shards | number:0}}
+            {{data.health.active_shards + data.health.initializing_shards + data.health.relocating_shards + data.health.unassigned_shards | number:0}}
         </span>
         <span>
           shards

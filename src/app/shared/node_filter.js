@@ -43,10 +43,10 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
 
   this.matchesType = function(node) {
     return (
-      node.data && this.data ||
-      node.master && this.master ||
-      node.ingest && this.ingest ||
-      node.coordinating && this.coordinating
+      node['node.role'].indexOf('d') !== -1 && this.data ||
+      node['node.role'].indexOf('m') !== -1 && this.master ||
+      node['node.role'].indexOf('i') !== -1 && this.ingest ||
+      node['node.role'].indexOf('-') !== -1 && this.coordinating
     );
   };
 

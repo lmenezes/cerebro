@@ -1,4 +1,4 @@
-package models.overview
+package services.overview
 
 import org.specs2.Specification
 
@@ -17,7 +17,6 @@ object ClusterOverviewSpec extends Specification {
       return number of unassigned shards     $unassignedShards
       return cluster doc count               $docsCount
       return cluster size in bytes           $sizeInBytes
-      return number of indices               $totalIndices
       return number of closed indices        $closedIndices
       return number of special indices       $specialIndices
       return state of shard allocation       $shardAllocation
@@ -30,73 +29,66 @@ object ClusterOverviewSpec extends Specification {
   val clusterDiabledAllocation = ClusterDisabledAllocation()
 
   def clusterName = {
-    (clusterWithoutData \ "cluster_name").as[String] mustEqual "elasticsearch"
-    (clusterWithData \ "cluster_name").as[String] mustEqual "elasticsearch"
-    (clusterInitializing \ "cluster_name").as[String] mustEqual "elasticsearch"
-    (clusterRelocating \ "cluster_name").as[String] mustEqual "elasticsearch"
+    (clusterWithoutData \ "health" \ "cluster_name").as[String] mustEqual "elasticsearch"
+    (clusterWithData \ "health" \ "cluster_name").as[String] mustEqual "elasticsearch"
+    (clusterInitializing \ "health" \ "cluster_name").as[String] mustEqual "elasticsearch"
+    (clusterRelocating \ "health" \ "cluster_name").as[String] mustEqual "elasticsearch"
   }
 
   def numberOfNodes = {
-    (clusterWithoutData \ "number_of_nodes").as[Int] mustEqual 2
-    (clusterWithData \ "number_of_nodes").as[Int] mustEqual 2
-    (clusterInitializing \ "number_of_nodes").as[Int] mustEqual 2
-    (clusterRelocating \ "number_of_nodes").as[Int] mustEqual 3
+    (clusterWithoutData \ "health" \ "number_of_nodes").as[Int] mustEqual 2
+    (clusterWithData \ "health" \ "number_of_nodes").as[Int] mustEqual 2
+    (clusterInitializing \ "health" \ "number_of_nodes").as[Int] mustEqual 2
+    (clusterRelocating \ "health" \ "number_of_nodes").as[Int] mustEqual 2
   }
 
   def activePrimaryShards = {
-    (clusterWithoutData \ "active_primary_shards").as[Int] mustEqual 0
-    (clusterWithData \ "active_primary_shards").as[Int] mustEqual 8
-    (clusterInitializing \ "active_primary_shards").as[Int] mustEqual 5
-    (clusterRelocating \ "active_primary_shards").as[Int] mustEqual 5
+    (clusterWithoutData \ "health" \ "active_primary_shards").as[Int] mustEqual 0
+    (clusterWithData \ "health" \ "active_primary_shards").as[Int] mustEqual 8
+    (clusterInitializing \ "health" \ "active_primary_shards").as[Int] mustEqual 5
+    (clusterRelocating \ "health" \ "active_primary_shards").as[Int] mustEqual 5
   }
 
   def activeShards = {
-    (clusterWithoutData \ "active_shards").as[Int] mustEqual 0
-    (clusterWithData \ "active_shards").as[Int] mustEqual 11
-    (clusterInitializing \ "active_shards").as[Int] mustEqual 5
-    (clusterRelocating \ "active_primary_shards").as[Int] mustEqual 5
+    (clusterWithoutData \ "health" \ "active_shards").as[Int] mustEqual 0
+    (clusterWithData \ "health" \ "active_shards").as[Int] mustEqual 11
+    (clusterInitializing \ "health" \ "active_shards").as[Int] mustEqual 5
+    (clusterRelocating \ "health" \ "active_primary_shards").as[Int] mustEqual 5
   }
 
   def relocatingShards = {
-    (clusterWithoutData \ "relocating_shards").as[Int] mustEqual 0
-    (clusterWithData \ "relocating_shards").as[Int] mustEqual 0
-    (clusterInitializing \ "relocating_shards").as[Int] mustEqual 0
-    (clusterRelocating \ "relocating_shards").as[Int] mustEqual 2
+    (clusterWithoutData \ "health" \ "relocating_shards").as[Int] mustEqual 0
+    (clusterWithData \ "health" \ "relocating_shards").as[Int] mustEqual 0
+    (clusterInitializing \ "health" \ "relocating_shards").as[Int] mustEqual 0
+    (clusterRelocating \ "health" \ "relocating_shards").as[Int] mustEqual 1
   }
 
   def initializingShards = {
-    (clusterWithoutData \ "initializing_shards").as[Int] mustEqual 0
-    (clusterWithData \ "initializing_shards").as[Int] mustEqual 0
-    (clusterInitializing \ "initializing_shards").as[Int] mustEqual 4
-    (clusterRelocating \ "initializing_shards").as[Int] mustEqual 0
+    (clusterWithoutData \ "health" \ "initializing_shards").as[Int] mustEqual 0
+    (clusterWithData \ "health" \ "initializing_shards").as[Int] mustEqual 0
+    (clusterInitializing \ "health" \ "initializing_shards").as[Int] mustEqual 4
+    (clusterRelocating \ "health" \ "initializing_shards").as[Int] mustEqual 0
   }
 
   def unassignedShards = {
-    (clusterWithoutData \ "unassigned_shards").as[Int] mustEqual 0
-    (clusterWithData \ "unassigned_shards").as[Int] mustEqual 0
-    (clusterInitializing \ "unassigned_shards").as[Int] mustEqual 1
-    (clusterRelocating \ "unassigned_shards").as[Int] mustEqual 0
+    (clusterWithoutData \ "health" \ "unassigned_shards").as[Int] mustEqual 0
+    (clusterWithData \ "health" \ "unassigned_shards").as[Int] mustEqual 0
+    (clusterInitializing \ "health" \ "unassigned_shards").as[Int] mustEqual 1
+    (clusterRelocating \ "health" \ "unassigned_shards").as[Int] mustEqual 0
   }
 
   def docsCount = {
     (clusterWithoutData \ "docs_count").as[Int] mustEqual 0
     (clusterWithData \ "docs_count").as[Int] mustEqual 3
     (clusterInitializing \ "docs_count").as[Int] mustEqual 108680
-    (clusterRelocating \ "docs_count").as[Int] mustEqual 108680
+    (clusterRelocating \ "docs_count").as[Int] mustEqual 0
   }
 
   def sizeInBytes = {
     (clusterWithoutData \ "size_in_bytes").as[Int] mustEqual 0
     (clusterWithData \ "size_in_bytes").as[Int] mustEqual 16184
     (clusterInitializing \ "size_in_bytes").as[Int] mustEqual 2026271
-    (clusterRelocating \ "size_in_bytes").as[Int] mustEqual 4052542
-  }
-
-  def totalIndices = {
-    (clusterWithoutData \ "total_indices").as[Int] mustEqual 0
-    (clusterWithData \ "total_indices").as[Int] mustEqual 3
-    (clusterInitializing \ "total_indices").as[Int] mustEqual 1
-    (clusterRelocating \ "total_indices").as[Int] mustEqual 1
+    (clusterRelocating \ "size_in_bytes").as[Int] mustEqual 650
   }
 
   def closedIndices = {

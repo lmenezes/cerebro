@@ -811,19 +811,17 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
   function($scope, $http, $window, $location, OverviewDataService, AlertService,
            ModalService, RefreshService) {
 
-    $scope.data = undefined;
-
-    $scope.indices = undefined;
-    $scope.nodes = undefined;
-    $scope.unassigned_shards = 0;
-    $scope.relocating_shards = 0;
-    $scope.initializing_shards = 0;
-    $scope.closed_indices = 0;
-    $scope.special_indices = 0;
+    $scope.data = undefined; // raw response
+    $scope.indices = undefined; // visible indices
+    $scope.nodes = undefined; // visible nodes
     $scope.shardAllocation = true;
 
     $scope.indices_filter = new IndexFilter('', false, false, true, true, 0);
     $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
+
+    $scope.shardAsInt = function(shard) { // TODO if ES returned shard as Int...
+      return parseInt(shard.shard);
+    };
 
     $scope.getPageSize = function() {
       return Math.max(Math.round($window.innerWidth / 280), 1);
@@ -833,8 +831,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       1,
       $scope.getPageSize(),
       [],
-      $scope.indices_filter)
-    ;
+      $scope.indices_filter
+    );
 
     $scope.page = $scope.paginator.getPage();
 
@@ -860,11 +858,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.data = data;
           $scope.setIndices(data.indices);
           $scope.setNodes(data.nodes);
-          $scope.unassigned_shards = data.unassigned_shards;
-          $scope.relocating_shards = data.relocating_shards;
-          $scope.initializing_shards = data.initializing_shards;
-          $scope.closed_indices = data.closed_indices;
-          $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
         },
         function(error) {
@@ -872,11 +865,6 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.data = undefined;
           $scope.indices = undefined;
           $scope.nodes = undefined;
-          $scope.unassigned_shards = 0;
-          $scope.relocating_shards = 0;
-          $scope.initializing_shards = 0;
-          $scope.closed_indices = 0;
-          $scope.special_indices = 0;
           $scope.shardAllocation = true;
         }
       );
@@ -1108,7 +1096,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.relocateShard = function(node) {
       var s = $scope.relocatingShard;
-      OverviewDataService.relocateShard(s.shard, s.index, s.node, node.id,
+      OverviewDataService.relocateShard(s.shard, s.index, s.node, node.name,
         function(response) {
           $scope.relocatingShard = undefined;
           RefreshService.refresh();
@@ -1129,8 +1117,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.canReceiveShard = function(index, node) {
       var shard = $scope.relocatingShard;
       if (shard && index) { // in case num indices < num columns
-        if (shard.node !== node.id && shard.index === index.name) {
-          var shards = index.shards[node.id];
+        if (shard.node !== node.name && shard.index === index.index) {
+          var shards = index.shards[node.name];
           if (shards) {
             var sameShard = function(s) {
               return s.shard === shard.shard;
@@ -1969,9 +1957,9 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       case 'name':
         return function(a, b) {
           if (asc) {
-            return a.name.localeCompare(b.name);
+            return a.index.localeCompare(b.index);
           } else {
-            return b.name.localeCompare(a.name);
+            return b.index.localeCompare(a.index);
           }
         };
       default:
@@ -2014,10 +2002,10 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
 
   this.matches = function(index) {
     var matches = true;
-    if (!this.special && index.special) {
+    if (!this.special && index.index.indexOf('.') === 0) {
       matches = false;
     }
-    if (!this.closed && index.closed) {
+    if (!this.closed && index.status === 'close') {
       matches = false;
     }
     // Hide healthy == show unhealthy only
@@ -2027,7 +2015,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     if (matches && this.name) {
       try {
         var regExp = new RegExp(this.name.trim(), 'i');
-        matches = regExp.test(index.name);
+        matches = regExp.test(index.index);
         if (!matches && index.aliases) {
           for (var idx = 0; idx < index.aliases.length; idx++) {
             if ((matches = regExp.test(index.aliases[idx]))) {
@@ -2037,7 +2025,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
         }
       }
       catch (err) { // if not valid regexp, still try normal matching
-        matches = index.name.indexOf(this.name.toLowerCase()) != -1;
+        matches = index.index.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
           for (var _idx = 0; _idx < index.aliases.length; _idx++) {
             var alias = index.aliases[_idx].toLowerCase();
@@ -2099,10 +2087,10 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
 
   this.matchesType = function(node) {
     return (
-      node.data && this.data ||
-      node.master && this.master ||
-      node.ingest && this.ingest ||
-      node.coordinating && this.coordinating
+      node['node.role'].indexOf('d') !== -1 && this.data ||
+      node['node.role'].indexOf('m') !== -1 && this.master ||
+      node['node.role'].indexOf('i') !== -1 && this.ingest ||
+      node['node.role'].indexOf('-') !== -1 && this.coordinating
     );
   };
 
