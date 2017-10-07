@@ -1,11 +1,9 @@
 package models.commons
 
-import play.api.libs.json.{JsArray, JsString, JsValue}
+import play.api.libs.json.{JsArray, JsValue}
 
 object Indices {
 
-  def apply(data: JsValue) = JsArray(data.as[JsArray].value.collect {
-    case index => (index \ "index").as[JsString]
-  })
+  def apply(data: JsValue) = JsArray((data \\ "index"))
 
 }
