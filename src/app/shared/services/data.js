@@ -9,6 +9,8 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     var password;
 
+    var onGoingRequests = {};
+
     this.getHost = function() {
       return host;
     };
@@ -100,6 +102,7 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
 
     var request = function(config, success, error) {
       var handleSuccess = function(data) {
+        onGoingRequests[config.url] = undefined;
         if (data.status === 303) {
           $window.location.href = 'login';
         } else {
@@ -111,9 +114,16 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         }
       };
       var handleError = function(data) {
+        onGoingRequests[config.url] = undefined;
         AlertService.error('Error connecting to the server', data.error);
       };
-      $http(config).success(handleSuccess).error(handleError);
+      var activeRequest = onGoingRequests[config.url] !== undefined;
+      var now = new Date().getTime();
+      var interval = RefreshService.getInterval();
+      if (!activeRequest || now - onGoingRequests[config.url] < interval) {
+        $http(config).success(handleSuccess).error(handleError);
+        onGoingRequests[config.url] = new Date().getTime();
+      }
     };
 
     return this;
