@@ -189,3 +189,16 @@ First cerebro release.
 - add missing settings for s3 repositories
 - display alias filter/routing on aliases listing
 - support linux aarch64 (https://github.com/lmenezes/cerebro/issues/207)
+
+###v0.7.0 - October 13th, 2017
+
+#### Bug fixes
+- fixed rest url autocompletion
+- fixed snapshot creation with selected list of indices
+- fixes 'show onlly affected indices' filter
+
+#### Enhancements
+- overview section optimised for big clusters
+- cluster changes alerts optimised for big clusters
+- gzip enabled for all api calls
+- avoid piling up of slow requests
