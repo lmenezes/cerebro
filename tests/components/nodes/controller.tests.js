@@ -116,8 +116,8 @@ describe('NodesController', function() {
     it('refresh list of visible nodes by applying the filter to the complete list',
       function() {
         var nodes = [
-          {name: 'a', master: true, data: true, client: false},
-          {name: 'b', master: true, data: true, client: false}
+          {name: 'a', master: true, data: true, client: false, 'node.role': 'md'},
+          {name: 'b', master: true, data: true, client: false, 'node.role': 'md'}
         ];
         this.scope.filter.name = 'b';
         this.scope._nodes = nodes;
