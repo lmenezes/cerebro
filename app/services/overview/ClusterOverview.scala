@@ -3,6 +3,8 @@ package services.overview
 import _root_.util.DataSize
 import play.api.libs.json._
 
+import scala.collection.mutable
+
 object ClusterOverview {
 
   def apply(clusterSettings: JsValue, health: JsValue,
@@ -16,12 +18,17 @@ object ClusterOverview {
       __.read[JsObject].map{ o => o ++ Json.obj( "state" -> JsString(state) ) }
     )
 
+    val unhealthyIndices = mutable.Set[String]()
+
     val shardMap = (shards.as[JsArray].value.flatMap {
       case shard =>
         val index = (shard \ "index").as[String]
         val node = (shard \ "node").asOpt[String].getOrElse("unassigned")
         // TODO: prune node/index from shard?
+        if (node.equals("unassigned"))
+          unhealthyIndices.add(index)
         if ((shard \ "state").as[String].equals("RELOCATING")) {
+          unhealthyIndices.add(index)
           val relocation = node.split(" ")
           val origin = relocation.head
           val target = relocation.last
@@ -42,12 +49,11 @@ object ClusterOverview {
       alias => (alias \ "index").as[String] -> (alias \ "alias").as[JsValue]
     }.groupBy(_._1).mapValues(a => JsArray(a.map(_._2)))
 
-
-
     def addAliasAndShards(index: String) = __.json.update {
       val aliases = JsObject(Map("aliases" -> aliasesMap.getOrElse(index, JsNull)))
       val shards = JsObject(Map("shards" -> JsObject(shardMap.getOrElse(index, Map()))))
-      __.read[JsObject].map { o => o ++ aliases ++ shards }
+      val healthy = JsObject(Map("unhealthy" -> JsBoolean(unhealthyIndices.contains(index))))
+      __.read[JsObject].map { o => o ++ aliases ++ shards ++ healthy}
     }
 
     var sizeInBytes = 0l
