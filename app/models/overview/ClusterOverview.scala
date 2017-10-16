@@ -6,8 +6,7 @@ object ClusterOverview {
 
   def apply(clusterState: JsValue, nodesStats: JsValue, indicesStats: JsValue,
             clusterSettings: JsValue, aliases: JsValue, clusterHealth: JsValue,
-            nodesInfo: JsValue, main: JsValue): JsValue = {
-
+            nodesInfo: JsValue): JsValue = {
     val indices = buildIndices(clusterState, indicesStats, aliases)
 
     val masterNodeId = (clusterState \ "master_node").as[String]
