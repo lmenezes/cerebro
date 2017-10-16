@@ -4,7 +4,7 @@ import play.api.libs.json.JsValue
 
 trait ClusterStub {
 
-  def apply() = ClusterOverview(clusterState, nodesStats, indicesStats, clusterSettings, aliases, clusterHealth, nodes, main)
+  def apply() = ClusterOverview(clusterState, nodesStats, indicesStats, clusterSettings, aliases, clusterHealth, nodes)
 
   val clusterState: JsValue
 
@@ -19,7 +19,5 @@ trait ClusterStub {
   val clusterHealth: JsValue
 
   val nodes: JsValue
-
-  val main: JsValue
 
 }

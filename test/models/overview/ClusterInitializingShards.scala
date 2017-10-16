@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 object ClusterInitializingShards {
 
-  def apply() = ClusterOverview(clusterState, nodesStats, indicesStats, clusterSettings, aliases, clusterHealth, nodes, main)
+  def apply() = ClusterOverview(clusterState, nodesStats, indicesStats, clusterSettings, aliases, clusterHealth, nodes)
 
   val clusterState = Json.parse(
     """
@@ -697,23 +697,6 @@ object ClusterInitializingShards {
       |      }
       |    }
       |  }
-      |}
-    """.stripMargin
-  )
-
-  val main = Json.parse(
-    """
-      |{
-      |  "name" : "Cecilia Reyes",
-      |  "cluster_name" : "elasticsearch",
-      |  "version" : {
-      |    "number" : "2.1.0",
-      |    "build_hash" : "72cd1f1a3eee09505e036106146dc1949dc5dc87",
-      |    "build_timestamp" : "2015-11-18T22:40:03Z",
-      |    "build_snapshot" : false,
-      |    "lucene_version" : "5.3.1"
-      |  },
-      |  "tagline" : "You Know, for Search"
       |}
     """.stripMargin
   )

@@ -20,8 +20,7 @@ class OverviewDataService @Inject()(client: ElasticClient) {
       "_cluster/settings",
       "_aliases",
       "_cluster/health",
-      s"_nodes/_all/os,jvm?human=true",
-      ""
+      s"_nodes/_all/os,jvm?human=true"
     )
 
     val start = System.currentTimeMillis()
@@ -39,8 +38,7 @@ class OverviewDataService @Inject()(client: ElasticClient) {
             responses(3).body,
             responses(4).body,
             responses(5).body,
-            responses(6).body,
-            responses(7).body
+            responses(6).body
           )
           println(s"Requesting took [${end - start}]")
           overview
