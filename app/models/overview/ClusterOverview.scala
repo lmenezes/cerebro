@@ -39,21 +39,20 @@ object ClusterOverview {
 
   def buildNodes(masterNodeId: String, nodesInfo: JsValue, nodesStats: JsValue): JsArray =
     JsArray(
-      (nodesInfo \ "nodes").as[JsObject].value.map {
-        case (id, info) =>
-          val stats = (nodesStats \ "nodes" \ id).as[JsObject]
+      (nodesStats \ "nodes").as[JsObject].value.map {
+        case (id, stats) =>
+          val info = (nodesInfo \ "nodes" \ id).as[JsObject]
           Node(id, info, stats, masterNodeId)
       }.toSeq
     )
 
   def buildIndices(clusterState: JsValue, indicesStats: JsValue, aliases: JsValue): Seq[JsValue] = {
     val routingTable = (clusterState \ "routing_table" \ "indices").as[JsObject]
-    val routingNodes = (clusterState \ "routing_nodes" \ "nodes").as[JsObject]
     val openIndices = routingTable.value.map { case (index, shards) =>
       val indexStats   = (indicesStats \ "indices" \ index).asOpt[JsObject].getOrElse(Json.obj())
       val indexAliases = (aliases \ index \ "aliases").asOpt[JsObject].getOrElse(Json.obj()) // 1.4 < does not return aliases obj
 
-      Index(index, indexStats, shards, indexAliases, routingNodes)
+      Index(index, indexStats, shards, indexAliases)
     }.toSeq
 
     val closedIndices = ClosedIndices(clusterState)

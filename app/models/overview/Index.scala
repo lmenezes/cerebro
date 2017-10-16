@@ -4,23 +4,22 @@ import play.api.libs.json._
 
 object Index {
 
-  def apply(name: String, stats: JsValue, shards: JsValue, aliases: JsObject, routingNodes: JsValue): JsValue = {
+  def apply(name: String, stats: JsValue, routingTable: JsValue, aliases: JsObject): JsValue = {
+    var unhealthy = false
+    var numReplicas = 0
+    var numShards = 0
 
-    val unassignedShards = (shards \ "shards").as[JsObject].values.flatMap {
-      case JsArray(shards) =>
-        shards.filter { shard =>
-          (shard \ "node").asOpt[String].isEmpty
-        }
-      case _ => Nil
-    }
+    val shardMap = (routingTable \ "shards").as[JsObject].value.toSeq.flatMap { case (num, shards) =>
+      numShards = Math.max(numShards, num.toInt + 1) // shard num is 0 based
 
-    val shardsAllocation = routingNodes.as[JsObject].value.mapValues {
-      case JsArray(shards) => JsArray(shards.filter { shard => (shard \ "index").as[String].equals(name) })
-      case _ => JsArray()
-    }.toSeq ++ Seq("unassigned" -> JsArray(unassignedShards.toSeq))
+      val shardInstances = shards.as[JsArray].value
+      numReplicas = shardInstances.length - 1
 
-    val numShards = (shards \ "shards").as[JsObject].keys.size
-    val numReplicas = (shards \ "shards" \ "0").as[JsArray].value.size - 1
+      shardInstances.map { shard =>
+        unhealthy = unhealthy && (shard \ "state").as[String].equals("STARTED")
+        (shard \ "node").asOpt[String].getOrElse("unassigned") -> shard
+      }
+    }.groupBy(_._1).mapValues(v => JsArray(v.map(_._2)))
 
     val special = name.startsWith(".")
 
@@ -28,7 +27,7 @@ object Index {
       "name"                -> JsString(name),
       "closed"              -> JsBoolean(false),
       "special"             -> JsBoolean(special),
-      "unhealthy"           -> JsBoolean(unhealthyIndex(shardsAllocation)),
+      "unhealthy"           -> JsBoolean(unhealthy),
       "doc_count"           -> (stats \ "primaries" \ "docs" \ "count").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "deleted_docs"        -> (stats \ "primaries" \ "docs" \ "deleted").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "size_in_bytes"       -> (stats \ "primaries" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
@@ -36,14 +35,8 @@ object Index {
       "aliases"             -> JsArray(aliases.keys.map(JsString(_)).toSeq), // 1.4 < does not return aliases obj
       "num_shards"          -> JsNumber(numShards),
       "num_replicas"        -> JsNumber(numReplicas),
-      "shards"              -> JsObject(shardsAllocation)
+      "shards"              -> JsObject(shardMap)
     ))
   }
-
-  private def unhealthyIndex(shardAllocation: Seq[(String, JsArray)]): Boolean =
-    shardAllocation.exists {
-      case ("unassigned", _)    => true
-      case (_, JsArray(shards)) => shards.exists(!_.\("state").as[String].equals("STARTED"))
-    }
 
 }

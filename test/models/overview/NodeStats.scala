@@ -11,10 +11,7 @@ object NodeStats {
       |  "name":"Solara",
       |  "transport_address":"127.0.0.1:9301",
       |  "host":"127.0.0.1",
-      |  "ip":[
-      |    "127.0.0.1:9301",
-      |    "NONE"
-      |  ],
+      |  "ip": "127.0.0.1",
       |  "os":{
       |    "timestamp":1458346589015,
       |    "load_average":3.17138671875,

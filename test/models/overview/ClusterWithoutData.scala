@@ -16,19 +16,6 @@ object ClusterWithoutData extends ClusterStub {
       |    "indices":{
       |
       |    }
-      |  },
-      |  "routing_nodes":{
-      |    "unassigned":[
-      |
-      |    ],
-      |    "nodes":{
-      |      "MoDcZdJkQGK2RpYTvJhQlA":[
-      |
-      |      ],
-      |      "cPsT9o5FQ3WRnvqSTXHiVQ":[
-      |
-      |      ]
-      |    }
       |  }
       |}
     """.stripMargin

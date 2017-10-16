@@ -14,7 +14,7 @@ class OverviewDataService @Inject()(client: ElasticClient) {
 
   def overview(target: ElasticServer): Future[JsValue] = {
     val apis = Seq(
-      "_cluster/state/master_node,routing_table,routing_nodes,blocks",
+      "_cluster/state/master_node,routing_table,blocks",
       "_nodes/stats/jvm,fs,os,process?human=true",
       "_stats/docs,store",
       "_cluster/settings",
@@ -22,26 +22,21 @@ class OverviewDataService @Inject()(client: ElasticClient) {
       "_cluster/health",
       s"_nodes/_all/os,jvm?human=true"
     )
-
-    val start = System.currentTimeMillis()
     Future.sequence(apis.map(client.executeRequest("GET", _, None, target))).map { responses =>
       responses.zipWithIndex.find(_._1.isInstanceOf[Error]) match {
-        case Some((failed, idx)) =>
-          throw RequestFailedException(apis(idx), failed.status, failed.body.toString())
+        case Some((response, idx)) =>
+          throw RequestFailedException(apis(idx), response.status, response.body.toString())
 
         case None =>
-          val end = System.currentTimeMillis()
-          val overview = ClusterOverview(
-            responses(0).body,
-            responses(1).body,
-            responses(2).body,
-            responses(3).body,
-            responses(4).body,
-            responses(5).body,
-            responses(6).body
+          ClusterOverview(
+            responses(0).body, // cluster state
+            responses(1).body, // nodes stats
+            responses(2).body, // index stats
+            responses(3).body, // cluster settings
+            responses(4).body, // aliases
+            responses(5).body, // cluster health
+            responses(6).body  // nodes
           )
-          println(s"Requesting took [${end - start}]")
-          overview
       }
     }
   }
