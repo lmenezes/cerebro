@@ -1,6 +1,7 @@
 package controllers
 
-import elastic.Success
+import controllers.AnalysisControllerSpec.application
+import elastic.{ElasticResponse, Success}
 import models.ElasticServer
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -27,27 +28,26 @@ object ClusterChangesControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    val healthResponse = Json.parse("""[{"cluster": "elasticsearch"}]""")
+    val mainResponse = Json.parse("""{"cluster_name": "elasticsearch"}""")
     val indicesResponse = Json.parse(
       """
         |[
-        |  {"index":"index1"},
-        |  {"index":"index2"}
+        |  {"health":"green","status":"open","index":"index1","pri":"10","rep":"0","docs.count":"4330","docs.deleted":"10","store.size":"4.1mb","pri.store.size":"4.1mb"},
+        |  {"health":"green","status":"closed","index":"index2","pri":"10","rep":"0","docs.count":"1497203","docs.deleted":"5048","store.size":"860.9mb","pri.store.size":"860.9mb"}
         |]
       """.stripMargin
     )
     val nodesResponse = Json.parse(
       """
       |[
-      |  {"name":"Shriek"},
-      |  {"name":"Jimaine Szardos"}
+      |  {"host":"127.0.0.1","ip":"127.0.0.1","name":"Shriek"},
+      |  {"host":"127.0.0.1","ip":"127.0.0.1","name":"Jimaine Szardos"}
       |]
       """.stripMargin
     )
-
-    client.executeRequest("GET", "_cat/health?h=cluster&format=json", None, ElasticServer("somehost", None)) returns Future.successful(Success(200, healthResponse))
-    client.executeRequest("GET", "_cat/nodes?format=json&h=name", None, ElasticServer("somehost", None)) returns Future.successful(Success(200, nodesResponse))
-    client.executeRequest("GET", "_cat/indices?format=json&h=index", None, ElasticServer("somehost", None)) returns Future.successful(Success(200, indicesResponse))
+    client.main(ElasticServer("somehost", None)) returns Future.successful(Success(200, mainResponse))
+    client.getNodes(ElasticServer("somehost", None)) returns Future.successful(Success(200, nodesResponse))
+    client.getIndices(ElasticServer("somehost", None)) returns Future.successful(Success(200, indicesResponse))
     val response = route(application, FakeRequest(POST, "/cluster_changes").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
