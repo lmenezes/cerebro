@@ -6,19 +6,6 @@ case class NodeRoles(master: Boolean, data: Boolean, ingest: Boolean) {
 
   def coordinating: Boolean = !master && !data && !ingest
 
-  def toEsString = {
-    val builder = StringBuilder.newBuilder
-    if (master)
-      builder.append("m")
-    if (data)
-      builder.append("d")
-    if (ingest)
-      builder.append("i")
-    if (builder.isEmpty)
-      builder.append("-")
-    builder.toString()
-  }
-
 }
 
 object NodeRoles {

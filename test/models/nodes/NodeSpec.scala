@@ -41,8 +41,7 @@ object NodeSpec extends Specification {
         |  "master": true,
         |  "name": "-qkZcMt",
         |  "uptime": 109228,
-        |  "version": "5.1.1",
-        |  "node.role":"mdi"
+        |  "version": "5.1.1"
         |}
       """.stripMargin
     )
@@ -78,8 +77,7 @@ object NodeSpec extends Specification {
         |  "master": true,
         |  "name": "007ywNv",
         |  "uptime": 492790575,
-        |  "version": "5.1.1",
-        |  "node.role":"mdi"
+        |  "version": "5.1.1"
         |}
       """.stripMargin
     )

@@ -7,7 +7,6 @@ object Node {
 
   def apply(id: String, currentMaster: Boolean, info: JsValue, stats: JsValue): JsValue = {
     val jvmVersion = (info \ "jvm" \ "version").asOpt[JsString].getOrElse(JsNull)
-    val nodeRoles = NodeRoles(info)
 
     Json.obj(
       "id" -> JsString(id),
@@ -18,12 +17,12 @@ object Node {
       "cpu" -> cpu(stats),
       "uptime" -> (stats \ "jvm" \ "uptime_in_millis").as[JsValue],
       "jvm" -> jvmVersion,
-      "version" -> (info \ "version").as[JsValue],
-      "node.role" -> JsString(nodeRoles.toEsString)
-    ) ++ roles(nodeRoles)
+      "version" -> (info \ "version").as[JsValue]
+    ) ++ roles(info)
   }
 
-  private def roles(roles: NodeRoles): JsObject = {
+  private def roles(info: JsValue): JsObject = {
+    val roles = NodeRoles(info)
     Json.obj(
       "master" -> JsBoolean(roles.master),
       "coordinating" -> JsBoolean(roles.coordinating),
