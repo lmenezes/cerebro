@@ -1,10 +1,10 @@
-package services.overview
+package models.overview
 
 import play.api.libs.json.Json
 
 object ClusterDisabledAllocation extends ClusterWithData {
 
-  override val settings = Json.parse(
+  override val clusterSettings = Json.parse(
     """
       |{
       |  "persistent" : { },

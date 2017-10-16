@@ -48,8 +48,4 @@ object NodeRoles {
         )
     }
   }
-
-  def apply(roles: String): NodeRoles =
-    NodeRoles(roles.contains("m"), roles.contains("d"), roles.contains("i"))
-
 }

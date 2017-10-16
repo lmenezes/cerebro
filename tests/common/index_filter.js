@@ -1,6 +1,6 @@
 QUnit.test("Filters out special indices", function(assert) {
     var filter = new IndexFilter("", true, false, true, true, 0);
-    var index = {index: ".index_name", status: 'open', unhealthy: false, aliases: []};
+    var index = {index: "index_name", status: 'open', unhealthy: false, aliases: []};
     assert.ok(!filter.matches(index), "Filters out special indices");
 });
 
