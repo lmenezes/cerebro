@@ -202,3 +202,14 @@ First cerebro release.
 - cluster changes alerts optimised for big clusters
 - gzip enabled for all api calls
 - avoid piling up of slow requests
+
+###v0.7.1 - October 17th, 2017
+
+#### Bug fixes
+- fixes mass actions on selected indices
+- fixes error connecting to cluster with more docs than Integer.MAX_VALUE
+
+#### Enhancements
+- enabled gzip when requesting data from ES
+- optimised ES response parsing
+- dropped internal usage of _cat apis in favor of faster alternatives
