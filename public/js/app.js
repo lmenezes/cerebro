@@ -2929,7 +2929,7 @@ angular.module('cerebro').factory('RefreshService',
 
     var timestamp = new Date().getTime();
 
-    var interval = 5000;
+    var interval = 15000;
 
     this.getInterval = function() {
       return interval;

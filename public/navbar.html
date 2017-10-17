@@ -68,7 +68,7 @@
             <i class="fa fa-fw fa-refresh"></i> {{refreshInterval | timeInterval}} <i class="fa fa-fw fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu" style="min-width: 60px;">
-            <li ng-repeat="i in [3000, 5000, 10000, 15000, 30000, 60000] track by $index">
+            <li ng-repeat="i in [5000, 10000, 15000, 30000, 60000] track by $index">
               <a class="nav-item nav-link" ng-click="setRefreshInterval(i)">
                 {{i | timeInterval}}
               </a>
