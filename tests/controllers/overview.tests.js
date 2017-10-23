@@ -76,7 +76,7 @@ describe('OverviewController', function() {
         };
         this.OverviewDataService.getOverview = function(success, error) {
           success(data);
-        }
+        };
         spyOn(this.OverviewDataService, 'getOverview').and.callThrough();
         spyOn(this.scope, 'setIndices').and.returnValue(true);
         spyOn(this.scope, 'setNodes').and.returnValue(true);
@@ -91,6 +91,25 @@ describe('OverviewController', function() {
         expect(this.scope.setIndices).toHaveBeenCalledWith(indices);
         expect(this.scope.setNodes).toHaveBeenCalledWith(nodes);
         expect(this.scope.data).toEqual(data);
+      }
+    );
+
+    it('clears health filter if no unhealthy indices exist',
+      function() {
+        var data = {
+          indices: ['someIndex'],
+          nodes: ['someNode'],
+          unassigned_shards: 0,
+          relocating_shards: 0,
+          initializing_shards: 0
+        };
+        this.OverviewDataService.getOverview = function(success, error) {
+          success(data);
+        };
+        this.scope.indices_filter.healthy = false;
+        spyOn(this.OverviewDataService, 'getOverview').and.callThrough();
+        this.scope.refresh();
+        expect(this.scope.indices_filter.healthy).toEqual(true);
       }
     );
     

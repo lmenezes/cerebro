@@ -59,6 +59,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
           $scope.shardAllocation = data.shard_allocation;
+          if (!$scope.unassigned_shards &&
+            !$scope.relocating_shards &&
+            !$scope.initializing_shards) {
+            $scope.indices_filter.healthy = true;
+          }
         },
         function(error) {
           AlertService.error('Error while loading data', error);
