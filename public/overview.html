@@ -43,16 +43,16 @@
       <td>
         <div class="row">
           <div class="col-lg-3 col-md-6">
-            <i class="fa fa-lock fa-2x table-control red normal-action" ng-click="enableShardAllocation()"
+            <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" ng-click="enableShardAllocation()"
                ng-hide="shardAllocation"></i>
-            <i class="fa fa-unlock fa-2x table-control normal-action" ng-click="disableShardAllocation()"
+            <i class="fa fa-unlock fa-2x table-control normal-action" title="disable shard allocation" ng-click="disableShardAllocation()"
                ng-show="shardAllocation"></i>
           </div>
           <div class="col-lg-3 col-md-6">
             <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView"
-               ng-click="expandedView = true"></i>
+               title="expand view" ng-click="expandedView = true"></i>
             <i class="fa fa-compress fa-2x normal-action table-control" ng-show="expandedView"
-               ng-click="expandedView = false"></i>
+               title="condense view" ng-click="expandedView = false"></i>
           </div>
           <div class="col-lg-3 col-md-6">
             <i class="fa fa-sort-alpha-asc fa-2x normal-action table-control" title="sort ascending"
@@ -63,7 +63,7 @@
           <div class="col-lg-3 col-md-6">
             <div class="dropdown">
               <span class="title normal-action" type="button" id="dropcluster" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
+                    aria-haspopup="true" aria-expanded="false" title="more options">
                 <i class="fa fa-caret-down fa-2x table-control"></i>
               </span>
               <ul class="dropdown-menu" aria-labelledby="dropcluster">
