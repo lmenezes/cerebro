@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top navbar-{{status}}" ng-controller="NavbarController">
+<nav class="navbar navbar-default navbar-fixed-top navbar-{{status}}" ng-controller="NavbarController" ng-show="host">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -81,7 +81,9 @@
           </a>
         </li>
         <li>
-          <a href="#connect" class="nav-item nav-link hidden-xs"><i class="fa fa-plug"></i></a>
+          <a href="#connect" class="nav-item nav-link hidden-xs" ng-click="disconnect()">
+            <i class="fa fa-plug"></i>
+          </a>
         </li>
         <li>
           <form action="auth/logout" method="POST" ng-show="username">
