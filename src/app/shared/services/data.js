@@ -23,6 +23,14 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       RefreshService.refresh();
     };
 
+    this.disconnect = function() {
+      host = undefined;
+      username = undefined;
+      password = undefined;
+      onGoingRequests = {};
+      $location.path('/connect');
+    };
+
     if ($location.search().host) {
       this.setHost($location.search().host);
     }
