@@ -67,6 +67,7 @@ POST        /index_settings/update                    controllers.IndexSettingsC
 
 # Connect module
 GET         /connect/hosts                            controllers.ConnectController.index
+POST        /connect                                  controllers.ConnectController.connect
 
 # Repositories module
 POST        /repositories                             controllers.RepositoriesController.get
