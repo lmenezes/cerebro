@@ -24,7 +24,7 @@ trait BaseController extends Controller with AuthSupport {
     try {
       processor(CerebroRequest(request, hosts)).recoverWith {
         case request: RequestFailedException =>
-          Future.successful(CerebroResponse(400, Json.obj("error" -> request.getMessage)))
+          Future.successful(CerebroResponse(request.status, Json.obj("error" -> request.getMessage)))
         case NonFatal(e) =>
           Logger.error(s"Error processing request [${formatRequest(request)}]", e)
           Future.successful(CerebroResponse(500, Json.obj("error" -> e.getMessage)))
