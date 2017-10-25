@@ -75,15 +75,6 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
       clusterRequest('cluster_changes', {}, success, error);
     };
 
-    // ---------- Connect ----------
-    this.getHosts = function(success, error) {
-      var config = {
-        method: 'GET',
-        url: 'connect/hosts'
-      };
-      request(config, success, error);
-    };
-
     // ---------- External API ----------
 
     this.send = function(path, data, success, error) {
@@ -111,14 +102,19 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     var request = function(config, success, error) {
       var handleSuccess = function(data) {
         onGoingRequests[config.url] = undefined;
-        if (data.status === 303) {
-          $window.location.href = 'login';
-        } else {
-          if (data.status >= 200 && data.status < 300) {
-            success(data.body);
-          } else {
-            error(data.body);
-          }
+        switch (data.status) {
+          case 303: // unauthorized in cerebro
+            $window.location.href = './login';
+            break;
+          case 401: // unauthorized in ES instance
+            $location.path('/connect').search({host: host, unauthorized: true});
+            break;
+          default:
+            if (data.status >= 200 && data.status < 300) {
+              success(data.body);
+            } else {
+              error(data.body);
+            }
         }
       };
       var handleError = function(data) {

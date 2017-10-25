@@ -1,59 +1,76 @@
-<div class="row" style="padding-top: 80px;">
-  <div class="col-lg-offset-4 col-lg-4">
-    <div>
-      <div class="text-center">
-        <img src="img/logo.png" height="160px">
-        <h4>Cerebro
-          <small>{{appVersion}}</small>
-        </h4>
-      </div>
-    </div>
-    <div style="padding-top: 60px;">
-      <h6>HOSTS</h6>
+<div class="row" style="padding-top: 80px; padding-bottom: 60px;">
+  <div class="col-xs-12 text-center">
+    <img src="img/logo.png" height="160px">
+    <h4>Cerebro
+      <small>{{appVersion}}</small>
+    </h4>
+  </div>
+</div>
+
+<div style="max-width: 400px; margin-left: auto; margin-right: auto">
+  <div class="text-center">
+    <span>
+      <p>
+        <span ng-show="connecting">
+          <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting...
+        </span>&nbsp;
+        <span class="text-danger" ng-show="feedback">
+          {{feedback}}
+        </span>
+      </p>
+    </span>
+  </div>
+  <div ng-hide="unauthorized">
+    <div ng-show="hosts.length > 0">
       <table class="table">
+        <thead>
+        <tr>
+          <th>Known clusters</th>
+        </tr>
+        </thead>
+        <tbody>
         <tr ng-repeat="host in hosts | orderBy track by $index">
           <td class="normal-action" ng-click="connect(host)">
             <span>{{host}}</span>
           </td>
         </tr>
+        </tbody>
       </table>
-      <form>
-        <div class="row">
-          <div class="col-xs-12">
-            <input id="newHost" type="text" ng-model="host" class="form-control form-control-sm"
-                   placeholder="example: http://localhost:9200" ng-enter="connect(host, username, password)">
-          </div>
-        </div>
-        <div class="row form-group">
-          <div class="col-xs-12 text-right">
-          <span ng-click="showAuth = !showAuth" data-toggle="collapse" data-target="#collapseAuth"
-                class="normal-action">
-            <small>Authentication</small>
-            <i class="fa" ng-class="{'fa-angle-down': !showAuth, 'fa-angle-up': showAuth}"></i>
-          </span>
-            <div class="collapse text-left" id="collapseAuth">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input id="username" type="text" ng-model="username" class="form-control form-control-sm"
-                       placeholder="admin" ng-enter="connect(host, username, password)">
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input id="password" type="password" ng-model="password" class="form-control form-control-sm"
-                       ng-enter="connect(host, username, password)">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="form-group row">
-          <div class="col-xs-12">
-                <span class="pull-left subtitle" ng-show="connecting">
-                    <i class="fa fa-fw fa-circle-o-notch fa-spin"> </i> Connecting
-                </span>
-            <button type="submit" class="btn btn-success pull-right" ng-click="connect(host, username, password)" ng-disabled ="!host">Connect</button>
-          </div>
-        </div>
-      </form>
     </div>
+    <form>
+      <div class="form-group">
+        <label for="host">Node address</label>
+        <input id="host" type="text" ng-model="host"
+               class="form-control form-control-sm"
+               placeholder="e.g.: http://localhost:9200"
+               ng-enter="connect(host)">
+      </div>
+      <button type="submit" class="btn btn-success pull-right"
+              ng-click="connect(host)"
+              ng-disabled="!host">
+        Connect
+      </button>
+    </form>
+  </div>
+  <div ng-show="unauthorized">
+    <form>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" type="text" ng-model="username"
+               class="form-control form-control-sm"
+               placeholder="admin"
+               ng-enter="authorize(host, username, password)">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" ng-model="password"
+               class="form-control form-control-sm"
+               ng-enter="authorize(host, username, password)">
+      </div>
+      <button type="submit" class="btn btn-success pull-right"
+              ng-click="authorize(host, username, password)">
+        Authenticate
+      </button>
+    </form>
   </div>
 </div>
