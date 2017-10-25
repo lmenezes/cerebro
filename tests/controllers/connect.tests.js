@@ -5,40 +5,53 @@ describe('ConnectController', function() {
   beforeEach(angular.mock.inject(function($rootScope, $controller, $injector) {
     this.scope = $rootScope.$new();
     this.$location = $injector.get('$location');
-    this.DataService = $injector.get('DataService');
+    this.ConnectDataService = $injector.get('ConnectDataService');
     this.AlertService = $injector.get('AlertService');
     this.createController = function() {
       return $controller('ConnectController',
-        {$scope: this.scope}, this.$location, this.DataService, this.AlertService);
+        {$scope: this.scope}, this.$location, this.ConnectDataService, this.AlertService);
     };
     this._controller = this.createController();
   }));
 
-  it('should have intial state correctly set', function() {
+  it('should have initial state correctly set', function() {
     expect(this.scope.hosts).toEqual(undefined);
     expect(this.scope.connecting).toEqual(false);
   });
 
   describe('setup', function() {
-    it('initializes list of known hosts editor', function() {
+    it('reads url parameters', function() {
+      this.$location.search = function() {
+        return {host: 'paramHost', unauthorized: true};
+      };
       var hosts = {host: 'http://somehost'};
-      this.DataService.getHosts = function(success, error) {
+      this.ConnectDataService.getHosts = function(success, error) {
         success(hosts);
       };
-      spyOn(this.DataService, "getHosts").and.callThrough();
+      spyOn(this.ConnectDataService, "getHosts").and.callThrough();
       this.scope.setup();
-      expect(this.DataService.getHosts).toHaveBeenCalled();
+      expect(this.scope.host).toEqual('paramHost');
+      expect(this.scope.unauthorized).toEqual(true);
+    });
+    it('initializes list of known hosts', function() {
+      var hosts = {host: 'http://somehost'};
+      this.ConnectDataService.getHosts = function(success, error) {
+        success(hosts);
+      };
+      spyOn(this.ConnectDataService, "getHosts").and.callThrough();
+      this.scope.setup();
+      expect(this.ConnectDataService.getHosts).toHaveBeenCalled();
       expect(this.scope.hosts).toEqual(hosts);
     });
-    it('initializes list of known hosts editor', function() {
+    it('fails to initializes list of known hosts', function() {
       var msg = 'kaput';
-      this.DataService.getHosts = function(success, error) {
+      this.ConnectDataService.getHosts = function(success, error) {
         error(msg);
       };
-      spyOn(this.DataService, 'getHosts').and.callThrough();
+      spyOn(this.ConnectDataService, 'getHosts').and.callThrough();
       spyOn(this.AlertService, 'error').and.returnValue(true);
       this.scope.setup();
-      expect(this.DataService.getHosts).toHaveBeenCalled();
+      expect(this.ConnectDataService.getHosts).toHaveBeenCalled();
       expect(this.scope.hosts).toEqual(undefined);
       expect(this.AlertService.error).toHaveBeenCalledWith('Error while fetching list of known hosts', 'kaput');
     });
@@ -46,27 +59,125 @@ describe('ConnectController', function() {
 
   describe('connect', function() {
     it('connects to valid host', function() {
-      spyOn(this.DataService, "setHost").and.returnValue();
+      this.ConnectDataService.testConnection = function(host, success, error) {
+        success({status: 200});
+      };
+      spyOn(this.ConnectDataService, "connect").and.returnValue();
+      spyOn(this.ConnectDataService, "testConnection").and.callThrough();
       spyOn(this.$location, 'path').and.returnValue(true);
       this.scope.connect('http://localhost:9200');
-      expect(this.DataService.setHost).toHaveBeenCalledWith(
-        'http://localhost:9200', undefined, undefined
+      expect(this.ConnectDataService.connect).toHaveBeenCalledWith(
+        'http://localhost:9200'
       );
       expect(this.$location.path).toHaveBeenCalledWith('/overview');
-      expect(this.scope.connecting).toEqual(true);
+      expect(this.scope.connecting).toEqual(false);
     });
+    it('connect to a secured host', function() {
+      this.ConnectDataService.testConnection = function(host, success, error) {
+        success({status: 401});
+      };
+      spyOn(this.ConnectDataService, "connect").and.returnValue(true);
+      spyOn(this.ConnectDataService, "testConnection").and.callThrough();
+      this.scope.connect('http://localhost:9200');
+      expect(this.ConnectDataService.connect).not.toHaveBeenCalledWith(
+        'http://localhost:9200'
+      );
+      expect(this.scope.connecting).toEqual(false);
+      expect(this.scope.unauthorized).toEqual(true);
+    });
+    it('handles unexpected response from host', function() {
+      this.ConnectDataService.testConnection = function(host, success, error) {
+        success({status: 301});
+      };
+      spyOn(this.ConnectDataService, "connect").and.returnValue(true);
+      spyOn(this.ConnectDataService, "testConnection").and.callThrough();
+      this.scope.connect('http://localhost:9200');
+      expect(this.ConnectDataService.connect).not.toHaveBeenCalledWith(
+        'http://localhost:9200'
+      );
+      expect(this.scope.connecting).toEqual(false);
+      expect(this.scope.feedback).toEqual('Unexpected response status: [301]');
+    });
+    it('handles failure connecting to host', function() {
+      this.ConnectDataService.testConnection = function(host, success, error) {
+        error('boom');
+      };
+      spyOn(this.ConnectDataService, "testConnection").and.callThrough();
+      spyOn(this.ConnectDataService, "connect").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
+      this.scope.connect('http://localhost:9200');
+      expect(this.ConnectDataService.connect).not.toHaveBeenCalledWith(
+        'http://localhost:9200'
+      );
+      expect(this.scope.connecting).toEqual(false);
+      expect(this.AlertService.error).toHaveBeenCalledWith(
+        'Error connecting to [http://localhost:9200]',
+        'boom'
+      );
+    });
+  });
 
-    it('connects to valid host passing username/password', function() {
-      spyOn(this.DataService, "setHost").and.returnValue();
+  describe('authorize', function() {
+    it('connect with valid credentials', function() {
+      this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
+        success({status: 200});
+      };
+      spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
+      spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
       spyOn(this.$location, 'path').and.returnValue(true);
-      this.scope.connect('http://localhost:9200', 'admin', '1234');
-      expect(this.DataService.setHost).toHaveBeenCalledWith(
-        'http://localhost:9200',
-        'admin',
-        '1234'
+      this.scope.authorize('http://localhost:9200', 'foo', 'bar');
+      expect(this.ConnectDataService.connectWithCredentials).toHaveBeenCalledWith(
+        'http://localhost:9200', 'foo', 'bar'
       );
       expect(this.$location.path).toHaveBeenCalledWith('/overview');
+      expect(this.scope.connecting).toEqual(false);
     });
-  })
+    it('connect with invalid credentials', function() {
+      this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
+        success({status: 401});
+      };
+      spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
+      spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
+      spyOn(this.$location, 'path').and.returnValue(true);
+      this.scope.authorize('http://localhost:9200', 'foo', 'bar');
+      expect(this.ConnectDataService.connectWithCredentials).not.toHaveBeenCalledWith(
+        'http://localhost:9200', 'foo', 'bar'
+      );
+      expect(this.scope.feedback).toEqual('Invalid username or password');
+      expect(this.scope.connecting).toEqual(false);
+    });
+    it('handles unexpected response', function() {
+      this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
+        success({status: 302});
+      };
+      spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
+      spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
+      spyOn(this.$location, 'path').and.returnValue(true);
+      this.scope.authorize('http://localhost:9200', 'foo', 'bar');
+      expect(this.ConnectDataService.connectWithCredentials).not.toHaveBeenCalledWith(
+        'http://localhost:9200', 'foo', 'bar'
+      );
+      expect(this.scope.feedback).toEqual('Unexpected response status: [302]');
+      expect(this.scope.connecting).toEqual(false);
+    });
+    it('handles failure connecting to host', function() {
+      this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
+        error('kaput');
+      };
+      spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
+      spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
+      spyOn(this.AlertService, "error").and.returnValue(true);
+      spyOn(this.$location, 'path').and.returnValue(true);
+      this.scope.authorize('http://localhost:9200', 'foo', 'bar');
+      expect(this.ConnectDataService.connectWithCredentials).not.toHaveBeenCalledWith(
+        'http://localhost:9200', 'foo', 'bar'
+      );
+      expect(this.scope.connecting).toEqual(false);
+      expect(this.AlertService.error).toHaveBeenCalledWith(
+        'Error connecting to [http://localhost:9200]',
+        'kaput'
+      );
+    });
+  });
 
 });

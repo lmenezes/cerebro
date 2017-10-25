@@ -24,39 +24,35 @@ angular.module('cerebro').controller('ConnectController', [
     };
 
     $scope.connect = function(host) {
-      if (host) {
-        $scope.feedback = undefined;
-        $scope.host = host;
-        $scope.connecting = true;
-        var success = function(data) {
-          $scope.connecting = false;
-          if (data.status >= 200 && data.status < 300) {
+      $scope.feedback = undefined;
+      $scope.host = host;
+      $scope.connecting = true;
+      var success = function(data) {
+        $scope.connecting = false;
+        switch (data.status) {
+          case 200:
             ConnectDataService.connect(host);
             $location.path('/overview');
-          } else {
-            if (data.status === 401) {
-              $scope.unauthorized = true;
-            } else {
-              error(data.body);
-            }
-          }
-        };
-        var error = function(data) {
-          $scope.connecting = false;
-          AlertService.error('Error connecting to [' + host + ']', data);
-        };
-        ConnectDataService.testConnection(host, success, error);
-      }
+            break;
+          case 401:
+            $scope.unauthorized = true;
+            break;
+          default:
+            feedback('Unexpected response status: [' + data.status + ']');
+        }
+      };
+      var error = function(data) {
+        $scope.connecting = false;
+        AlertService.error('Error connecting to [' + host + ']', data);
+      };
+      ConnectDataService.testConnection(host, success, error);
     };
 
     $scope.authorize = function(host, username, pwd) {
       $scope.feedback = undefined;
       $scope.connecting = true;
-      var feedback = function(message) {
-        $scope.connecting = false;
-        $scope.feedback  = message;
-      };
       var success = function(data) {
+        $scope.connecting = false;
         switch (data.status) {
           case 401:
             feedback('Invalid username or password');
@@ -66,7 +62,7 @@ angular.module('cerebro').controller('ConnectController', [
             $location.path('/overview');
             break;
           default:
-            feedback('Unexpected response stats: [' + data.status + ']');
+            feedback('Unexpected response status: [' + data.status + ']');
         }
       };
       var error = function(data) {
@@ -74,6 +70,10 @@ angular.module('cerebro').controller('ConnectController', [
         AlertService.error('Error connecting to [' + host + ']', data);
       };
       ConnectDataService.testCredentials(host, username, pwd, success, error);
+    };
+
+    var feedback = function(message) {
+      $scope.feedback = message;
     };
 
   }]);
