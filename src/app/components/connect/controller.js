@@ -1,6 +1,6 @@
 angular.module('cerebro').controller('ConnectController', [
-  '$scope', '$location', 'ConnectDataService', 'AlertService', 'DataService',
-  function($scope, $location, ConnectDataService, AlertService, DataService) {
+  '$scope', '$location', 'ConnectDataService', 'AlertService',
+  function($scope, $location, ConnectDataService, AlertService) {
 
     $scope.hosts = undefined;
 
@@ -31,7 +31,7 @@ angular.module('cerebro').controller('ConnectController', [
         var success = function(data) {
           $scope.connecting = false;
           if (data.status >= 200 && data.status < 300) {
-            DataService.setHost(host);
+            ConnectDataService.connect(host);
             $location.path('/overview');
           } else {
             if (data.status === 401) {
@@ -45,11 +45,11 @@ angular.module('cerebro').controller('ConnectController', [
           $scope.connecting = false;
           AlertService.error('Error connecting to [' + host + ']', data);
         };
-        ConnectDataService.connect(host, success, error);
+        ConnectDataService.testConnection(host, success, error);
       }
     };
 
-    $scope.authorize = function(host, username, password) {
+    $scope.authorize = function(host, username, pwd) {
       $scope.feedback = undefined;
       $scope.connecting = true;
       var feedback = function(message) {
@@ -62,7 +62,7 @@ angular.module('cerebro').controller('ConnectController', [
             feedback('Invalid username or password');
             break;
           case 200:
-            DataService.setHost(host, username, password);
+            ConnectDataService.connectWithCredentials(host, username, pwd);
             $location.path('/overview');
             break;
           default:
@@ -73,7 +73,7 @@ angular.module('cerebro').controller('ConnectController', [
         $scope.connecting = false;
         AlertService.error('Error connecting to [' + host + ']', data);
       };
-      ConnectDataService.authorize(host, username, password, success, error);
+      ConnectDataService.testCredentials(host, username, pwd, success, error);
     };
 
   }]);

@@ -486,8 +486,8 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
 ]);
 
 angular.module('cerebro').controller('ConnectController', [
-  '$scope', '$location', 'ConnectDataService', 'AlertService', 'DataService',
-  function($scope, $location, ConnectDataService, AlertService, DataService) {
+  '$scope', '$location', 'ConnectDataService', 'AlertService',
+  function($scope, $location, ConnectDataService, AlertService) {
 
     $scope.hosts = undefined;
 
@@ -518,7 +518,7 @@ angular.module('cerebro').controller('ConnectController', [
         var success = function(data) {
           $scope.connecting = false;
           if (data.status >= 200 && data.status < 300) {
-            DataService.setHost(host);
+            ConnectDataService.connect(host);
             $location.path('/overview');
           } else {
             if (data.status === 401) {
@@ -532,11 +532,11 @@ angular.module('cerebro').controller('ConnectController', [
           $scope.connecting = false;
           AlertService.error('Error connecting to [' + host + ']', data);
         };
-        ConnectDataService.connect(host, success, error);
+        ConnectDataService.testConnection(host, success, error);
       }
     };
 
-    $scope.authorize = function(host, username, password) {
+    $scope.authorize = function(host, username, pwd) {
       $scope.feedback = undefined;
       $scope.connecting = true;
       var feedback = function(message) {
@@ -549,7 +549,7 @@ angular.module('cerebro').controller('ConnectController', [
             feedback('Invalid username or password');
             break;
           case 200:
-            DataService.setHost(host, username, password);
+            ConnectDataService.connectWithCredentials(host, username, pwd);
             $location.path('/overview');
             break;
           default:
@@ -560,13 +560,13 @@ angular.module('cerebro').controller('ConnectController', [
         $scope.connecting = false;
         AlertService.error('Error connecting to [' + host + ']', data);
       };
-      ConnectDataService.authorize(host, username, password, success, error);
+      ConnectDataService.testCredentials(host, username, pwd, success, error);
     };
 
   }]);
 
-angular.module('cerebro').factory('ConnectDataService', ['$http',
-  function($http) {
+angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
+  function($http, DataService) {
 
     this.getHosts = function(success, error) {
       var config = {method: 'GET', url: 'connect/hosts'};
@@ -580,15 +580,23 @@ angular.module('cerebro').factory('ConnectDataService', ['$http',
       $http(config).success(handleSuccess).error(error);
     };
 
-    this.connect = function(host, success, error) {
+    this.testConnection = function(host, success, error) {
       var config = {method: 'POST', url: 'connect', data: {host: host}};
       $http(config).success(success).error(error);
     };
 
-    this.authorize = function(host, username, password, success, error) {
+    this.testCredentials = function(host, username, password, success, error) {
       var data = {host: host, username: username, password: password};
       var config = {method: 'POST', url: 'connect', data: data};
       $http(config).success(success).error(error);
+    };
+
+    this.connect = function(host) {
+      DataService.setHost(host);
+    };
+
+    this.connectWithCredentials = function(host, username, password) {
+      DataService.setHost(host, username, password);
     };
 
     return this;
