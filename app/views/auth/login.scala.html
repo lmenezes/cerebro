@@ -1,58 +1,56 @@
 @()(implicit flash: Flash)
 
-@import models.BuildInfo
+  @import models.BuildInfo
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Cerebro</title>
+    <title>Cerebro</title>
 
-        <link rel="stylesheet" href="css/lib.css">
-        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/lib.css">
+    <link rel="stylesheet" href="css/app.css">
 
-    </head>
+  </head>
 
-    <body class="login">
-
-        <div class="row" style="padding-top: 80px;">
-            <div class="col-lg-offset-5 col-lg-2">
-                <div>
-                    <div class="text-center">
-                        <img src="img/logo.png" height="160px">
-                        <h4>
-                            Cerebro <small>v@BuildInfo.version</small>
-                        </h4>
-                    </div>
-                </div>
-                <div>
-                    <form class="form-signin" action="auth/login" method="POST">
-                        <div class="form-group">
-                            <label for="inputUser" class="sr-only">User</label>
-                            <input type="text" name="user" id="inputUser" class="form-control form-control-sm" placeholder="LDAP user" required autofocus>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputPassword" class="sr-only">Password</label>
-                            <input type="password" name="password" id="inputPassword" class="form-control form-control-sm" placeholder="Password" required>
-                        </div>
-                        <button class="btn btn-success pull-right" type="submit">Sign in</button>
-                    </form>
-                </div>
-                <div class="row">
-                    <div class="col-md-5"></div>
-                    <div class="col-md-3">
-                        @flash.get(controllers.AuthController.LOGIN_MSG).fold(Html("")) { msg =>
-                            <div class="alert alert-warning" role="alert">@msg</div>
-                        }
-                    </div>
-                    <div class="col-md-4"></div>
-                </div>
-            </div>
+  <body class="login">
+    <div class="row" style="padding-top: 80px;
+      padding-bottom: 60px;">
+      <div class="col-xs-12 text-center">
+        <img src="img/logo.png" height="160px">
+        <h4>Cerebro
+          <small>v@BuildInfo.version</small>
+        </h4>
+      </div>
+    </div>
+    <div style="max-width: 300px;
+      margin-left: auto;
+      margin-right: auto">
+      <div class="row">
+        <div class="col-xs-12 text-center text-danger">
+          <p>@flash.get(controllers.AuthController.LOGIN_MSG).getOrElse("")&nbsp;</p>
         </div>
-    </body>
-    <script src="js/lib.js"></script>
-    <script src="js/app.js"></script>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <form class="form-signin" action="auth/login" method="POST">
+            <div class="form-group">
+              <label for="inputUser" class="sr-only">User</label>
+              <input type="text" name="user" id="inputUser" class="form-control form-control-sm" placeholder="LDAP user" required autofocus>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword" class="sr-only">Password</label>
+              <input type="password" name="password" id="inputPassword" class="form-control form-control-sm" placeholder="Password" required>
+            </div>
+            <button class="btn btn-success pull-right" type="submit">Sign in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="js/lib.js"></script>
+  <script src="js/app.js"></script>
 </html>
