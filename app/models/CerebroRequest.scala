@@ -4,7 +4,7 @@ import controllers.auth.AuthRequest
 import exceptions.{MissingRequiredParamException, MissingTargetHostException}
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 
-class CerebroRequest(val target: ElasticServer, body: JsValue, val user: Option[User]) {
+case class CerebroRequest(val target: ElasticServer, body: JsValue, val user: Option[User]) {
 
   def get(name: String) =
     (body \ name).asOpt[String].getOrElse(throw MissingRequiredParamException(name))
@@ -36,22 +36,23 @@ class CerebroRequest(val target: ElasticServer, body: JsValue, val user: Option[
 
 object CerebroRequest {
 
-  def apply(request: AuthRequest[JsValue], hosts: Hosts) = {
+  def apply(request: AuthRequest[JsValue], hosts: Hosts): CerebroRequest = {
     val body = request.body
 
     val host = (body \ "host").asOpt[String].getOrElse(throw MissingTargetHostException)
-    val knownHost = hosts.getServer(host)
-    val cluster = knownHost.getOrElse {
-      val username = (body \ "username").asOpt[String]
-      val password = (body \ "password").asOpt[String]
-      if (username.isDefined && password.isDefined) {
-        val auth = ESAuth(username.get, password.get)
-        ElasticServer(host, Some(auth))
-      } else {
-        ElasticServer(host, None)
-      }
+    val username = (body \ "username").asOpt[String]
+    val password = (body \ "password").asOpt[String]
+
+    val requestAuth = (username, password) match {
+      case (Some(u), Some(p)) => Some(ESAuth(u, p))
+      case _ => None
     }
-    new CerebroRequest(cluster, body, request.user)
+
+    val server = hosts.getServer(host) match {
+      case Some(ElasticServer(h, a)) => ElasticServer(h, a.orElse(requestAuth))
+      case None => ElasticServer(host, requestAuth)
+    }
+    CerebroRequest(server, body, request.user)
   }
 
 }
