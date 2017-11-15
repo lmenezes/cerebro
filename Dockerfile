@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-slim
 
-ARG CEREBRO_VERSION=0.6.5
+ARG CEREBRO_VERSION=0.7.1
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN addgroup --system cerebro              \
