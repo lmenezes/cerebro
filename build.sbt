@@ -2,7 +2,7 @@ name := "cerebro"
 
 maintainer := "Leonardo Menezes <leonardo.menezes@xing.com>"
 
-version := "0.7.1"
+version := "0.7.2"
 
 scalaVersion := "2.11.11"
 

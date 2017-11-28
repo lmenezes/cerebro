@@ -213,3 +213,9 @@ First cerebro release.
 - enabled gzip when requesting data from ES
 - optimised ES response parsing
 - dropped internal usage of _cat apis in favor of faster alternatives
+
+###v0.7.2 - November 28th, 2017
+
+#### Bug fixes
+- fixes unhealty indices filter
+- analyse module to work with ES 6.X
