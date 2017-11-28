@@ -16,7 +16,7 @@ object Index {
       numReplicas = shardInstances.length - 1
 
       shardInstances.map { shard =>
-        unhealthy = unhealthy && (shard \ "state").as[String].equals("STARTED")
+        unhealthy = unhealthy || !(shard \ "state").as[String].equals("STARTED")
         (shard \ "node").asOpt[String].getOrElse("unassigned") -> shard
       }
     }.groupBy(_._1).mapValues(v => JsArray(v.map(_._2)))
