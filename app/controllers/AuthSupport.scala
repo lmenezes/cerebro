@@ -1,11 +1,13 @@
 package controllers
 
 import controllers.auth.{AuthAction, AuthenticationModule}
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 
-trait AuthSupport { self: Controller =>
+import scala.concurrent.ExecutionContext
 
-  def AuthAction(authentication: AuthenticationModule, redirect: Boolean = false): AuthAction =
-    new AuthAction(authentication, redirect)
+trait AuthSupport { self: InjectedController =>
+
+  def AuthAction(authentication: AuthenticationModule, redirect: Boolean = false)(implicit ec: ExecutionContext): AuthAction =
+    new AuthAction(authentication, redirect, parse.anyContent)
 
 }

@@ -5,11 +5,12 @@ import models.{CerebroResponse, User}
 import play.api.libs.json.JsNull
 import play.api.mvc._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuthRequest[A](val user: Option[User], request: Request[A]) extends WrappedRequest[A](request)
 
-final class AuthAction(auth: AuthenticationModule, redirect: Boolean) extends ActionBuilder[AuthRequest] {
+final class AuthAction(auth: AuthenticationModule, redirect: Boolean, override val parser: BodyParser[AnyContent])(implicit ec: ExecutionContext)
+  extends ActionBuilder[AuthRequest, AnyContent] {
 
   def invokeBlock[A](request: Request[A], block: (AuthRequest[A]) => Future[Result]) = {
     if (auth.isEnabled) {
@@ -29,6 +30,7 @@ final class AuthAction(auth: AuthenticationModule, redirect: Boolean) extends Ac
     }
   }
 
+  override protected def executionContext: ExecutionContext = ec
 }
 
 object AuthAction {
