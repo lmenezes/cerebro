@@ -60,7 +60,7 @@ class AuthController @Inject()(system: ActorSystem,
   }
 
   def logout = Action { _ =>
-    val prefix = configuration.getString("play.http.context").getOrElse("/")
+    val prefix = configuration.getOptional[String]("play.http.context").getOrElse("/")
     Redirect(s"${prefix}login").withNewSession
   }
 

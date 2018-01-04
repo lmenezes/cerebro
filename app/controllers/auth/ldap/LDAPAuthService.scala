@@ -14,7 +14,7 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
 
   private val log = org.slf4j.LoggerFactory.getLogger(classOf[LDAPAuthService])
 
-  private final val config = new LDAPAuthConfig(globalConfig.getConfig("auth.settings").get)
+  private final val config = new LDAPAuthConfig(globalConfig.get[Configuration]("auth.settings"))
 
   def auth(username: String, password: String): Option[String] = {
     val env = new Hashtable[String, String](11)

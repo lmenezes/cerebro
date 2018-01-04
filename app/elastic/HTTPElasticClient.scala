@@ -322,7 +322,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val authentication = target.authentication
     val url = s"${target.host.replaceAll("/+$", "")}$uri"
     val request =
-      authentication.foldLeft(client.url(url).withMethod(method).withHeaders(headers: _*)) {
+      authentication.foldLeft(client.url(url).withMethod(method).withHttpHeaders(headers: _*)) {
       case (request, auth) =>
         request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }

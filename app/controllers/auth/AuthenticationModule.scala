@@ -17,7 +17,7 @@ trait AuthenticationModule {
 @Singleton
 class AuthenticationModuleImpl @Inject()(config: Configuration) extends AuthenticationModule {
 
-  val service = config.getString("auth.type") match {
+  val service = config.getOptional[String]("auth.type") match {
     case Some("ldap")  => Some(new LDAPAuthService(config))
     case Some("basic") => Some(new BasicAuthService(config))
     case _             => None
