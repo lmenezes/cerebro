@@ -415,6 +415,10 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
       }
     };
 
+    $scope.changeSettingPersistence = function(setting) {
+      $scope.changes[setting].transient = !$scope.changes[setting].transient;
+    };
+
     $scope.removeChange = function(property) {
       if ($scope.changes[property]) {
         $scope.pendingChanges -= 1;
@@ -453,7 +457,7 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
       $scope.pendingChanges = 0;
       ClusterSettingsDataService.getClusterSettings(
         function(response) {
-          ['persistent', 'transient', 'defaults'].forEach(function(group) {
+          ['defaults', 'persistent', 'transient'].forEach(function(group) {
             angular.forEach(response[group], function(value, property) {
               $scope.settings[property] = value;
               $scope.originalSettings[property] = value;
@@ -484,6 +488,21 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
 
   }
 ]);
+
+angular.module('cerebro').directive('ngPendingChange',
+  function() {
+    return {
+      scope: {
+        setting: '@',
+        value: '@',
+        transient: '@',
+        'revertSetting': '&onRevert',
+        'changeSettingPersistence': '&onChangeSettingPersistence'
+      },
+      templateUrl: './cluster_settings/pending_change.html'
+    };
+  }
+);
 
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'ConnectDataService', 'AlertService',

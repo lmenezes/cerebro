@@ -1,6 +1,6 @@
 <h4>cluster settings</h4>
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-xs-6">
     <div class="form-group">
       <select ng-model="group" ng-init="group = 'cluster_settings/routing.html'" class="form-control">
         <option value="cluster_settings/routing.html">routing settings</option>
@@ -25,13 +25,20 @@
       </thead>
       <tr ng-repeat="(p, v) in changes track by $index" ng-show="v">
         <td>
-          <i class="fa fa-cog"> </i> {{p}} <span class="info-text"> set to value</span> {{v.value}}
-          <i class="fa fa-undo normal-action pull-right" ng-click="revert(p)"></i>
+          <ng-pending-change
+            setting="{{p}}"
+            value="{{v.value}}"
+            transient="{{v.transient}}"
+            on-revert="revert(setting)"
+            on-change-setting-persistence="changeSettingPersistence(setting)">
+          </ng-pending-change>
         </td>
       </tr>
     </table>
   </div>
-  <div class="col-lg-12 text-right">
+</div>
+<div class="row">
+  <div class="col-lg-12 text-right" ng-show="pendingChanges">
     <div class="form-group">
       <div class="btn-group">
         <button class="btn btn-success" ng-click="save()">
@@ -41,3 +48,4 @@
     </div>
   </div>
 </div>
+
