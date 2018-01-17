@@ -124,8 +124,8 @@ describe('AnalysisController', function() {
         success(tokens);
       };
       spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
-      this.scope.analyzeByField('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByField('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.field_tokens).toEqual(tokens);
     });
 
@@ -135,8 +135,8 @@ describe('AnalysisController', function() {
       };
       spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
       spyOn(this.AlertService, "error").and.callThrough();
-      this.scope.analyzeByField('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByField('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error analyzing text by field', 'kaput');
     });
 
@@ -145,8 +145,8 @@ describe('AnalysisController', function() {
         error('kaput');
       };
       spyOn(this.AnalysisDataService, "analyzeByField").and.callThrough();
-      this.scope.analyzeByField('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByField('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByField).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.field_tokens).toEqual(undefined);
     });
   });
@@ -158,8 +158,8 @@ describe('AnalysisController', function() {
         success(tokens);
       };
       spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
-      this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByAnalyzer('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzer_tokens).toEqual(tokens);
     });
 
@@ -169,8 +169,8 @@ describe('AnalysisController', function() {
       };
       spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
       spyOn(this.AlertService, "error").and.callThrough();
-      this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByAnalyzer('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.AlertService.error).toHaveBeenCalledWith('Error analyzing text by analyzer', 'kaput');
     });
 
@@ -179,8 +179,8 @@ describe('AnalysisController', function() {
         error('kaput');
       };
       spyOn(this.AnalysisDataService, "analyzeByAnalyzer").and.callThrough();
-      this.scope.analyzeByAnalyzer('idx', 'fld', 'txt');
-      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', 'txt', jasmine.any(Function), jasmine.any(Function));
+      this.scope.analyzeByAnalyzer('idx', 'fld', ['txt']);
+      expect(this.AnalysisDataService.analyzeByAnalyzer).toHaveBeenCalledWith('idx', 'fld', ['txt'], jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.analyzer_tokens).toEqual(undefined);
     });
   });

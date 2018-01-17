@@ -84,9 +84,9 @@ trait ElasticClient {
 
   def getNodes(target: ElasticServer): Future[ElasticResponse]
 
-  def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer): Future[ElasticResponse]
+  def analyzeTextByField(index: String, field: String, text: Array[String], target: ElasticServer): Future[ElasticResponse]
 
-  def analyzeTextByAnalyzer(index: String, analyzer: String, text: String, target: ElasticServer): Future[ElasticResponse]
+  def analyzeTextByAnalyzer(index: String, analyzer: String, text: Array[String], target: ElasticServer): Future[ElasticResponse]
 
   def getClusterSettings(target: ElasticServer): Future[ElasticResponse]
 

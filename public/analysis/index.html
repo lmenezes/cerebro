@@ -23,13 +23,18 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <label class="form-label">&nbsp;</label>
+    <div ng-repeat="text in fieldText track by $index" class="row">
       <div class="col-sm-12">
         <div class="form-group">
-          <label class="form-label">&nbsp;</label>
-          <input type="text" class="form-control"
-                 placeholder="text to analyze"
-                 ng-model="fieldText">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="text to analyze" ng-model="fieldText[$index]">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-info" ng-click="($index == 0) ? fieldText.push('') : fieldText.splice($index, 1)">
+                <i class="fa {{$index == 0 ? 'fa-plus' : 'fa-minus'}}"></i>
+              </button>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -74,13 +79,18 @@
       </div>
       <div class="col-sm-4"></div>
     </div>
-    <div class="row">
+    <label class="form-label">&nbsp;</label>
+    <div ng-repeat="text in analyzerText track by $index" class="row">
       <div class="col-sm-12">
         <div class="form-group">
-          <label class="form-label">&nbsp;</label>
-          <input type="text" class="form-control"
-                 placeholder="text to analyze"
-                 ng-model="analyzerText">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="text to analyze" ng-model="analyzerText[$index]">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-info" ng-click="($index == 0) ? analyzerText.push('') : analyzerText.splice($index, 1)">
+                <i class="fa {{$index == 0 ? 'fa-plus' : 'fa-minus'}}"></i>
+              </button>
+            </span>
+          </div>
         </div>
       </div>
     </div>

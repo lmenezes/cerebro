@@ -208,13 +208,13 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(path, "GET", None, target)
   }
 
-  def analyzeTextByField(index: String, field: String, text: String, target: ElasticServer) = {
+  def analyzeTextByField(index: String, field: String, text: Array[String], target: ElasticServer) = {
     val path = s"/${encoded(index)}/_analyze"
     val body = Json.obj("text" -> text, "field" -> field).toString()
     execute(path, "GET", Some(body), target, Seq(JsonContentType))
   }
 
-  def analyzeTextByAnalyzer(index: String, analyzer: String, text: String, target: ElasticServer) = {
+  def analyzeTextByAnalyzer(index: String, analyzer: String, text: Array[String], target: ElasticServer) = {
     val path = s"/${encoded(index)}/_analyze"
     val body = Json.obj("text" -> text, "analyzer" -> analyzer).toString()
     execute(path, "GET", Some(body), target, Seq(JsonContentType))
