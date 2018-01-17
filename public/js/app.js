@@ -235,6 +235,9 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           AlertService.error('Error analyzing text by field', error);
         };
         AnalysisDataService.analyzeByField(index, field, text, success, error);
+      } else {
+        AlertService
+          .warn('Select a valid index / field and one or more texts');
       }
     };
 
@@ -253,6 +256,9 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           text,
           success, error
         );
+      } else {
+        AlertService
+          .warn('Select a valid index / analyzer and one or more texts');
       }
     };
 
