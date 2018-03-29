@@ -23,10 +23,10 @@
                href="#confirm_dialog">
             </i>
             <i class="fa fa-download normal-action pull-right"
-               data-toggle="collapse" href="#{{snapshot.snapshot}}_details">
+               data-toggle="collapse" href="#{{snapshot.snapshot.replace('.','_')}}_details">
             </i>
           </div>
-          <div class="collapse" id="{{snapshot.snapshot}}_details">
+          <div class="collapse" id="{{snapshot.snapshot.replace('.','_')}}_details">
             <ng-include src="'./snapshot/restore_snapshot.html'"
                         onload="form = {includeAliases: true, includeGlobalState: true, ignoreUnavailable: true}">
               {{form}}
