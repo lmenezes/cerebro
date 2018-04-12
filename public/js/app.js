@@ -1478,7 +1478,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.mappings = undefined;
     $scope.host = undefined;
 
-    $scope.method = 'POST';
+    $scope.method = 'GET';
     $scope.path = '';
     $scope.options = [];
 
@@ -1540,6 +1540,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       if ($scope.mappings) {
         var autocomplete = new URLAutocomplete($scope.mappings);
         $scope.options = autocomplete.getAlternatives(text);
+      }
+    };
+
+    $scope.sendQuery = function(event) {
+      if (event.ctrlKey && (event.keyCode === 10 || event.keyCode === 13)) {
+            $scope.execute();
       }
     };
 

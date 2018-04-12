@@ -27,15 +27,17 @@
                placeholder="path (eg: indexName/_search)"
                ng-change="updateOptions(path)"
                typeahead-wait-ms="20"
+
+               ng-keypress="sendQuery($event)"
                uib-typeahead="url for url in options | startsWith:$viewValue | limitTo:10"
                typeahead-popup-template-url="customPopupTemplate.html"
                typeahead-template-url="customTemplate.html">
       </div>
       <div class="col-lg-2 col-md-3 form-group">
         <select ng-model="method" class="form-control">
-          <option value="GET">GET</option>
+          <option value="GET" selected="selected">GET</option>
           <option value="PUT">PUT</option>
-          <option value="POST" selected="selected">POST</option>
+          <option value="POST">POST</option>
           <option value="DELETE">DELETE</option>
         </select>
       </div>
@@ -62,7 +64,7 @@
     </div>
     <div class="form-group row">
       <div class="col-lg-12">
-        <div id="rest-client-editor" class="ace-cerebro" style="height: 600px;"></div>
+        <div id="rest-client-editor" class="ace-cerebro" style="height: 600px;" ng-keypress="sendQuery($event)"></div>
       </div>
     </div>
     <div class="form-group row">
