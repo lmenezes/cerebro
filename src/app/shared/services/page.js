@@ -1,9 +1,6 @@
 angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
   '$document', function(DataService, $rootScope, $document) {
 
-    var clusterName;
-    var clusterStatus;
-
     var link = $document[0].querySelector('link[rel~=\'icon\']');
 
     var colors = {
@@ -13,32 +10,27 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
       black: 'img/black-favicon.png'
     };
 
-    this.setup = function(newName, newStatus) {
-      setPageTitle(newName);
-      setFavIconColor(newStatus);
+    this.setup = function(name, status) {
+      setPageTitle(name, status);
+      setFavIconColor(status);
     };
 
-    var setPageTitle = function(newClusterName) {
-      if (clusterName !== newClusterName) {
-        if (newClusterName) {
-          clusterName = newClusterName;
-          $rootScope.title = 'cerebro[' + clusterName + ']';
-        } else {
-          clusterName = undefined;
-          $rootScope.title = 'cerebro - no connection';
-        }
+    var setPageTitle = function(name, status) {
+      if (name) {
+        $rootScope.title = name + '[' + status + ']';
+      } else {
+        $rootScope.title = 'cerebro - no connection';
       }
     };
 
-    var setFavIconColor = function(newClusterStatus) {
+    var setFavIconColor = function(status) {
       if (link) {
-        clusterStatus = newClusterStatus;
-        var url = clusterStatus ? colors[clusterStatus] : colors.black;
         link.type = 'image/png';
-        link.href = url;
+        link.href = colors[status] || colors.black;
       }
     };
 
     return this;
 
-  }]);
+  }
+]);
