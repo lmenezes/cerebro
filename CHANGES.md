@@ -219,3 +219,14 @@ First cerebro release.
 #### Bug fixes
 - fixes unhealty indices filter
 - analyse module to work with ES 6.X
+
+###v0.7.3 - April 14th, 2018
+
+### New features
+- allow saving cluster settings as persistent/transient
+
+#### Bug fixes
+- fix index and repo sorting in snapshot module #236
+- fixes missing initializing shard when relocating shard #250
+- fix restoring snapshots with dots on name #254
+- ignore_unavailable indices for overview stats #247
