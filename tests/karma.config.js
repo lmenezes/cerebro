@@ -27,7 +27,7 @@ module.exports = function(config) {
     autoWatch: true, // enable / disable watching file and executing tests whenever any file changes
     usePolling: true,
     transports: ['websocket', 'polling'],
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000,
     singleRun: false // Continuous Integration mode: if true, it capture browsers, run tests and exit
