@@ -1,43 +1,60 @@
-<h4>{{index}} settings</h4>
-<div class="row">
-  <div class="col-xs-12">
-    <div class="form-group">
-      <select ng-model="group" ng-init="group = 'index_settings/index_settings.html'" class="form-control">
-        <option value="index_settings/index_settings.html">index</option>
-        <option value="index_settings/blocks.html">block operations</option>
-        <option value="index_settings/translog.html">translog</option>
-        <option value="index_settings/routing.html">routing</option>
-        <option value="index_settings/cache.html">cache</option>
-        <option value="index_settings/slowlog.html">slowlog</option>
-      </select>
+<!-- filter -->
+<div class="row query-container">
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+    <input type="text" class="form-control" ng-model="settingsFilter.name"
+           ng-change="refreshVisibleProperties()" placeholder="filter settings by name"/>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ng-model="settingsFilter.showStatic"> show static settings <i class="fa fa-lock alert-warning"></i>
+      </label>
     </div>
   </div>
+</div>
+
+<!-- settings form -->
+<div class="row form-group" ng-repeat="group in groupedSettings.groups | filter:displayGroup | orderBy:'name'">
   <div class="col-xs-12">
-    <div ng-include src="group"></div>
+    <h6><b>{{group.name | uppercase}}</b></h6>
+    <hr class="header">
+  </div>
+  <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" ng-repeat="setting in group.settings | filter:displaySetting | orderBy:'name'">
+    <div class="form-group">
+      <label class="form-label">
+        {{setting.name}} <i class="fa fa-lock alert-warning" ng-show="setting.static"> </i>
+      </label>
+      <input type="text" class="form-control" ng-model="form[setting.name]"
+             ng-change="set(setting.name)" ng-disabled="setting.static"/>
+    </div>
   </div>
 </div>
-<div class="row" ng-show="pendingChanges">
-  <div class="col-xs-12">
-    <table class="table">
-      <thead>
-      <tr>
-        <td>{{pendingChanges}} pending changes</td>
-      </tr>
-      </thead>
-      <tr ng-repeat="(p, v) in changes track by $index" ng-show="v">
-        <td>
-          <i class="fa fa-cog"> </i> {{p}} <span class="info-text"> set to value</span> {{v}}
-          <i class="fa fa-undo normal-action pull-right" ng-click="revert(p)"></i>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div class="col-lg-12 text-right">
-    <div class="form-group">
-      <div class="btn-group">
-        <button class="btn btn-success" ng-click="save()">
-          save
-        </button>
+<!-- pending changes -->
+<div class="row" ng-show="pendingChanges" style="padding-top: {{(pendingChanges * 40) + 90}}px;">
+  <div class="pending-changes">
+    <div class="col-xs-12">
+      <table class="table">
+        <thead>
+        <tr class="text-center">
+          <td>{{pendingChanges}} pending changes</td>
+        </tr>
+        </thead>
+        <tr ng-repeat="(setting, value) in changes track by $index">
+          <td>
+            <i class="fa fa-cog"></i>
+            {{setting}} <span class="info-text">updated to</span> {{value}}
+            <i class="fa fa-undo normal-action pull-right" ng-click="revertSetting(setting)"></i>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-lg-12 text-right">
+      <div class="form-group">
+        <div class="btn-group">
+          <button class="btn btn-success" ng-click="save()">
+            save
+          </button>
+        </div>
       </div>
     </div>
   </div>

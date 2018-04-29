@@ -16,10 +16,12 @@ describe('IndexSettingsController', function() {
   }));
 
   it('should have intial state correctly set', function () {
-    expect(this.scope.originalSettings).toEqual(undefined);
+    expect(this.scope.form).toEqual(undefined);
     expect(this.scope.settings).toEqual(undefined);
     expect(this.scope.changes).toEqual(undefined);
     expect(this.scope.pendingChanges).toEqual(0);
+    expect(this.scope.groupedSettings).toEqual(undefined);
+    expect(this.scope.settingsFilter).toEqual({name: '', showStatic: false});
   });
 
   describe('setup', function() {
@@ -27,8 +29,8 @@ describe('IndexSettingsController', function() {
       var settings = {
         foo: {
           settings: {
-            setting: 'some value',
-            setting_2: 'other value'
+            'index.setting': 'some value',
+            'index.setting_2': 'other value'
           }
         }
       };
@@ -38,13 +40,19 @@ describe('IndexSettingsController', function() {
       spyOn(this.IndexSettingsDataService, "get").and.callThrough();
       this.scope.setup();
       expect(this.IndexSettingsDataService.get).toHaveBeenCalledWith('foo', jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.settings).toEqual({setting: 'some value', setting_2: 'other value'});
-      expect(this.scope.originalSettings).toEqual({setting: 'some value', setting_2: 'other value'});
+      expect(this.scope.settings).toEqual({'setting': 'some value', 'setting_2': 'other value'});
+      expect(this.scope.form).toEqual({'setting': 'some value', 'setting_2': 'other value'});
       expect(this.scope.changes).toEqual({});
       expect(this.scope.pendingChanges).toEqual(0);
       expect(this.scope.index).toEqual('foo');
+      expect(this.scope.groupedSettings.groups).toEqual(
+        [
+          { 'name': 'setting', "settings": [ { "name": "setting", "static": true } ] },
+          { 'name': 'setting_2', "settings": [ {"name": "setting_2", "static": true } ] }
+        ]
+      );
     });
-    it('alerts if fails to laod cluster settings', function () {
+    it('alerts if fails to load cluster settings', function () {
       this.IndexSettingsDataService.get = function(index, success, error) {
         error('kaput');
       };
@@ -106,10 +114,10 @@ describe('IndexSettingsController', function() {
 
   describe('revert', function() {
     it('reverts change', function () {
-      this.scope.settings = {some_setting: 'new value'};
-      this.scope.originalSettings = {some_setting: 'old value'};
+      this.scope.settings = {some_setting: 'old value'};
+      this.scope.form = {some_setting: 'new value'};
       spyOn(this.scope, "removeChange").and.returnValue(true);
-      this.scope.revert('some_setting');
+      this.scope.revertSetting('some_setting');
       expect(this.scope.removeChange).toHaveBeenCalled();
       expect(this.scope.settings['some_setting']).toEqual('old value')
     });
@@ -134,18 +142,21 @@ describe('IndexSettingsController', function() {
     it('sets new value for existing property', function () {
       this.scope.changes = {};
       this.scope.settings = {some_setting: 'value'};
+      this.scope.form = {some_setting: 'new value'};
       this.scope.set('some_setting');
-      expect(this.scope.changes).toEqual({some_setting: 'value'});
+      expect(this.scope.changes).toEqual({some_setting: 'new value'});
     });
     it('updates value for existing change', function () {
       this.scope.changes = {some_setting: 'value'};
-      this.scope.settings = {some_setting: 'updated value'};
+      this.scope.form = {some_setting: 'updated value'};
+      this.scope.settings = {some_setting: 'old value'};
       this.scope.set('some_setting');
       expect(this.scope.changes).toEqual({some_setting: 'updated value'});
     });
     it('clears changes for property', function () {
       this.scope.changes = {some_setting: 'value'};
-      this.scope.settings = {some_setting: ''};
+      this.scope.form = {some_setting: 'previous_setting'};
+      this.scope.settings = {some_setting: 'previous_setting'};
       this.scope.set('some_setting');
       expect(this.scope.changes).toEqual({});
     });
