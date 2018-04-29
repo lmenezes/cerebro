@@ -468,7 +468,10 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
           });
           if (!$scope.groupedSettings) {
             $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form));
+              Object.keys($scope.form).map(function(setting) {
+                return {name: setting, static: !DynamicSettings.valid(setting)};
+              })
+            );
           }
         },
         function(error) {
@@ -577,29 +580,6 @@ var DynamicSettings = (function() {
   };
 })();
 
-
-function GroupedSettings(settings) {
-  var groups = {};
-  settings.forEach(function(setting) {
-    var group = setting.split('.')[0];
-    if (!groups[group]) {
-      groups[group] = new Group(group);
-    }
-    groups[group].addSetting(setting);
-  });
-  this.groups = Object.values(groups);
-}
-
-function Group(name) {
-  this.name = name;
-  this.settings = [];
-
-  this.addSetting = function(setting) {
-    var settingObj = {name: setting, static: !DynamicSettings.valid(setting)};
-    this.settings.push(settingObj);
-  };
-
-}
 
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'ConnectDataService', 'AlertService',
@@ -2172,6 +2152,18 @@ angular.module('cerebro').filter('bytes', function() {
   };
 
 });
+
+function GroupedSettings(settings) {
+  var groups = {};
+  settings.forEach(function(setting) {
+    var group = setting.name.split('.')[0];
+    if (!groups[group]) {
+      groups[group] = {name: group, settings: []};
+    }
+    groups[group].settings.push(setting);
+  });
+  this.groups = Object.values(groups);
+}
 
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   this.name = name;
