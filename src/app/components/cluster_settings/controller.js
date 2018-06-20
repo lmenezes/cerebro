@@ -86,7 +86,10 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
           });
           if (!$scope.groupedSettings) {
             $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form));
+              Object.keys($scope.form).map(function(setting) {
+                return {name: setting, static: !DynamicSettings.valid(setting)};
+              })
+            );
           }
         },
         function(error) {
