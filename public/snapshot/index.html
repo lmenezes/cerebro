@@ -23,10 +23,10 @@
                href="#confirm_dialog">
             </i>
             <i class="fa fa-download normal-action pull-right"
-               data-toggle="collapse" href="#{{snapshot.snapshot}}_details">
+               data-toggle="collapse" href="#{{snapshot.snapshot.replace('.','_')}}_details">
             </i>
           </div>
-          <div class="collapse" id="{{snapshot.snapshot}}_details">
+          <div class="collapse" id="{{snapshot.snapshot.replace('.','_')}}_details">
             <ng-include src="'./snapshot/restore_snapshot.html'"
                         onload="form = {includeAliases: true, includeGlobalState: true, ignoreUnavailable: true}">
               {{form}}
@@ -42,7 +42,7 @@
       <div class="col-sm-6">
         <div class="form-group">
           <label class="form-label">repository</label>
-          <select class="form-control" ng-model="form.repository" ng-options="r for r in repositories">
+          <select class="form-control" ng-model="form.repository" ng-options="r for r in repositories | orderBy:r">
             <option value="">select repository</option>
           </select>
         </div>
@@ -69,7 +69,7 @@
               <input type="checkbox" ng-model="showSpecialIndices" ng-true-value="true"> show special indices
             </label>
           </label>
-          <select multiple="multiple" ng-model="form.indices" ng-options="i.name as i.name for i in indices | orderBy:name"
+          <select multiple="multiple" ng-model="form.indices" ng-options="i.name as i.name for i in indices | orderBy:'name'"
                   class="form-control" size="13">
           </select>
         </div>

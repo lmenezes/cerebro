@@ -5,6 +5,10 @@ import javax.inject.Singleton
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Configuration
 
+import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
+
+
 @ImplementedBy(classOf[HostsImpl])
 trait Hosts {
 
@@ -17,18 +21,18 @@ trait Hosts {
 @Singleton
 class HostsImpl @Inject()(config: Configuration) extends Hosts {
 
-  val hosts: Map[String, ElasticServer] = config.getConfigSeq("hosts") match {
-    case Some(hostsConf) => hostsConf.map { hostConf =>
-      val host = hostConf.getString("host").get
-      val name = hostConf.getString("name").getOrElse(host)
-      val username = hostConf.getString("auth.username")
-      val password = hostConf.getString("auth.password")
+  val hosts: Map[String, ElasticServer] = Try(config.underlying.getConfigList("hosts").asScala.map(Configuration(_))) match {
+    case Success(hostsConf) => hostsConf.map { hostConf =>
+      val host = hostConf.getOptional[String]("host").get
+      val name = hostConf.getOptional[String]("name").getOrElse(host)
+      val username = hostConf.getOptional[String]("auth.username")
+      val password = hostConf.getOptional[String]("auth.password")
       (username, password) match {
         case (Some(username), Some(password)) => (name -> ElasticServer(host, Some(ESAuth(username, password))))
         case _ => (name -> ElasticServer(host, None))
       }
     }.toMap
-    case _ => Map()
+    case Failure(_) => Map()
   }
 
   def getHostNames() = hosts.keys.toSeq

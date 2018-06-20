@@ -1,17 +1,17 @@
 Cerebro Releases
 ------------
 
-###v0.1.0 - July 14th, 2016
+### v0.1.0 - July 14th, 2016
 
 First cerebro release.
 
-####Features
+#### Features
 - cluster overview
 - rest client
 - aliases management
 - index creation
 
-###v0.2.0 - August 25th, 2016
+### v0.2.0 - August 25th, 2016
 
 #### New features
 - analysis api
@@ -19,7 +19,7 @@ First cerebro release.
 - cluster settings api
 - notify regarding created/deleted indices and joining/leaving nodes
 
-###v0.3.0 - November 3rd, 2016
+### v0.3.0 - November 3rd, 2016
 
 #### Bug fixes
 - rest client format body button
@@ -31,12 +31,12 @@ First cerebro release.
 #### New features
 - added index settings module
 
-###v0.3.1 - November 17th, 2016
+### v0.3.1 - November 17th, 2016
 
 #### Bug fixes
 - displayed node roles
 
-###v0.4.0 - December 2nd, 2016
+### v0.4.0 - December 2nd, 2016
 
 #### Bug fixes
 - fix favicon for
@@ -50,12 +50,12 @@ First cerebro release.
 - copy to curl to rest client
 - repositories / snapshots module
 
-###v0.4.1 - December 6th, 2016
+### v0.4.1 - December 6th, 2016
 
 #### Bug fixes
 - fix indices selection on snapshot creation
 
-###v0.4.2 - January 4th, 2017
+### v0.4.2 - January 4th, 2017
 
 #### Bug fixes
 - fixed issue that prevent alias removal
@@ -66,7 +66,7 @@ First cerebro release.
 - support edit index template
 - added cat module
 
-###v0.5.0 - January 19th, 2017
+### v0.5.0 - January 19th, 2017
 
 #### Bug fixes
 - fixed stuck shard state
@@ -74,7 +74,7 @@ First cerebro release.
 #### New features
 - added authentication support
 
-###v0.5.1 - February 11th, 2017
+### v0.5.1 - February 11th, 2017
 
 #### Enhancements
 - consistent node sorting on cluster overview
@@ -84,7 +84,7 @@ First cerebro release.
 - avoid parsing errors when ES requests fail
 - fixes select shard for relocation menu entry
 
-###v0.6.0 - March 9th, 2017
+### v0.6.0 - March 9th, 2017
 
 #### Enhancements
 - support aws clusters
@@ -96,13 +96,13 @@ First cerebro release.
 - support rest client history
 - nodes module
 
-###v0.6.1 - March 10th, 2017
+### v0.6.1 - March 10th, 2017
 
 #### Bug fixes
 - correct play.i18n.langs format
 - set an application.home default
 
-###v0.6.2 - March 21st, 2017
+### v0.6.2 - March 21st, 2017
 
 #### Bug fixes
 - consider initializing/relocating/unassigned shards as unhealthy
@@ -119,7 +119,7 @@ First cerebro release.
 - support for custom base path
 - added index stats action to overview
 
-###v0.6.3 - March 22nd, 2017
+### v0.6.3 - March 22nd, 2017
 
 #### Bug fixes
 - fixed node stats danger indication in overview
@@ -136,7 +136,7 @@ First cerebro release.
 #### Enhancements
 - support indices with special characters (for ES < 2.X))
 
-###v0.6.5 - April 6th, 2017
+### v0.6.5 - April 6th, 2017
 
 #### Bug fixes
 - logout action to use relative path
@@ -162,7 +162,7 @@ First cerebro release.
 - display single alias on overview
 - improve performance of overview index filtering
 
-###v0.6.7 - September 23rd, 2017
+### v0.6.7 - September 23rd, 2017
 
 #### Bug fixes
 - use correct host when copying rest request for curl
@@ -190,7 +190,7 @@ First cerebro release.
 - display alias filter/routing on aliases listing
 - support linux aarch64 (https://github.com/lmenezes/cerebro/issues/207)
 
-###v0.7.0 - October 13th, 2017
+### v0.7.0 - October 13th, 2017
 
 #### Bug fixes
 - fixed rest url autocompletion
@@ -203,7 +203,7 @@ First cerebro release.
 - gzip enabled for all api calls
 - avoid piling up of slow requests
 
-###v0.7.1 - October 17th, 2017
+### v0.7.1 - October 17th, 2017
 
 #### Bug fixes
 - fixes mass actions on selected indices
@@ -214,8 +214,26 @@ First cerebro release.
 - optimised ES response parsing
 - dropped internal usage of _cat apis in favor of faster alternatives
 
-###v0.7.2 - November 28th, 2017
+### v0.7.2 - November 28th, 2017
 
 #### Bug fixes
 - fixes unhealty indices filter
 - analyse module to work with ES 6.X
+
+###v0.7.3 - April 14th, 2018
+
+### New features
+- allow saving cluster settings as persistent/transient
+
+#### Bug fixes
+- fix index and repo sorting in snapshot module #236
+- fixes missing initializing shard when relocating shard #250
+- fix restoring snapshots with dots on name #254
+- ignore_unavailable indices for overview stats #247
+
+###v0.8.0 - June 20th, 2018
+
+### New features
+- cluster status text added to navbar and tab title
+- available cluster/index settings now read from ES
+- added dockerfile and published to dockerhub

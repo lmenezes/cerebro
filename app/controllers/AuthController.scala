@@ -6,14 +6,14 @@ import akka.actor.ActorSystem
 import controllers.auth.{AuthAction, AuthenticationModule}
 import forms.LoginForm
 import play.api.Configuration
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.InjectedController
 
 
 @Singleton
 class AuthController @Inject()(system: ActorSystem,
                                authentication: AuthenticationModule,
                                configuration: Configuration)
-  extends Controller {
+  extends InjectedController {
 
   import AuthController._
 
@@ -60,7 +60,7 @@ class AuthController @Inject()(system: ActorSystem,
   }
 
   def logout = Action { _ =>
-    val prefix = configuration.getString("play.http.context").getOrElse("/")
+    val prefix = configuration.getOptional[String]("play.http.context").getOrElse("/")
     Redirect(s"${prefix}login").withNewSession
   }
 

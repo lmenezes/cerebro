@@ -380,39 +380,33 @@ angular.module('cerebro').factory('CatDataService', ['DataService',
   }
 ]);
 
-angular.module('cerebro').directive('clusterSetting', function() {
-  return {
-    restrict: 'EA',
-    scope: {
-      'set': '&',
-      'property': '=',
-      'settings': '='
-    },
-    templateUrl: 'cluster_settings/cluster_setting.html'
-  };
-});
-
 angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
   'ClusterSettingsDataService', 'AlertService',
   function($scope, ClusterSettingsDataService, AlertService) {
 
-    $scope.originalSettings = undefined;
+    $scope.form = undefined;
     $scope.settings = undefined;
+    $scope.groupedSettings = undefined;
     $scope.changes = undefined;
     $scope.pendingChanges = 0;
+    $scope.settingsFilter = {name: '', showStatic: false};
 
-    $scope.set = function(property) {
-      var value = $scope.settings[property];
-      if (value) {
-        if ($scope.changes[property]) {
-          $scope.changes[property].value = value;
+    $scope.set = function(setting) {
+      var value = $scope.form[setting];
+      if (value !== $scope.settings[setting]) {
+        if ($scope.changes[setting]) {
+          $scope.changes[setting].value = value;
         } else {
-          $scope.changes[property] = {value: value, transient: true};
+          $scope.changes[setting] = {value: value, transient: true};
           $scope.pendingChanges += 1;
         }
       } else {
-        $scope.removeChange(property);
+        $scope.removeChange(setting);
       }
+    };
+
+    $scope.changeSettingPersistence = function(setting) {
+      $scope.changes[setting].transient = !$scope.changes[setting].transient;
     };
 
     $scope.removeChange = function(property) {
@@ -422,18 +416,31 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
       }
     };
 
-    $scope.revert = function(property) {
-      $scope.settings[property] = $scope.originalSettings[property];
-      $scope.removeChange(property);
+    $scope.revertSetting = function(setting) {
+      $scope.form[setting] = $scope.settings[setting];
+      $scope.removeChange(setting);
+    };
+
+    $scope.displayGroup = function(group) {
+      var matchedSettings = 0;
+      group.settings.forEach(function(s) {
+        matchedSettings += $scope.displaySetting(s) ? 1 : 0;
+      });
+      return matchedSettings > 0;
+    };
+
+    $scope.displaySetting = function(setting) {
+      var matchesName = setting.name.indexOf($scope.settingsFilter.name) >= 0;
+      var matchesType = (!setting.static || $scope.settingsFilter.showStatic);
+      return matchesName && matchesType;
     };
 
     $scope.save = function() {
       var settings = {transient: {}, persistent: {}};
-      angular.forEach($scope.changes, function(value, property) {
-        if (value.value) {
-          var settingType = value.transient ? 'transient' : 'persistent';
-          settings[settingType][property] = value.value;
-        }
+      angular.forEach($scope.changes, function(setting, name) {
+        var settingType = setting.transient ? 'transient' : 'persistent';
+        var value = setting.value.length > 0 ? setting.value : null;
+        settings[settingType][name] = value;
       });
       ClusterSettingsDataService.saveSettings(settings,
         function(response) {
@@ -447,18 +454,25 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
     };
 
     $scope.setup = function() {
-      $scope.settings = {};
-      $scope.originalSettings = {};
-      $scope.changes = {};
-      $scope.pendingChanges = 0;
       ClusterSettingsDataService.getClusterSettings(
         function(response) {
-          ['persistent', 'transient', 'defaults'].forEach(function(group) {
-            angular.forEach(response[group], function(value, property) {
-              $scope.settings[property] = value;
-              $scope.originalSettings[property] = value;
+          $scope.settings = {};
+          $scope.form = {};
+          $scope.changes = {};
+          $scope.pendingChanges = 0;
+          ['defaults', 'persistent', 'transient'].forEach(function(group) {
+            angular.forEach(response[group], function(value, setting) {
+              $scope.settings[setting] = value;
+              $scope.form[setting] = value;
             });
           });
+          if (!$scope.groupedSettings) {
+            $scope.groupedSettings = new GroupedSettings(
+              Object.keys($scope.form).map(function(setting) {
+                return {name: setting, static: !DynamicSettings.valid(setting)};
+              })
+            );
+          }
         },
         function(error) {
           AlertService.error('Error loading cluster settings', error);
@@ -484,6 +498,88 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
 
   }
 ]);
+
+var DynamicSettings = (function() {
+  var settings = {
+    'cluster.blocks.read_only': true,
+    'cluster.blocks.read_only_allow_delete': true,
+    'cluster.indices.close.enable': true,
+    'cluster.info.update.interval': true,
+    'cluster.info.update.timeout': true,
+    'cluster.routing.allocation.allow_rebalance': true,
+    'cluster.routing.allocation.awareness.attributes': true,
+    'cluster.routing.allocation.balance.index': true,
+    'cluster.routing.allocation.balance.shard': true,
+    'cluster.routing.allocation.balance.threshold': true,
+    'cluster.routing.allocation.cluster_concurrent_rebalance': true,
+    'cluster.routing.allocation.disk.include_relocations': true,
+    'cluster.routing.allocation.disk.reroute_interval': true,
+    'cluster.routing.allocation.disk.threshold_enabled': true,
+    'cluster.routing.allocation.disk.watermark.high': true,
+    'cluster.routing.allocation.disk.watermark.low': true,
+    'cluster.routing.allocation.enable': true,
+    'cluster.routing.allocation.node_concurrent_incoming_recoveries': true,
+    'cluster.routing.allocation.node_concurrent_outgoing_recoveries': true,
+    'cluster.routing.allocation.node_concurrent_recoveries': true,
+    'cluster.routing.allocation.node_initial_primaries_recoveries': true,
+    'cluster.routing.allocation.same_shard.host': true,
+    'cluster.routing.allocation.snapshot.relocation_enabled': true,
+    'cluster.routing.allocation.total_shards_per_node': true,
+    'cluster.routing.rebalance.enable': true,
+    'cluster.service.slow_task_logging_threshold': true,
+    'discovery.zen.commit_timeout': true,
+    'discovery.zen.minimum_master_nodes': true,
+    'discovery.zen.no_master_block': true,
+    'discovery.zen.publish_diff.enable': true,
+    'discovery.zen.publish_timeout': true,
+    'gateway.initial_shards': true,
+    'indices.breaker.fielddata.limit': true,
+    'indices.breaker.fielddata.overhead': true,
+    'indices.breaker.request.limit': true,
+    'indices.breaker.request.overhead': true,
+    'indices.breaker.total.limit': true,
+    'indices.mapping.dynamic_timeout': true,
+    'indices.recovery.internal_action_long_timeout': true,
+    'indices.recovery.internal_action_timeout': true,
+    'indices.recovery.max_bytes_per_sec': true,
+    'indices.recovery.recovery_activity_timeout': true,
+    'indices.recovery.retry_delay_network': true,
+    'indices.recovery.retry_delay_state_sync': true,
+    'indices.store.throttle.max_bytes_per_sec': true,
+    'indices.store.throttle.type': true,
+    'indices.ttl.interval': true,
+    'ingest.new_date_format': true,
+    'network.breaker.inflight_requests.limit': true,
+    'network.breaker.inflight_requests.overhead': true,
+    'script.max_compilations_per_minute': true,
+    'search.default_search_timeout': true,
+    'search.low_level_cancellation': true,
+    'transport.tracer.exclude.0': true,
+    'transport.tracer.exclude.1': true,
+    'xpack.ml.node_concurrent_job_allocations': true,
+    'xpack.monitoring.collection.cluster.state.timeout': true,
+    'xpack.monitoring.collection.cluster.stats.timeout': true,
+    'xpack.monitoring.collection.index.recovery.active_only': true,
+    'xpack.monitoring.collection.index.recovery.timeout': true,
+    'xpack.monitoring.collection.index.stats.timeout': true,
+    'xpack.monitoring.collection.interval': true,
+    'xpack.monitoring.collection.ml.job.stats.timeout': true,
+    'xpack.monitoring.history.duration': true,
+    'xpack.security.http.filter.enabled': true,
+    'xpack.security.transport.filter.enabled': true,
+    'xpack.watcher.history.cleaner_service.enabled': true,
+    'action.auto_create_index': true,
+    'action.destructive_requires_name': true,
+    'action.search.shard_count.limit': true
+  };
+
+  return {
+    valid: function(setting) {
+      return settings[setting] || false;
+    }
+  };
+})();
+
 
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'ConnectDataService', 'AlertService',
@@ -678,21 +774,25 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
   '$location', 'IndexSettingsDataService', 'AlertService',
   function($scope, $location, IndexSettingsDataService, AlertService) {
 
-    $scope.originalSettings = undefined;
+    $scope.form = undefined;
     $scope.settings = undefined;
+    $scope.groupedSettings = undefined;
     $scope.changes = undefined;
     $scope.pendingChanges = 0;
+    $scope.settingsFilter = {name: '', showStatic: false};
     $scope.index = $location.search().index;
 
-    $scope.set = function(property) {
-      var value = $scope.settings[property];
-      if (value) {
-        if (!$scope.changes[property]) {
+    $scope.set = function(setting) {
+      var value = $scope.form[setting];
+      if (value !== $scope.settings[setting]) {
+        if ($scope.changes[setting]) {
+          $scope.changes[setting] = value;
+        } else {
+          $scope.changes[setting] = value;
           $scope.pendingChanges += 1;
         }
-        $scope.changes[property] = value;
       } else {
-        $scope.removeChange(property);
+        $scope.removeChange(setting);
       }
     };
 
@@ -703,9 +803,23 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
       }
     };
 
-    $scope.revert = function(property) {
-      $scope.settings[property] = $scope.originalSettings[property];
-      $scope.removeChange(property);
+    $scope.revertSetting = function(setting) {
+      $scope.form[setting] = $scope.settings[setting];
+      $scope.removeChange(setting);
+    };
+
+    $scope.displayGroup = function(group) {
+      var matchedSettings = 0;
+      group.settings.forEach(function(s) {
+        matchedSettings += $scope.displaySetting(s) ? 1 : 0;
+      });
+      return matchedSettings > 0;
+    };
+
+    $scope.displaySetting = function(setting) {
+      var matchesName = setting.name.indexOf($scope.settingsFilter.name) >= 0;
+      var matchesType = (!setting.static || $scope.settingsFilter.showStatic);
+      return matchesName && matchesType;
     };
 
     $scope.save = function() {
@@ -723,20 +837,31 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
     };
 
     $scope.setup = function() {
-      $scope.settings = {};
-      $scope.originalSettings = {};
-      $scope.changes = {};
-      $scope.pendingChanges = 0;
-      var loadSetting = function(value, property) {
-        $scope.settings[property] = value;
-        $scope.originalSettings[property] = value;
-      };
-
       IndexSettingsDataService.get(
         $scope.index,
         function(response) {
-          angular.forEach(response[$scope.index].settings, loadSetting);
-          angular.forEach(response[$scope.index].defaults, loadSetting);
+          $scope.settings = {};
+          $scope.form = {};
+          $scope.changes = {};
+          $scope.pendingChanges = 0;
+          var settings = response[$scope.index];
+          ['defaults', 'settings'].forEach(function(group) {
+            angular.forEach(settings[group], function(value, setting) {
+              if (ValidIndexSettings.valid(setting)) {
+                setting = setting.substring('index.'.length);
+                $scope.settings[setting] = value;
+                $scope.form[setting] = value;
+              }
+            });
+          });
+          if (!$scope.groupedSettings) {
+            $scope.groupedSettings = new GroupedSettings(
+              Object.keys($scope.form).map(function(setting) {
+                var dynamic = DynamicIndexSettings.valid(setting);
+                return {name: setting, static: !dynamic};
+              })
+            );
+          }
         },
         function(error) {
           AlertService.error('Error loading index settings', error);
@@ -761,6 +886,100 @@ angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
     return this;
   }
 ]);
+
+var DynamicIndexSettings = (function() {
+  var settings = {
+    'mapper.dynamic': true,
+    'max_refresh_listeners': true,
+    'number_of_replicas': true,
+    'allocation.max_retries': true,
+    'auto_expand_replicas': true,
+    'blocks.metadata': true,
+    'blocks.read': true,
+    'blocks.read_only': true,
+    'blocks.read_only_allow_delete': true,
+    'blocks.write': true,
+    'compound_format': true,
+    'gc_deletes': true,
+    'indexing.slowlog.level': true,
+    'indexing.slowlog.reformat': true,
+    'indexing.slowlog.source': true,
+    'indexing.slowlog.threshold.index.debug': true,
+    'indexing.slowlog.threshold.index.info': true,
+    'indexing.slowlog.threshold.index.trace': true,
+    'indexing.slowlog.threshold.index.warn': true,
+    'mapping.depth.limit': true,
+    'mapping.nested_fields.limit': true,
+    'mapping.total_fields.limit': true,
+    'max_adjacency_matrix_filters': true,
+    'max_rescore_window': true,
+    'max_result_window': true,
+    'max_slices_per_scroll': true,
+    'merge.policy.expunge_deletes_allowed': true,
+    'merge.policy.floor_segment': true,
+    'merge.policy.max_merge_at_once': true,
+    'merge.policy.max_merge_at_once_explicit': true,
+    'merge.policy.max_merged_segment': true,
+    'merge.policy.reclaim_deletes_weight': true,
+    'merge.policy.segments_per_tier': true,
+    'merge.scheduler.auto_throttle': true,
+    'merge.scheduler.max_merge_count': true,
+    'merge.scheduler.max_thread_count': true,
+    'optimize_auto_generated_id': true,
+    'priority': true,
+    'recovery.initial_shards': true,
+    'refresh_interval': true,
+    'requests.cache.enable': true,
+    'routing.allocation.enable': true,
+    'routing.allocation.total_shards_per_node': true,
+    'routing.rebalance.enable': true,
+    'search.slowlog.level': true,
+    'search.slowlog.threshold.fetch.debug': true,
+    'search.slowlog.threshold.fetch.info': true,
+    'search.slowlog.threshold.fetch.trace': true,
+    'search.slowlog.threshold.fetch.warn': true,
+    'search.slowlog.threshold.query.debug': true,
+    'search.slowlog.threshold.query.info': true,
+    'search.slowlog.threshold.query.trace': true,
+    'search.slowlog.threshold.query.warn': true,
+    'shared_filesystem.recover_on_any_node': true,
+    'store.throttle.max_bytes_per_sec': true,
+    'store.throttle.type': true,
+    'translog.durability': true,
+    'translog.flush_threshold_size': true,
+    'ttl.disable_purge': true,
+    'unassigned.node_left.delayed_timeout': true,
+    'warmer.enabled': true,
+    'write.wait_for_active_shards': true
+  };
+
+  return {
+    valid: function(setting) {
+      return settings[setting] || false;
+    }
+  };
+})();
+
+
+var ValidIndexSettings = (function() {
+  var invalidSettings = [
+    'index.creation_date',
+    'index.provided_name',
+    'index.uuid',
+    'index.version.created'
+  ];
+
+  return {
+    valid: function(setting) {
+      var valid = true;
+      invalidSettings.forEach(function(invalidSetting) {
+        valid = valid && setting.indexOf(invalidSetting) == -1;
+      });
+      return valid;
+    }
+  };
+})();
+
 
 angular.module('cerebro').controller('ModalController', ['$scope',
   'ModalService', function($scope, ModalService) {
@@ -2057,6 +2276,18 @@ angular.module('cerebro').filter('bytes', function() {
 
 });
 
+function GroupedSettings(settings) {
+  var groups = {};
+  settings.forEach(function(setting) {
+    var group = setting.name.split('.')[0];
+    if (!groups[group]) {
+      groups[group] = {name: group, settings: []};
+    }
+    groups[group].settings.push(setting);
+  });
+  this.groups = Object.values(groups);
+}
+
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   this.name = name;
   this.closed = closed;
@@ -2989,9 +3220,6 @@ angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
 angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
   '$document', function(DataService, $rootScope, $document) {
 
-    var clusterName;
-    var clusterStatus;
-
     var link = $document[0].querySelector('link[rel~=\'icon\']');
 
     var colors = {
@@ -3001,35 +3229,30 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
       black: 'img/black-favicon.png'
     };
 
-    this.setup = function(newName, newStatus) {
-      setPageTitle(newName);
-      setFavIconColor(newStatus);
+    this.setup = function(name, status) {
+      setPageTitle(name, status);
+      setFavIconColor(status);
     };
 
-    var setPageTitle = function(newClusterName) {
-      if (clusterName !== newClusterName) {
-        if (newClusterName) {
-          clusterName = newClusterName;
-          $rootScope.title = 'cerebro[' + clusterName + ']';
-        } else {
-          clusterName = undefined;
-          $rootScope.title = 'cerebro - no connection';
-        }
+    var setPageTitle = function(name, status) {
+      if (name) {
+        $rootScope.title = name + '[' + status + ']';
+      } else {
+        $rootScope.title = 'cerebro - no connection';
       }
     };
 
-    var setFavIconColor = function(newClusterStatus) {
+    var setFavIconColor = function(status) {
       if (link) {
-        clusterStatus = newClusterStatus;
-        var url = clusterStatus ? colors[clusterStatus] : colors.black;
         link.type = 'image/png';
-        link.href = url;
+        link.href = colors[status] || colors.black;
       }
     };
 
     return this;
 
-  }]);
+  }
+]);
 
 angular.module('cerebro').factory('RefreshService',
   function($rootScope, $timeout) {

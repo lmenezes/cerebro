@@ -16,7 +16,7 @@ class OverviewDataService @Inject()(client: ElasticClient) {
     val apis = Seq(
       "_cluster/state/master_node,routing_table,blocks",
       "_nodes/stats/jvm,fs,os,process?human=true",
-      "_stats/docs,store",
+      "_stats/docs,store?ignore_unavailable=true",
       "_cluster/settings",
       "_aliases",
       "_cluster/health",

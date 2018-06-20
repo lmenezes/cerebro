@@ -3,7 +3,7 @@ package dao
 import java.security.MessageDigest
 import java.util.Date
 
-import slick.driver.SQLiteDriver.api._
+import slick.jdbc.SQLiteProfile.api._
 import slick.lifted.Tag
 
 case class HashedRestRequest(path: String, method: String, body: String, username: String, createdAt: Long, md5: String)

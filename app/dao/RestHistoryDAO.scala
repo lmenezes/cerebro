@@ -5,8 +5,8 @@ import java.util.Date
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Configuration
 import play.api.db.slick.DatabaseConfigProvider
-import slick.driver.JdbcProfile
-import slick.driver.SQLiteDriver.api._
+import slick.jdbc.JdbcProfile
+import slick.jdbc.SQLiteProfile.api._
 import slick.lifted.TableQuery
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,7 +28,7 @@ trait RestHistoryDAO {
 class RestHistoryDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider,
                                    config: Configuration) extends RestHistoryDAO {
 
-  private val max = config.getInt("rest.history.size").getOrElse(50)
+  private val max = config.getOptional[Int]("rest.history.size").getOrElse(50)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 

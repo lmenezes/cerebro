@@ -14,10 +14,13 @@ describe('ClusterSettingsController', function() {
   }));
 
   it('should have intial state correctly set', function () {
-    expect(this.scope.originalSettings).toEqual(undefined);
+    expect(this.scope.form).toEqual(undefined);
     expect(this.scope.settings).toEqual(undefined);
+    expect(this.scope.groupedSettings).toEqual(undefined);
     expect(this.scope.changes).toEqual(undefined);
     expect(this.scope.pendingChanges).toEqual(0);
+    expect(this.scope.settingsFilter.name).toEqual('');
+    expect(this.scope.settingsFilter).toEqual({name: '', showStatic: false});
   });
 
   describe('setup', function() {
@@ -34,7 +37,7 @@ describe('ClusterSettingsController', function() {
       this.scope.setup();
       expect(this.ClusterSettingsDataService.getClusterSettings).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.settings).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
-      expect(this.scope.originalSettings).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
+      expect(this.scope.form).toEqual({setting: 'some other value', setting_2: 'other value', setting_3: 'still another'});
       expect(this.scope.changes).toEqual({});
       expect(this.scope.pendingChanges).toEqual(0);
     });
@@ -65,7 +68,7 @@ describe('ClusterSettingsController', function() {
       spyOn(this.scope, "setup").and.returnValue(true);
       this.scope.save();
       expect(this.ClusterSettingsDataService.saveSettings).toHaveBeenCalledWith(
-        {transient: {some_property: 'some value'}, persistent: {some_other_property: 'some other value'}},
+        {transient: {some_property: 'some value', some_blank_property: null}, persistent: {some_other_property: 'some other value'}},
         jasmine.any(Function),
         jasmine.any(Function)
       );
@@ -85,7 +88,7 @@ describe('ClusterSettingsController', function() {
       spyOn(this.AlertService, "error").and.returnValue(true);
       this.scope.save();
       expect(this.ClusterSettingsDataService.saveSettings).toHaveBeenCalledWith(
-        {transient: {some_property: 'some value'}, persistent: {some_other_property: 'some other value'}},
+        {transient: {some_property: 'some value', some_blank_property: null}, persistent: {some_other_property: 'some other value'}},
         jasmine.any(Function),
         jasmine.any(Function)
       );
@@ -95,10 +98,10 @@ describe('ClusterSettingsController', function() {
 
   describe('revert', function() {
     it('reverts change', function () {
-      this.scope.settings = {some_setting: 'new value'};
-      this.scope.originalSettings = {some_setting: 'old value'};
+      this.scope.form = {some_setting: 'new value'};
+      this.scope.settings = {some_setting: 'old value'};
       spyOn(this.scope, "removeChange").and.returnValue(true);
-      this.scope.revert('some_setting');
+      this.scope.revertSetting('some_setting');
       expect(this.scope.removeChange).toHaveBeenCalled();
       expect(this.scope.settings['some_setting']).toEqual('old value')
     });
@@ -122,19 +125,22 @@ describe('ClusterSettingsController', function() {
   describe('set', function() {
     it('sets new value for existing property', function () {
       this.scope.changes = {};
+      this.scope.form = {some_setting: 'new value'};
       this.scope.settings = {some_setting: 'value'};
       this.scope.set('some_setting');
-      expect(this.scope.changes).toEqual({some_setting: { value: 'value', transient: true}});
+      expect(this.scope.changes).toEqual({some_setting: { value: 'new value', transient: true}});
     });
     it('updates value for existing change', function () {
-      this.scope.changes = {some_setting: { value: 'value', transient: true}};
-      this.scope.settings = {some_setting: 'updated value'};
+      this.scope.changes = {some_setting: { value: 'new value', transient: true}};
+      this.scope.settings = {some_setting: 'original alue'};
+      this.scope.form = {some_setting: 'updated new value'};
       this.scope.set('some_setting');
-      expect(this.scope.changes).toEqual({some_setting: { value: 'updated value', transient: true}});
+      expect(this.scope.changes).toEqual({some_setting: { value: 'updated new value', transient: true}});
     });
     it('clears changes for property', function () {
       this.scope.changes = {some_setting: { value: 'value', transient: true}};
-      this.scope.settings = {some_setting: ''};
+      this.scope.settings = {some_setting: 'original value'};
+      this.scope.form = {some_setting: 'original value'};
       this.scope.set('some_setting');
       expect(this.scope.changes).toEqual({});
     });

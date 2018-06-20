@@ -133,3 +133,15 @@ table.shard-map { table-layout: fixed; }
 .checkbox inline {
     padding-right: 6px;
 }
+.pending-changes {
+    position: fixed;
+    bottom: 0;
+    height: auto;
+    width: 100%;
+    background: #373a3c;
+    border: 1px solid #D0D0D0;
+}
+.query-container {
+    padding-bottom: 30px;
+}
+hr.header { margin-top: 0; }

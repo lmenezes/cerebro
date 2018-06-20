@@ -5,14 +5,14 @@ import exceptions.MissingRequiredParamException
 import models.{CerebroRequest, CerebroResponse, Hosts}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Controller, Result}
+import play.api.mvc.{Controller, InjectedController, Result}
 import services.exception.RequestFailedException
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-trait BaseController extends Controller with AuthSupport {
+trait BaseController extends InjectedController with AuthSupport {
 
   val authentication: AuthenticationModule
 
