@@ -8,13 +8,15 @@ import play.api.Play._
 import play.api.inject.guice.GuiceApplicationBuilder
 
 import scala.concurrent.Future
-
+import scala.concurrent.duration.FiniteDuration
 
 class RestRequestDAOSpec(implicit ee: ExecutionEnv) extends Specification {
 
-  val app = new GuiceApplicationBuilder().configure(
-    Map("rest.history.size" -> 3)
-  ).build()
+  val app = new GuiceApplicationBuilder()
+    .configure(
+      Map("rest.history.size" -> 3)
+    )
+    .build()
 
   override def is =
     sequential ^ s2"""
@@ -28,14 +30,19 @@ class RestRequestDAOSpec(implicit ee: ExecutionEnv) extends Specification {
 
   def save = {
     val dao: RestHistoryDAO = app.injector.instanceOf(classOf[RestHistoryDAO])
-    val entry = RestRequest("somePath", "someMethod", "theBody", "admin", new Date(123))
+    val entry =
+      RestRequest("somePath", "someMethod", "theBody", "admin", new Date(123))
     dao.save(entry) must beEqualTo(Some("f909cacf3de2c117ca3c08e472bd1d88")).await
   }
 
   def update = {
     val dao: RestHistoryDAO = app.injector.instanceOf(classOf[RestHistoryDAO])
     val currentTime = System.currentTimeMillis
-    val entry = RestRequest("otherPath", "otherMethod", "otherBody", "admin", new Date(currentTime))
+    val entry = RestRequest("otherPath",
+                            "otherMethod",
+                            "otherBody",
+                            "admin",
+                            new Date(currentTime))
     val existing = dao.save(entry)
     val updated = dao.save(entry.copy(createdAt = new Date(currentTime + 1)))
     (existing must beEqualTo(Some("fad24b7447043f5412c89b12e2b7697c")).await and
@@ -45,20 +52,26 @@ class RestRequestDAOSpec(implicit ee: ExecutionEnv) extends Specification {
   def maxSize = {
     val time = System.currentTimeMillis
     val dao: RestHistoryDAO = app.injector.instanceOf(classOf[RestHistoryDAO])
-    val all = Future.sequence(
-      Seq(
-        dao.save(RestRequest("request1", "GET", "{}", "admin", new Date(time))),
-        dao.save(RestRequest("request2", "GET", "{}", "admin", new Date(time + 1))),
-        dao.save(RestRequest("request3", "GET", "{}", "admin", new Date(time + 2)))
+    val all = Future
+      .sequence(
+        Seq(
+          dao.save(
+            RestRequest("request1", "GET", "{}", "admin", new Date(time))),
+          dao.save(
+            RestRequest("request2", "GET", "{}", "admin", new Date(time + 1))),
+          dao.save(
+            RestRequest("request3", "GET", "{}", "admin", new Date(time + 2)))
+        )
       )
-    ).flatMap { _ => dao.all("admin") }
+      .flatMap { _ =>
+        dao.all("admin")
+      }
     val expected = Seq(
       RestRequest("request3", "GET", "{}", "admin", new Date(time + 2)),
       RestRequest("request2", "GET", "{}", "admin", new Date(time + 1)),
       RestRequest("request1", "GET", "{}", "admin", new Date(time))
-
     )
-    all must beEqualTo(expected).await
+    all must beEqualTo(expected).awaitFor(FiniteDuration(3, "s"))
   }
 
   def clear = {

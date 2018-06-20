@@ -7,14 +7,14 @@ version := "0.8.0"
 scalaVersion := "2.11.11"
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play"                    % "2.6.7",
-  "com.typesafe.play" %% "play-json"               % "2.6.7",
-  "com.typesafe.play" %% "play-slick"              % "3.0.1",
-  "com.typesafe.play" %% "play-slick-evolutions"   % "3.0.1",
-  "org.xerial"        %  "sqlite-jdbc"             % "3.20.0",
-  "org.specs2"        %% "specs2-junit"  % "3.8.4" % "test",
-  "org.specs2"        %% "specs2-core"   % "3.8.4" % "test",
-  "org.specs2"        %% "specs2-mock"   % "3.8.4" % "test"
+  "com.typesafe.play" %% "play"                    % "2.6.15",
+  "com.typesafe.play" %% "play-json"               % "2.6.9",
+  "com.typesafe.play" %% "play-slick"              % "3.0.3",
+  "com.typesafe.play" %% "play-slick-evolutions"   % "3.0.3",
+  "org.xerial"        %  "sqlite-jdbc"             % "3.23.1",
+  "org.specs2"        %% "specs2-junit"  % "3.9.2" % "test",
+  "org.specs2"        %% "specs2-core"   % "3.9.2" % "test",
+  "org.specs2"        %% "specs2-mock"   % "3.9.2" % "test"
 )
 
 libraryDependencies += filters
