@@ -230,3 +230,10 @@ First cerebro release.
 - fixes missing initializing shard when relocating shard #250
 - fix restoring snapshots with dots on name #254
 - ignore_unavailable indices for overview stats #247
+
+###v0.8.0 - June 20th, 2018
+
+### New features
+- cluster status text added to navbar and tab title
+- available cluster/index settings now read from ES
+- added dockerfile and published to dockerhub
