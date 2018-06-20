@@ -237,3 +237,13 @@ First cerebro release.
 - cluster status text added to navbar and tab title
 - available cluster/index settings now read from ES
 - added dockerfile and published to dockerhub
+
+### v0.8.1 - June 20th, 2018
+
+#### Enhancements
+- Fix markdown headers of CHANGES.md #240
+- Add username formatting option to support OpenLDAP and others #246
+- Simplify dockerfile #301
+
+#### Bug Fixes
+- Remove firefox specific rules incompatible with firefox Quantum #235
