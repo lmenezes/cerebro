@@ -5,15 +5,6 @@ body { padding-top: 50px; font-weight: normal; }
 /** Overview **/
 table.shard-map { table-layout: fixed; }
 
-@-moz-document url-prefix() {
-    table.shard-map {
-        table-layout: auto;
-    }
-    table.shard-map tr td {
-        width: 16.67%;
-    }
-}
-
 .table.shard-map td, .table th { padding: .4rem !important; }
 
 .disabled { opacity: 0.2; }
@@ -133,6 +124,7 @@ table.shard-map { table-layout: fixed; }
 .checkbox inline {
     padding-right: 6px;
 }
+
 .pending-changes {
     position: fixed;
     bottom: 0;
@@ -141,7 +133,9 @@ table.shard-map { table-layout: fixed; }
     background: #373a3c;
     border: 1px solid #D0D0D0;
 }
+
 .query-container {
     padding-bottom: 30px;
 }
+
 hr.header { margin-top: 0; }
