@@ -220,9 +220,9 @@ First cerebro release.
 - fixes unhealty indices filter
 - analyse module to work with ES 6.X
 
-###v0.7.3 - April 14th, 2018
+### v0.7.3 - April 14th, 2018
 
-### New features
+#### New features
 - allow saving cluster settings as persistent/transient
 
 #### Bug fixes
@@ -231,9 +231,9 @@ First cerebro release.
 - fix restoring snapshots with dots on name #254
 - ignore_unavailable indices for overview stats #247
 
-###v0.8.0 - June 20th, 2018
+### v0.8.0 - June 20th, 2018
 
-### New features
+#### New features
 - cluster status text added to navbar and tab title
 - available cluster/index settings now read from ES
 - added dockerfile and published to dockerhub
