@@ -324,7 +324,8 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val request =
       authentication.foldLeft(client.url(url).withMethod(method).withHttpHeaders(headers: _*)) {
       case (request, auth) =>
-        request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
+        val awsHeaders = AwsSigner.sing(method, url, headers, body, auth.username, auth.password)
+        request.addHttpHeaders(awsHeaders: _*)
     }
 
     body.fold(request)(request.withBody((_))).execute.map { response =>
