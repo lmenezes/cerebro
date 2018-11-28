@@ -27,25 +27,35 @@ angular.module('cerebro').controller('ConnectController', [
       $scope.feedback = undefined;
       $scope.host = host;
       $scope.connecting = true;
-      var success = function(data) {
-        $scope.connecting = false;
-        switch (data.status) {
-          case 200:
-            ConnectDataService.connect(host);
-            $location.path('/overview');
-            break;
-          case 401:
-            $scope.unauthorized = true;
-            break;
-          default:
-            feedback('Unexpected response status: [' + data.status + ']');
+      var parser = document.createElement('a');
+      parser.href = host;
+      if (parser.username && parser.password) {
+        var esHost = parser.protocol + '//' + parser.host;
+        if (parser.port) {
+          esHost = esHost + ':' + parser.port;
         }
-      };
-      var error = function(data) {
-        $scope.connecting = false;
-        AlertService.error('Error connecting to [' + host + ']', data);
-      };
-      ConnectDataService.testConnection(host, success, error);
+        $scope.authorize(esHost, parser.username, parser.password);
+      } else {
+        var success = function(data) {
+          $scope.connecting = false;
+          switch (data.status) {
+            case 200:
+              ConnectDataService.connect(host);
+              $location.path('/overview');
+              break;
+            case 401:
+              $scope.unauthorized = true;
+              break;
+            default:
+              feedback('Unexpected response status: [' + data.status + ']');
+          }
+        };
+        var error = function(data) {
+          $scope.connecting = false;
+          AlertService.error('Error connecting to [' + host + ']', data);
+        };
+        ConnectDataService.testConnection(host, success, error);
+      }
     };
 
     $scope.authorize = function(host, username, pwd) {
