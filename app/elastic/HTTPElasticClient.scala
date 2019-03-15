@@ -321,8 +321,11 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
                            headers: Seq[(String, String)] = Seq()) = {
     val authentication = target.authentication
     val url = s"${target.host.replaceAll("/+$", "")}$uri"
+
+    val mergedHeaders = headers ++ target.forwardHeaders()
+
     val request =
-      authentication.foldLeft(client.url(url).withMethod(method).withHttpHeaders(headers: _*)) {
+      authentication.foldLeft(client.url(url).withMethod(method).withHttpHeaders(mergedHeaders: _*)) {
       case (request, auth) =>
         request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }

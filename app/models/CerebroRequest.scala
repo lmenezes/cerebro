@@ -49,9 +49,11 @@ object CerebroRequest {
     }
 
     val server = hosts.getServer(host) match {
-      case Some(ElasticServer(h, a)) => ElasticServer(h, a.orElse(requestAuth))
+      case Some(ElasticServer(h, a, forward_header)) => ElasticServer(h, a.orElse(requestAuth), forward_header)
       case None => ElasticServer(host, requestAuth)
     }
+
+    server.setForwardHeader(request.headers)
     CerebroRequest(server, body, request.user)
   }
 

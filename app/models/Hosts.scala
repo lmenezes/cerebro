@@ -27,9 +27,10 @@ class HostsImpl @Inject()(config: Configuration) extends Hosts {
       val name = hostConf.getOptional[String]("name").getOrElse(host)
       val username = hostConf.getOptional[String]("auth.username")
       val password = hostConf.getOptional[String]("auth.password")
+      val forward_headers = hostConf.getOptional[Seq[String]](path = "forward_headers").getOrElse(Seq.empty[String])
       (username, password) match {
-        case (Some(username), Some(password)) => (name -> ElasticServer(host, Some(ESAuth(username, password))))
-        case _ => (name -> ElasticServer(host, None))
+        case (Some(username), Some(password)) => (name -> ElasticServer(host, Some(ESAuth(username, password)), forward_headers))
+        case _ => (name -> ElasticServer(host, None, forward_headers))
       }
     }.toMap
     case Failure(_) => Map()
