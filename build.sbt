@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick"              % "3.0.3",
   "com.typesafe.play" %% "play-slick-evolutions"   % "3.0.3",
   "org.xerial"        %  "sqlite-jdbc"             % "3.23.1",
+  "com.amazonaws"	  %	 "aws-java-sdk-core"       % "1.11.359",
   "org.specs2"        %% "specs2-junit"  % "3.9.2" % "test",
   "org.specs2"        %% "specs2-core"   % "3.9.2" % "test",
   "org.specs2"        %% "specs2-mock"   % "3.9.2" % "test"
