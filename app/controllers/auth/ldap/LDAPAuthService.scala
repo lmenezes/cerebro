@@ -19,11 +19,7 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
 
   def checkUserAuth(username: String, password: String): Boolean = {
     val props = new Hashtable[String, String]()
-    if (username.contains("@")) {
-      props.put(Context.SECURITY_PRINCIPAL, username)
-    } else {
-      props.put(Context.SECURITY_PRINCIPAL, config.userTemplate.format(username, config.baseDN))
-    }
+    props.put(Context.SECURITY_PRINCIPAL, config.userTemplate.format(username, config.baseDN))
     props.put(Context.SECURITY_CREDENTIALS, password)
 
     try {
@@ -44,11 +40,12 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
     props.put(Context.SECURITY_PRINCIPAL, config.bindDN)
     props.put(Context.SECURITY_CREDENTIALS, config.bindPwd)
     props.put(Context.REFERRAL, "follow")
+    val user     = config.userTemplate.format(username, config.baseDN)
     val controls = new SearchControls()
     controls.setSearchScope(SearchControls.SUBTREE_SCOPE)
     try {
       val context = LdapCtxFactory.getLdapCtxInstance(config.url, props)
-      val search = context.search(groupConfig.baseDN,s"(& (${groupConfig.userAttr}=$username)(${groupConfig.group}))", controls)
+      val search = context.search(groupConfig.baseDN,s"(& (${groupConfig.userAttr}=$user)(${groupConfig.group}))", controls)
       context.close()
       search.hasMore()
     } catch {
