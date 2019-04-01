@@ -14,10 +14,11 @@ cerebro needs Java 1.8 or newer to run.
 - Run bin/cerebro(or bin/cerebro.bat if on Windows)
 - Access on http://localhost:9000
 
-### Docker image
+### Docker
 
-- Build docker image: `docker build -t cerebro:development .`
-- Run the image: `docker run --rm -it -p 9000:9000 cerebro:development`
+You can find the official docker images in the official [docker hub repo](https://hub.docker.com/r/lmenezes/cerebro/).
+
+Visit [cerebro-docker](https://github.com/lmenezes/cerebro-docker) for further information. 
 
 ### Configuration
 
