@@ -1,49 +1,69 @@
 package controllers.auth.ldap
 
 import java.util.Hashtable
-import javax.naming._
-import javax.naming.directory._
 
 import com.google.inject.Inject
+import com.sun.jndi.ldap.LdapCtxFactory
 import controllers.auth.AuthService
-import play.api.Configuration
+import javax.naming._
+import javax.naming.directory.SearchControls
+import play.api.{Configuration, Logger}
 
 import scala.util.control.NonFatal
 
 class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService {
 
-  private val log = org.slf4j.LoggerFactory.getLogger(classOf[LDAPAuthService])
+  private val log = Logger(this.getClass)
 
   private final val config = new LDAPAuthConfig(globalConfig.get[Configuration]("auth.settings"))
 
-  def auth(username: String, password: String): Option[String] = {
-    val env = new Hashtable[String, String](11)
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-    env.put(Context.PROVIDER_URL, s"${config.url}/${config.baseDN}")
-    env.put(Context.SECURITY_AUTHENTICATION, config.method)
-
-    if (username.contains("@")) {
-      env.put(Context.SECURITY_PRINCIPAL, username)
-    } else if (!config.domain.isEmpty()){
-      env.put(Context.SECURITY_PRINCIPAL, s"$username@${config.domain}")
-    } else {
-      env.put(Context.SECURITY_PRINCIPAL, config.userformat.format(username,config.baseDN))
-    }
-    log.debug(s"Logging into LDAP with user ${env.get(Context.SECURITY_PRINCIPAL)}")
-    env.put(Context.SECURITY_CREDENTIALS, password)
+  def checkUserAuth(username: String, password: String): Boolean = {
+    val props = new Hashtable[String, String]()
+    props.put(Context.SECURITY_PRINCIPAL, config.userTemplate.format(username, config.baseDN))
+    props.put(Context.SECURITY_CREDENTIALS, password)
 
     try {
-      val ctx = new InitialDirContext(env)
-      ctx.close()
-      Some(username)
+      LdapCtxFactory.getLdapCtxInstance(config.url, props)
+      true
     } catch {
-      case ex: AuthenticationException =>
-        log.info(s"login of $username failed with: ${ex.getMessage}")
-        None
+      case e: AuthenticationException =>
+        log.info(s"login of $username failed with: ${e.getMessage}")
+        false
       case NonFatal(e) =>
         log.error(s"login of $username failed", e)
-        None
+        false
     }
+  }
+
+  def checkGroupMembership(username: String, groupConfig: LDAPGroupSearchConfig): Boolean = {
+    val props = new Hashtable[String, String]()
+    props.put(Context.SECURITY_PRINCIPAL, config.bindDN)
+    props.put(Context.SECURITY_CREDENTIALS, config.bindPwd)
+    props.put(Context.REFERRAL, "follow")
+    val user     = config.userTemplate.format(username, config.baseDN)
+    val controls = new SearchControls()
+    controls.setSearchScope(SearchControls.SUBTREE_SCOPE)
+    try {
+      val context = LdapCtxFactory.getLdapCtxInstance(config.url, props)
+      val search = context.search(groupConfig.baseDN,s"(& (${groupConfig.userAttr}=$user)(${groupConfig.group}))", controls)
+      context.close()
+      search.hasMore()
+    } catch {
+      case e: AuthenticationException =>
+        log.info(s"User $username doesn't fulfill condition (${groupConfig.group}) : ${e.getMessage}")
+        false
+      case NonFatal(e) =>
+        log.error(s"Unexpected error while checking group membership of $username", e)
+        false
+    }
+  }
+
+  def auth(username: String, password: String): Option[String] = {
+    val isValidUser = config.groupMembership match {
+      case Some(groupConfig) => checkGroupMembership(username, groupConfig) && checkUserAuth(username, password)
+      case None              => checkUserAuth(username, password)
+    }
+    if (isValidUser) Some(username) else None
   }
 
 }
