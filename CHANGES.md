@@ -128,7 +128,7 @@ First cerebro release.
 - display all index aliases on overview
 - improved error messages
 
-###v0.6.4 - March 30th, 2017
+### v0.6.4 - March 30th, 2017
 
 #### Bug fixes
 - use relative path for authentication action
@@ -147,7 +147,7 @@ First cerebro release.
 - updated known node types(included ingest, renamed client to coordinating)
 - support changing refresh interval
 
-###v0.6.6 - July 26th, 2017
+### v0.6.6 - July 26th, 2017
 
 #### Bug fixes
 - support non valid json requests through rest client
@@ -177,7 +177,7 @@ First cerebro release.
 #### New features
 - support flush index from cluster overview
 
-###v0.6.8 - September 30th, 2017
+### v0.6.8 - September 30th, 2017
 
 #### Bug fixes
 - fixed heading text on cat apis page
