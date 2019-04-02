@@ -247,3 +247,9 @@ First cerebro release.
 
 #### Bug Fixes
 - Remove firefox specific rules incompatible with firefox Quantum #235
+
+### v0.8.2 - April 2nd, 2019
+
+#### Enhancements
+- Move docker file to its [own repo](https://github.com/lmenezes/cerebro-docker) #306
+- Add LDAP group search #307
