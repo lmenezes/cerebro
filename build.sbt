@@ -28,7 +28,7 @@ lazy val root = (project in file(".")).
     buildInfoPackage := "models"
   )
 
-doc in Compile <<= target.map(_ / "none")
+sources in (Compile, doc) := Seq.empty
 
 enablePlugins(JavaServerAppPackaging)
 enablePlugins(SystemdPlugin)
