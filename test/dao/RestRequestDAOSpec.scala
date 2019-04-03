@@ -44,7 +44,7 @@ class RestRequestDAOSpec(implicit ee: ExecutionEnv) extends Specification {
                             "admin",
                             new Date(currentTime))
     val existing = dao.save(entry)
-    val updated = dao.save(entry.copy(createdAt = new Date(currentTime + 1)))
+    val updated = existing.flatMap(_ => dao.save(entry.copy(createdAt = new Date(currentTime + 1))))
     (existing must beEqualTo(Some("fad24b7447043f5412c89b12e2b7697c")).await and
       (updated must beEqualTo(Some("fad24b7447043f5412c89b12e2b7697c")).await))
   }
