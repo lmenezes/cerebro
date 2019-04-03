@@ -4,17 +4,17 @@ maintainer := "Leonardo Menezes <leonardo.menezes@xing.com>"
 
 version := "0.8.2"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play"                    % "2.6.15",
-  "com.typesafe.play" %% "play-json"               % "2.6.9",
-  "com.typesafe.play" %% "play-slick"              % "3.0.3",
-  "com.typesafe.play" %% "play-slick-evolutions"   % "3.0.3",
+  "com.typesafe.play" %% "play"                    % "2.7.0",
+  "com.typesafe.play" %% "play-json"               % "2.7.2",
+  "com.typesafe.play" %% "play-slick"              % "4.0.0",
+  "com.typesafe.play" %% "play-slick-evolutions"   % "4.0.0",
   "org.xerial"        %  "sqlite-jdbc"             % "3.23.1",
-  "org.specs2"        %% "specs2-junit"  % "3.9.2" % "test",
-  "org.specs2"        %% "specs2-core"   % "3.9.2" % "test",
-  "org.specs2"        %% "specs2-mock"   % "3.9.2" % "test"
+  "org.specs2"        %% "specs2-junit"  % "4.3.4" % "test",
+  "org.specs2"        %% "specs2-core"   % "4.3.4" % "test",
+  "org.specs2"        %% "specs2-mock"   % "4.3.4" % "test"
 )
 
 libraryDependencies += filters
@@ -28,7 +28,7 @@ lazy val root = (project in file(".")).
     buildInfoPackage := "models"
   )
 
-doc in Compile <<= target.map(_ / "none")
+sources in (Compile, doc) := Seq.empty
 
 enablePlugins(JavaServerAppPackaging)
 enablePlugins(SystemdPlugin)
