@@ -4,7 +4,7 @@ import controllers.auth.{AuthRequest, AuthenticationModule}
 import exceptions.MissingRequiredParamException
 import models.{CerebroRequest, CerebroResponse, Hosts}
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json._
 import play.api.mvc.{Controller, InjectedController, Result}
 import services.exception.RequestFailedException
 
@@ -41,7 +41,11 @@ trait BaseController extends InjectedController with AuthSupport {
   }
 
   private def formatRequest(request: AuthRequest[JsValue]): String = {
-    s"path: ${request.uri}, body: ${request.body.toString}"
+    val body = request.body.transform(censorPassword) getOrElse request.body
+    s"path: ${request.uri}, body: ${body.toString()}"
   }
+
+  private def censorPassword: Reads[JsObject] =
+    (__ \ "password").json.update(__.read[JsString].map(_ => JsString("xxxxxx")))
 
 }
