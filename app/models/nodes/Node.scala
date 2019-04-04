@@ -12,7 +12,7 @@ object Node {
       "id" -> JsString(id),
       "current_master" -> JsBoolean(currentMaster),
       "name" -> (stats \ "name").as[JsValue],
-      "host" -> (stats \ "host").as[JsValue],
+      "host" -> (stats \ "host").asOpt[JsValue],
       "heap" -> heap(stats),
       "disk" -> disk(stats),
       "cpu" -> cpu(stats),
