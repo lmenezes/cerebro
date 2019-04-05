@@ -253,3 +253,18 @@ First cerebro release.
 #### Enhancements
 - Move docker file to its [own repo](https://github.com/lmenezes/cerebro-docker) #306
 - Add LDAP group search #307
+
+### v0.8.3 - April 5th, 2019
+
+#### Enhancements
+
+- Sbt configuration for creating rpm and deb packages #308
+- Fix markdown headers of CHANGES.md #328
+- Fix snapshot view for snapshot that contains `:` #351
+- Update scala and main libs to the latest versions #352
+- Travis CI integration #353
+- Stop logging sensible data #354
+
+#### Bug fixes
+
+- Show host in nodes overview #346 
