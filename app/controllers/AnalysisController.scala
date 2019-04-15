@@ -39,7 +39,7 @@ class AnalysisController @Inject()(val authentication: AuthenticationModule,
   def analyzeByField = process { request =>
     val index = request.get("index")
     val field = request.get("field")
-    val text = request.get("text")
+    val text = request.getArray("text")
     client.analyzeTextByField(index, field, text, request.target).map {
       case Success(status, tokens) => CerebroResponse(status, Tokens(tokens))
       case Error(status, error) => CerebroResponse(status, error)
@@ -49,7 +49,7 @@ class AnalysisController @Inject()(val authentication: AuthenticationModule,
   def analyzeByAnalyzer = process { request =>
     val index = request.get("index")
     val analyzer = request.get("analyzer")
-    val text = request.get("text")
+    val text = request.getArray("text")
     client.analyzeTextByAnalyzer(index, analyzer, text, request.target).map {
       case Success(status, tokens) => CerebroResponse(status, Tokens(tokens))
       case Error(status, error) => CerebroResponse(status, error)

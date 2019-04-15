@@ -198,6 +198,8 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     $scope.indices = [];
     $scope.fields = [];
     $scope.analyzers = [];
+    $scope.fieldText = [''];
+    $scope.analyzerText = [''];
 
     $scope.loadAnalyzers = function(index) {
       AnalysisDataService.getIndexAnalyzers(index,
@@ -224,7 +226,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.analyzeByField = function(index, field, text) {
-      if (text && field && text) {
+      if (index && field && text.join('')) {
         $scope.field_tokens = undefined;
         var success = function(response) {
           $scope.field_tokens = response;
@@ -233,11 +235,14 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           AlertService.error('Error analyzing text by field', error);
         };
         AnalysisDataService.analyzeByField(index, field, text, success, error);
+      } else {
+        AlertService
+          .warn('Select a valid index / field and one or more texts');
       }
     };
 
     $scope.analyzeByAnalyzer = function(index, analyzer, text) {
-      if (text && analyzer && text) {
+      if (index && analyzer && text.join('')) {
         $scope.analyzer_tokens = undefined;
         var success = function(response) {
           $scope.analyzer_tokens = response;
@@ -251,6 +256,9 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           text,
           success, error
         );
+      } else {
+        AlertService
+          .warn('Select a valid index / analyzer and one or more texts');
       }
     };
 
@@ -2181,37 +2189,6 @@ function AceEditor(target) {
 
 }
 
-function Alias(alias, index, filter, indexRouting, searchRouting) {
-  this.alias = alias ? alias.toLowerCase() : '';
-  this.index = index ? index.toLowerCase() : '';
-  this.filter = filter ? filter : '';
-  this.index_routing = indexRouting ? indexRouting : '';
-  this.search_routing = searchRouting ? searchRouting : '';
-
-  this.validate = function() {
-    if (!this.alias) {
-      throw 'Alias must have a non empty name';
-    }
-    if (!this.index) {
-      throw 'Alias must have a valid index name';
-    }
-  };
-
-  var cleanInput = function(input) {
-    return input ? input.trim() : undefined;
-  };
-
-  this.toJson = function() {
-    return {
-      alias: this.alias,
-      index: this.index,
-      filter: this.filter,
-      index_routing: cleanInput(this.index_routing),
-      search_routing: cleanInput(this.search_routing)
-    };
-  };
-}
-
 function AliasFilter(index, alias) {
 
   this.index = index;
@@ -2255,6 +2232,37 @@ function AliasFilter(index, alias) {
     }
   };
 
+}
+
+function Alias(alias, index, filter, indexRouting, searchRouting) {
+  this.alias = alias ? alias.toLowerCase() : '';
+  this.index = index ? index.toLowerCase() : '';
+  this.filter = filter ? filter : '';
+  this.index_routing = indexRouting ? indexRouting : '';
+  this.search_routing = searchRouting ? searchRouting : '';
+
+  this.validate = function() {
+    if (!this.alias) {
+      throw 'Alias must have a non empty name';
+    }
+    if (!this.index) {
+      throw 'Alias must have a valid index name';
+    }
+  };
+
+  var cleanInput = function(input) {
+    return input ? input.trim() : undefined;
+  };
+
+  this.toJson = function() {
+    return {
+      alias: this.alias,
+      index: this.index,
+      filter: this.filter,
+      index_routing: cleanInput(this.index_routing),
+      search_routing: cleanInput(this.search_routing)
+    };
+  };
 }
 
 angular.module('cerebro').filter('bytes', function() {

@@ -8,6 +8,8 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     $scope.indices = [];
     $scope.fields = [];
     $scope.analyzers = [];
+    $scope.fieldText = [''];
+    $scope.analyzerText = [''];
 
     $scope.loadAnalyzers = function(index) {
       AnalysisDataService.getIndexAnalyzers(index,
@@ -34,7 +36,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.analyzeByField = function(index, field, text) {
-      if (text && field && text) {
+      if (index && field && text.join('')) {
         $scope.field_tokens = undefined;
         var success = function(response) {
           $scope.field_tokens = response;
@@ -43,11 +45,14 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           AlertService.error('Error analyzing text by field', error);
         };
         AnalysisDataService.analyzeByField(index, field, text, success, error);
+      } else {
+        AlertService
+          .warn('Select a valid index / field and one or more texts');
       }
     };
 
     $scope.analyzeByAnalyzer = function(index, analyzer, text) {
-      if (text && analyzer && text) {
+      if (index && analyzer && text.join('')) {
         $scope.analyzer_tokens = undefined;
         var success = function(response) {
           $scope.analyzer_tokens = response;
@@ -61,6 +66,9 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           text,
           success, error
         );
+      } else {
+        AlertService
+          .warn('Select a valid index / analyzer and one or more texts');
       }
     };
 
