@@ -142,9 +142,8 @@
             </ul>
           </div>
           <div class="subtitle" ng-show="index.aliases.length">
-            <div class="title">
-              <i class="fa fa-tag"></i> {{index.aliases[0]}}
-              <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
+            <div class="title" ng-repeat="alias in index.aliases">
+              <i class="fa fa-tag" ></i> {{alias}}
             </div>
           </div>
           <div class="detail">
