@@ -42,19 +42,25 @@
     <tr>
       <td>
         <div class="row">
-          <div class="col-lg-3 col-md-6">
+          <div class="col-lg-2 col-md-6">
             <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" ng-click="enableShardAllocation()"
                ng-hide="shardAllocation"></i>
             <i class="fa fa-unlock fa-2x table-control normal-action" title="disable shard allocation" ng-click="disableShardAllocation()"
                ng-show="shardAllocation"></i>
           </div>
-          <div class="col-lg-3 col-md-6">
+          <div class="col-lg-2 col-md-6">
             <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView"
                title="expand view" ng-click="expandedView = true"></i>
             <i class="fa fa-compress fa-2x normal-action table-control" ng-show="expandedView"
                title="condense view" ng-click="expandedView = false"></i>
           </div>
-          <div class="col-lg-3 col-md-6">
+          <div class="col-lg-2 col-md-6">
+            <i class="fa fa-eye fa-2x normal-action table-control" ng-hide="showAllAliases"
+               title="show all aliases" ng-click="showAllAliases = true"></i>
+            <i class="fa fa-eye-slash fa-2x normal-action table-control" ng-show="showAllAliases"
+               title="show single alias" ng-click="showAllAliases = false"></i>
+          </div>
+          <div class="col-lg-2 col-md-6">
             <i class="fa fa-sort-alpha-asc fa-2x normal-action table-control" title="sort ascending"
                ng-show="indices_filter.asc" ng-click="indices_filter.asc = false"></i>
             <i class="fa fa-sort-alpha-desc fa-2x normal-action table-control" title="sort descending"
@@ -142,7 +148,11 @@
             </ul>
           </div>
           <div class="subtitle" ng-show="index.aliases.length">
-            <div class="title" ng-repeat="alias in index.aliases">
+            <div ng-hide="showAllAliases" class="title">
+                <i class="fa fa-tag"></i> {{index.aliases[0]}}
+                <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
+            </div>
+            <div ng-show="showAllAliases" class="title" ng-repeat="alias in index.aliases">
               <i class="fa fa-tag" ></i> {{alias}}
             </div>
           </div>
