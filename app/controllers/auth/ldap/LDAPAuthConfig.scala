@@ -21,10 +21,11 @@ class LDAPAuthConfig(config: Configuration) extends AuthConfig {
       LDAPGroupSearchConfig(
         groupAuthConfig.getOptional[String]("base-dn").getOrElse(baseDN),
         getSetting("user-attr")(groupAuthConfig),
+        groupAuthConfig.getOptional[String]("user-attr-template").getOrElse(userTemplate),
         group
       )
     }
   }
 }
 
-case class LDAPGroupSearchConfig(baseDN: String, userAttr: String, group: String)
+case class LDAPGroupSearchConfig(baseDN: String, userAttr: String, userAttrTemplate:String, group: String)
