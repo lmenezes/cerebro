@@ -66,6 +66,9 @@ LDAP_BIND_PWD=adminpass
 # Attribute that represent the user, for example uid or mail
 # LDAP_USER_ATTR=mail
 
+# If left unset LDAP_USER_TEMPLATE will be used
+# LDAP_USER_ATTR_TEMPLATE=%s
+
 # Filter that tests membership of the group. If this property is empty then there is no group membership check
 # AD example => memberOf=CN=mygroup,ou=ouofthegroup,DC=domain,DC=com
 # OpenLDAP example => CN=mygroup

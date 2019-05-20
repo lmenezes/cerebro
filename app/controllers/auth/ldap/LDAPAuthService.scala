@@ -40,7 +40,7 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
     props.put(Context.SECURITY_PRINCIPAL, config.bindDN)
     props.put(Context.SECURITY_CREDENTIALS, config.bindPwd)
     props.put(Context.REFERRAL, "follow")
-    val user     = config.userTemplate.format(username, config.baseDN)
+    val user     = groupConfig.userAttrTemplate.format(username, config.baseDN)
     val controls = new SearchControls()
     controls.setSearchScope(SearchControls.SUBTREE_SCOPE)
     try {
