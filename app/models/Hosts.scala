@@ -14,22 +14,23 @@ trait Hosts {
 
   def getHostNames(): Seq[String]
 
-  def getServer(name: String): Option[ElasticServer]
+  def getHost(name: String): Option[Host]
 
 }
 
 @Singleton
 class HostsImpl @Inject()(config: Configuration) extends Hosts {
 
-  val hosts: Map[String, ElasticServer] = Try(config.underlying.getConfigList("hosts").asScala.map(Configuration(_))) match {
+  val hosts: Map[String, Host] = Try(config.underlying.getConfigList("hosts").asScala.map(Configuration(_))) match {
     case Success(hostsConf) => hostsConf.map { hostConf =>
       val host = hostConf.getOptional[String]("host").get
       val name = hostConf.getOptional[String]("name").getOrElse(host)
       val username = hostConf.getOptional[String]("auth.username")
       val password = hostConf.getOptional[String]("auth.password")
+      val headersWhitelist = hostConf.getOptional[Seq[String]](path = "headers-whitelist")  .getOrElse(Seq.empty[String])
       (username, password) match {
-        case (Some(username), Some(password)) => (name -> ElasticServer(host, Some(ESAuth(username, password))))
-        case _ => (name -> ElasticServer(host, None))
+        case (Some(username), Some(password)) => name -> Host(host, Some(ESAuth(username, password)), headersWhitelist)
+        case _ => name -> Host(host, None, headersWhitelist)
       }
     }.toMap
     case Failure(_) => Map()
@@ -37,6 +38,6 @@ class HostsImpl @Inject()(config: Configuration) extends Hosts {
 
   def getHostNames() = hosts.keys.toSeq
 
-  def getServer(name: String) = hosts.get(name)
+  def getHost(name: String) = hosts.get(name)
 
 }

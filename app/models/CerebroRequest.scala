@@ -39,7 +39,7 @@ object CerebroRequest {
   def apply(request: AuthRequest[JsValue], hosts: Hosts): CerebroRequest = {
     val body = request.body
 
-    val host = (body \ "host").asOpt[String].getOrElse(throw MissingTargetHostException)
+    val hostName = (body \ "host").asOpt[String].getOrElse(throw MissingTargetHostException)
     val username = (body \ "username").asOpt[String]
     val password = (body \ "password").asOpt[String]
 
@@ -48,10 +48,13 @@ object CerebroRequest {
       case _ => None
     }
 
-    val server = hosts.getServer(host) match {
-      case Some(ElasticServer(h, a)) => ElasticServer(h, a.orElse(requestAuth))
-      case None => ElasticServer(host, requestAuth)
+    val server = hosts.getHost(hostName) match {
+      case Some(host @ Host(h, a, headersWhitelist)) =>
+        val headers = headersWhitelist.flatMap(headerName => request.headers.get(headerName).map(headerName -> _))
+        ElasticServer(host.copy(authentication = a.orElse(requestAuth)), headers)
+      case None => ElasticServer(Host(hostName, requestAuth))
     }
+
     CerebroRequest(server, body, request.user)
   }
 

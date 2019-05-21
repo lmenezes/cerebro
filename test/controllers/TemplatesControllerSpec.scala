@@ -1,7 +1,7 @@
 package controllers
 
 import elastic.Success
-import models.ElasticServer
+import models.{ElasticServer, Host}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -68,7 +68,7 @@ object TemplatesControllerSpec extends MockedServices {
         |]
       """.stripMargin
     )
-    client.getTemplates(ElasticServer("somehost", None)) returns Future.successful(Success(200, mockedResponse))
+    client.getTemplates(ElasticServer(Host("somehost", None))) returns Future.successful(Success(200, mockedResponse))
     val response = route(application, FakeRequest(POST, "/templates").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, expectedResponse)
   }
@@ -79,7 +79,7 @@ object TemplatesControllerSpec extends MockedServices {
         |{"acknowledged":true}
       """.stripMargin
     )
-    client.deleteTemplate("someTemplate", ElasticServer("somehost", None)) returns Future.successful(Success(200, expectedResponse))
+    client.deleteTemplate("someTemplate", ElasticServer(Host("somehost", None))) returns Future.successful(Success(200, expectedResponse))
     val response = route(application, FakeRequest(POST, "/templates/delete").withBody(Json.obj("host" -> "somehost", "name" -> "someTemplate"))).get
     ensure(response, 200, expectedResponse)
   }
@@ -102,7 +102,7 @@ object TemplatesControllerSpec extends MockedServices {
       """.stripMargin
     )
     val body = Json.obj("host" -> "somehost", "name" -> "someTemplate", "template" -> template)
-    client.createTemplate("someTemplate", template, ElasticServer("somehost", None)) returns Future.successful(Success(200, expectedResponse))
+    client.createTemplate("someTemplate", template, ElasticServer(Host("somehost", None))) returns Future.successful(Success(200, expectedResponse))
     val response = route(application, FakeRequest(POST, "/templates/create").withBody(body)).get
     ensure(response, 200, expectedResponse)
   }
