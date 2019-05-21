@@ -1,7 +1,7 @@
 package controllers
 
 import elastic.{ElasticResponse, Success}
-import models.ElasticServer
+import models.{ElasticServer, Host}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -30,7 +30,7 @@ object AnalysisControllerSpec extends MockedServices {
         |]
       """.stripMargin
     )
-    client.getIndices(ElasticServer("somehost")) returns Future.successful(Success(200, expectedResponse))
+    client.getIndices(ElasticServer(Host("somehost"))) returns Future.successful(Success(200, expectedResponse))
     val response = route(application, FakeRequest(POST, "/analysis/indices").withBody(Json.obj("host" -> "somehost"))).get
     ensure(response, 200, Json.arr("index1", "index2"))
   }
@@ -58,7 +58,7 @@ object AnalysisControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    client.getIndexSettings("foo", ElasticServer("somehost")) returns Future.successful(Success(200, expectedResponse))
+    client.getIndexSettings("foo", ElasticServer(Host("somehost"))) returns Future.successful(Success(200, expectedResponse))
     val response = route(application, FakeRequest(POST, "/analysis/analyzers").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
     ensure(response, 200, Json.arr("foo_analyzer"))
   }
@@ -83,7 +83,7 @@ object AnalysisControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    client.getIndexMapping("foo", ElasticServer("somehost")) returns Future.successful(Success(200, expectedResponse))
+    client.getIndexMapping("foo", ElasticServer(Host("somehost"))) returns Future.successful(Success(200, expectedResponse))
     val response = route(application, FakeRequest(POST, "/analysis/fields").withBody(Json.obj("host" -> "somehost", "index" -> "foo"))).get
     ensure(response, 200, Json.arr("name"))
   }
@@ -104,7 +104,7 @@ object AnalysisControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    client.analyzeTextByAnalyzer("foo", "bar", "qux", ElasticServer("somehost")) returns Future.successful(Success(200, expectedResponse))
+    client.analyzeTextByAnalyzer("foo", "bar", "qux", ElasticServer(Host("somehost"))) returns Future.successful(Success(200, expectedResponse))
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "analyzer" -> "bar", "text" -> "qux")
     val response = route(application, FakeRequest(POST, "/analysis/analyze/analyzer").withBody(params)).get
     val expected = Json.parse(
@@ -138,7 +138,7 @@ object AnalysisControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    client.analyzeTextByField("foo", "bar", "qux", ElasticServer("somehost")) returns Future.successful(Success(200, expectedResponse))
+    client.analyzeTextByField("foo", "bar", "qux", ElasticServer(Host("somehost"))) returns Future.successful(Success(200, expectedResponse))
     val params = Json.obj("host" -> "somehost", "index" -> "foo", "field" -> "bar", "text" -> "qux")
     val response = route(application, FakeRequest(POST, "/analysis/analyze/field").withBody(params)).get
     val expected = Json.parse(

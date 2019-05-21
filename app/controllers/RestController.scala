@@ -45,7 +45,7 @@ class RestController @Inject()(val authentication: AuthenticationModule,
       case Success(status, body) =>
         val data = Json.obj(
           "mappings" -> ClusterMapping(body),
-          "host"    -> request.target.host
+          "host"    -> request.target.host.name
         )
         CerebroResponse(status, data)
 
