@@ -153,7 +153,7 @@
                 <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
             </div>
             <div ng-show="showAllAliases" class="title" ng-repeat="alias in index.aliases">
-              <i class="fa fa-tag" ></i> {{alias}}
+              <i class="fa fa-tag"></i> {{alias}}
             </div>
           </div>
           <div class="detail">
@@ -163,6 +163,7 @@
               <span><small>size: {{index.size_in_bytes | bytes}}</small></span>
             </span>
             <span ng-show="index.closed">
+              <span><small>shards: {{index.num_shards}} * {{index.num_replicas + 1}}</small></span><br>
               <span><small><i>index closed</i></small></span>
             </span>
           </div>

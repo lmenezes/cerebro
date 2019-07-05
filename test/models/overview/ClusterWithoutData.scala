@@ -16,6 +16,11 @@ object ClusterWithoutData extends ClusterStub {
       |    "indices":{
       |
       |    }
+      |  },
+      |  "metadata":{
+      |    "indices":{
+      |
+      |    }
       |  }
       |}
     """.stripMargin
