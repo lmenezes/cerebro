@@ -267,4 +267,11 @@ First cerebro release.
 
 #### Bug fixes
 
-- Show host in nodes overview #346 
+- Show host in nodes overview #346
+
+### v0.8.4 - July 23rd, 2019
+
+#### Enhancements
+
+- Support user-attr-template for LDAP auth
+- Allow forwarding proxy headers to ES
