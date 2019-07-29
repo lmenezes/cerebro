@@ -47,16 +47,22 @@ object ClusterOverview {
     )
 
   def buildIndices(clusterState: JsValue, indicesStats: JsValue, aliases: JsValue): Seq[JsValue] = {
-    val routingTable = (clusterState \ "routing_table" \ "indices").as[JsObject]
-    val openIndices = routingTable.value.map { case (index, shards) =>
+    val routingTable = (clusterState \ "routing_table" \ "indices").as[JsObject].value
+    val blocks = (clusterState \ "blocks" \ "indices").asOpt[JsObject].getOrElse(Json.obj())
+    val indices = routingTable.map { case (index, shards) =>
       val indexStats   = (indicesStats \ "indices" \ index).asOpt[JsObject].getOrElse(Json.obj())
       val indexAliases = (aliases \ index \ "aliases").asOpt[JsObject].getOrElse(Json.obj()) // 1.4 < does not return aliases obj
-
-      Index(index, indexStats, shards, indexAliases)
+      val indexBlock = (blocks \ index).asOpt[JsObject].getOrElse(Json.obj())
+      Index(index, indexStats, shards, indexAliases, indexBlock)
     }.toSeq
 
-    val closedIndices = ClosedIndices(clusterState)
-    openIndices ++ closedIndices
+    val closedIndices = blocks.value.collect { // ES < 7.X does not return routing_table for closed indices
+      case (name, block) if !routingTable.contains(name) && (block \ "4").isDefined =>
+        ClosedIndex(name)
+    }
+
+    indices ++ closedIndices
+
   }
 
 }

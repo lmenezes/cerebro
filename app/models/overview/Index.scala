@@ -4,12 +4,12 @@ import play.api.libs.json._
 
 object Index {
 
-  def apply(name: String, stats: JsValue, routingTable: JsValue, aliases: JsValue): JsValue = {
+  def apply(name: String, stats: JsValue, routingTable: JsValue, aliases: JsValue, indexBlock: JsObject): JsValue = {
     val shardMap = createShardMap(routingTable)
 
     JsObject(Seq(
       "name" -> JsString(name),
-      "closed" -> JsBoolean(false),
+      "closed" -> isClosed(indexBlock),
       "special" -> JsBoolean(name.startsWith(".")),
       "unhealthy" -> JsBoolean(isIndexUnhealthy(shardMap)),
       "doc_count" -> (stats \ "primaries" \ "docs" \ "count").asOpt[JsNumber].getOrElse(JsNumber(0)),
@@ -22,6 +22,14 @@ object Index {
       "shards" -> JsObject(shardMap)
     ))
   }
+
+  /**
+    * Reads if index block is due to index being closed
+    * @param block
+    * @return
+    */
+  def isClosed(block: JsObject): JsBoolean =
+    JsBoolean((block \ "4").isDefined)
 
   /**
     * Parses shard information as a pair where first element is the allocating node and value

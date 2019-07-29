@@ -29,6 +29,7 @@ table.shard-map { table-layout: fixed; }
 .shard-relocating { border: 1px solid #9F85FF; color: #9F85FF; }
 .shard-recovering { border: 1px solid #E4D836; color: #E4D836; }
 .shard-unassigned { border: 1px solid #8B8F95; color: #8B8F95; }
+.shard-closed { border: 1px solid; opacity: 0.3 }
 .shard-spot { border: 1px dashed; opacity: 0.7; padding-top: 2px; }
 .shard-replica { border: 1px dashed; opacity: 0.7; }
 .row-condensed { margin-right: -.1875rem !important; margin-left: -.1875rem !important; }

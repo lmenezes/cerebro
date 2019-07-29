@@ -260,7 +260,11 @@
             <span class="shard shard-{{shard.state | lowercase}} normal-action"
                   ng-class="{'shard-replica': !shard.primary && shard.node}"
                   data-toggle="dropdown"
-                  id="{{shard.shard}}_{{shard.node}}_{{shard.index}}">
+                  id="{{shard.shard}}_{{shard.node}}_{{shard.index}}" ng-hide="index.closed">
+              <small>{{shard.shard}}</small>
+            </span>
+            <span class="shard shard-{{shard.state | lowercase}} shard-closed"
+                  ng-class="{'shard-replica': !shard.primary && shard.node}" ng-show="index.closed">
             <small>{{shard.shard}}</small>
           </span>
             <ul class="dropdown-menu"
