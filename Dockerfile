@@ -1,6 +1,6 @@
 FROM openjdk:11-jre-slim
 
-ENV CEREBRO_VERSION 0.8.3
+ENV CEREBRO_VERSION 0.8.4
 
 ADD target/universal/cerebro-${CEREBRO_VERSION}.tgz /opt
 
