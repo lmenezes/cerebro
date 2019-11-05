@@ -1,7 +1,7 @@
 function GroupedSettings(settings) {
   var groups = {};
   settings.forEach(function(setting) {
-    var group = setting.name.split('.')[0];
+    var group = setting.name.split('.')[1];
     if (!groups[group]) {
       groups[group] = {name: group, settings: []};
     }

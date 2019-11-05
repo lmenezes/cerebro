@@ -40,15 +40,15 @@ describe('IndexSettingsController', function() {
       spyOn(this.IndexSettingsDataService, "get").and.callThrough();
       this.scope.setup();
       expect(this.IndexSettingsDataService.get).toHaveBeenCalledWith('foo', jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.settings).toEqual({'setting': 'some value', 'setting_2': 'other value'});
-      expect(this.scope.form).toEqual({'setting': 'some value', 'setting_2': 'other value'});
+      expect(this.scope.settings).toEqual({'index.setting': 'some value', 'index.setting_2': 'other value'});
+      expect(this.scope.form).toEqual({'index.setting': 'some value', 'index.setting_2': 'other value'});
       expect(this.scope.changes).toEqual({});
       expect(this.scope.pendingChanges).toEqual(0);
       expect(this.scope.index).toEqual('foo');
       expect(this.scope.groupedSettings.groups).toEqual(
         [
-          { 'name': 'setting', "settings": [ { "name": "setting", "static": true } ] },
-          { 'name': 'setting_2', "settings": [ {"name": "setting_2", "static": true } ] }
+          { 'name': 'setting', "settings": [ { "name": "index.setting", "static": true } ] },
+          { 'name': 'setting_2', "settings": [ {"name": "index.setting_2", "static": true } ] }
         ]
       );
     });

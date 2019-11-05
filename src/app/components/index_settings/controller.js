@@ -76,7 +76,6 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
           ['defaults', 'settings'].forEach(function(group) {
             angular.forEach(settings[group], function(value, setting) {
               if (ValidIndexSettings.valid(setting)) {
-                setting = setting.substring('index.'.length);
                 $scope.settings[setting] = value;
                 $scope.form[setting] = value;
               }

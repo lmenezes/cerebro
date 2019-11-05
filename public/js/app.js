@@ -848,7 +848,6 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
           ['defaults', 'settings'].forEach(function(group) {
             angular.forEach(settings[group], function(value, setting) {
               if (ValidIndexSettings.valid(setting)) {
-                setting = setting.substring('index.'.length);
                 $scope.settings[setting] = value;
                 $scope.form[setting] = value;
               }
@@ -889,68 +888,68 @@ angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
 
 var DynamicIndexSettings = (function() {
   var settings = {
-    'mapper.dynamic': true,
-    'max_refresh_listeners': true,
-    'number_of_replicas': true,
-    'allocation.max_retries': true,
-    'auto_expand_replicas': true,
-    'blocks.metadata': true,
-    'blocks.read': true,
-    'blocks.read_only': true,
-    'blocks.read_only_allow_delete': true,
-    'blocks.write': true,
-    'compound_format': true,
-    'gc_deletes': true,
-    'indexing.slowlog.level': true,
-    'indexing.slowlog.reformat': true,
-    'indexing.slowlog.source': true,
-    'indexing.slowlog.threshold.index.debug': true,
-    'indexing.slowlog.threshold.index.info': true,
-    'indexing.slowlog.threshold.index.trace': true,
-    'indexing.slowlog.threshold.index.warn': true,
-    'mapping.depth.limit': true,
-    'mapping.nested_fields.limit': true,
-    'mapping.total_fields.limit': true,
-    'max_adjacency_matrix_filters': true,
-    'max_rescore_window': true,
-    'max_result_window': true,
-    'max_slices_per_scroll': true,
-    'merge.policy.expunge_deletes_allowed': true,
-    'merge.policy.floor_segment': true,
-    'merge.policy.max_merge_at_once': true,
-    'merge.policy.max_merge_at_once_explicit': true,
-    'merge.policy.max_merged_segment': true,
-    'merge.policy.reclaim_deletes_weight': true,
-    'merge.policy.segments_per_tier': true,
-    'merge.scheduler.auto_throttle': true,
-    'merge.scheduler.max_merge_count': true,
-    'merge.scheduler.max_thread_count': true,
-    'optimize_auto_generated_id': true,
-    'priority': true,
-    'recovery.initial_shards': true,
-    'refresh_interval': true,
-    'requests.cache.enable': true,
-    'routing.allocation.enable': true,
-    'routing.allocation.total_shards_per_node': true,
-    'routing.rebalance.enable': true,
-    'search.slowlog.level': true,
-    'search.slowlog.threshold.fetch.debug': true,
-    'search.slowlog.threshold.fetch.info': true,
-    'search.slowlog.threshold.fetch.trace': true,
-    'search.slowlog.threshold.fetch.warn': true,
-    'search.slowlog.threshold.query.debug': true,
-    'search.slowlog.threshold.query.info': true,
-    'search.slowlog.threshold.query.trace': true,
-    'search.slowlog.threshold.query.warn': true,
-    'shared_filesystem.recover_on_any_node': true,
-    'store.throttle.max_bytes_per_sec': true,
-    'store.throttle.type': true,
-    'translog.durability': true,
-    'translog.flush_threshold_size': true,
-    'ttl.disable_purge': true,
-    'unassigned.node_left.delayed_timeout': true,
-    'warmer.enabled': true,
-    'write.wait_for_active_shards': true
+    'index.mapper.dynamic': true,
+    'index.max_refresh_listeners': true,
+    'index.number_of_replicas': true,
+    'index.allocation.max_retries': true,
+    'index.auto_expand_replicas': true,
+    'index.blocks.metadata': true,
+    'index.blocks.read': true,
+    'index.blocks.read_only': true,
+    'index.blocks.read_only_allow_delete': true,
+    'index.blocks.write': true,
+    'index.compound_format': true,
+    'index.gc_deletes': true,
+    'index.indexing.slowlog.level': true,
+    'index.indexing.slowlog.reformat': true,
+    'index.indexing.slowlog.source': true,
+    'index.indexing.slowlog.threshold.index.debug': true,
+    'index.indexing.slowlog.threshold.index.info': true,
+    'index.indexing.slowlog.threshold.index.trace': true,
+    'index.indexing.slowlog.threshold.index.warn': true,
+    'index.mapping.depth.limit': true,
+    'index.mapping.nested_fields.limit': true,
+    'index.mapping.total_fields.limit': true,
+    'index.max_adjacency_matrix_filters': true,
+    'index.max_rescore_window': true,
+    'index.max_result_window': true,
+    'index.max_slices_per_scroll': true,
+    'index.merge.policy.expunge_deletes_allowed': true,
+    'index.merge.policy.floor_segment': true,
+    'index.merge.policy.max_merge_at_once': true,
+    'index.merge.policy.max_merge_at_once_explicit': true,
+    'index.merge.policy.max_merged_segment': true,
+    'index.merge.policy.reclaim_deletes_weight': true,
+    'index.merge.policy.segments_per_tier': true,
+    'index.merge.scheduler.auto_throttle': true,
+    'index.merge.scheduler.max_merge_count': true,
+    'index.merge.scheduler.max_thread_count': true,
+    'index.optimize_auto_generated_id': true,
+    'index.priority': true,
+    'index.recovery.initial_shards': true,
+    'index.refresh_interval': true,
+    'index.requests.cache.enable': true,
+    'index.routing.allocation.enable': true,
+    'index.routing.allocation.total_shards_per_node': true,
+    'index.routing.rebalance.enable': true,
+    'index.search.slowlog.level': true,
+    'index.search.slowlog.threshold.fetch.debug': true,
+    'index.search.slowlog.threshold.fetch.info': true,
+    'index.search.slowlog.threshold.fetch.trace': true,
+    'index.search.slowlog.threshold.fetch.warn': true,
+    'index.search.slowlog.threshold.query.debug': true,
+    'index.search.slowlog.threshold.query.info': true,
+    'index.search.slowlog.threshold.query.trace': true,
+    'index.search.slowlog.threshold.query.warn': true,
+    'index.shared_filesystem.recover_on_any_node': true,
+    'index.store.throttle.max_bytes_per_sec': true,
+    'index.store.throttle.type': true,
+    'index.translog.durability': true,
+    'index.translog.flush_threshold_size': true,
+    'index.ttl.disable_purge': true,
+    'index.unassigned.node_left.delayed_timeout': true,
+    'index.warmer.enabled': true,
+    'index.write.wait_for_active_shards': true
   };
 
   return {
@@ -2181,37 +2180,6 @@ function AceEditor(target) {
 
 }
 
-function Alias(alias, index, filter, indexRouting, searchRouting) {
-  this.alias = alias ? alias.toLowerCase() : '';
-  this.index = index ? index.toLowerCase() : '';
-  this.filter = filter ? filter : '';
-  this.index_routing = indexRouting ? indexRouting : '';
-  this.search_routing = searchRouting ? searchRouting : '';
-
-  this.validate = function() {
-    if (!this.alias) {
-      throw 'Alias must have a non empty name';
-    }
-    if (!this.index) {
-      throw 'Alias must have a valid index name';
-    }
-  };
-
-  var cleanInput = function(input) {
-    return input ? input.trim() : undefined;
-  };
-
-  this.toJson = function() {
-    return {
-      alias: this.alias,
-      index: this.index,
-      filter: this.filter,
-      index_routing: cleanInput(this.index_routing),
-      search_routing: cleanInput(this.search_routing)
-    };
-  };
-}
-
 function AliasFilter(index, alias) {
 
   this.index = index;
@@ -2257,6 +2225,37 @@ function AliasFilter(index, alias) {
 
 }
 
+function Alias(alias, index, filter, indexRouting, searchRouting) {
+  this.alias = alias ? alias.toLowerCase() : '';
+  this.index = index ? index.toLowerCase() : '';
+  this.filter = filter ? filter : '';
+  this.index_routing = indexRouting ? indexRouting : '';
+  this.search_routing = searchRouting ? searchRouting : '';
+
+  this.validate = function() {
+    if (!this.alias) {
+      throw 'Alias must have a non empty name';
+    }
+    if (!this.index) {
+      throw 'Alias must have a valid index name';
+    }
+  };
+
+  var cleanInput = function(input) {
+    return input ? input.trim() : undefined;
+  };
+
+  this.toJson = function() {
+    return {
+      alias: this.alias,
+      index: this.index,
+      filter: this.filter,
+      index_routing: cleanInput(this.index_routing),
+      search_routing: cleanInput(this.search_routing)
+    };
+  };
+}
+
 angular.module('cerebro').filter('bytes', function() {
 
   var UNITS = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -2279,7 +2278,7 @@ angular.module('cerebro').filter('bytes', function() {
 function GroupedSettings(settings) {
   var groups = {};
   settings.forEach(function(setting) {
-    var group = setting.name.split('.')[0];
+    var group = setting.name.split('.')[1];
     if (!groups[group]) {
       groups[group] = {name: group, settings: []};
     }
