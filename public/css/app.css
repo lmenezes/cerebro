@@ -59,10 +59,10 @@ table.shard-map { table-layout: fixed; }
 .radio+.radio, .checkbox+.checkbox { margin-top: 7px; }
 
 /* JSON TREE CSS */
-.jstValue { white-space: pre-wrap; font-size: 12px; font-weight: 400; font-family: Monaco, Menlo, Consolas, "Courier New", monospace; line-height: normal; display: block; }
-.jstComma { white-space: pre-wrap; }
+.jstValue { font-size: 12px; font-weight: 400; font-family: Monaco, Menlo, Consolas, "Courier New", monospace; line-height: normal; display: block; }
+.jstComma { }
 .jstProperty { color: #D0D0D0; word-wrap: break-word; }
-.jstBracket { white-space: pre-wrap; }
+.jstBracket { }
 .jstBool { color: #1CA8DD; }
 .jstNum { color: #9F85FF; }
 .jstNull { color: #D0D0D0; }
