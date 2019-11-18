@@ -275,3 +275,16 @@ First cerebro release.
 
 - Support user-attr-template for LDAP auth
 - Allow forwarding proxy headers to ES
+
+### v0.8.5 - September 18th, 2019
+
+#### Enhancements
+
+- Update json-tree to 0.3.0 #405
+
+#### Bug fixes
+
+- Read closed indices from routing table
+- Use full setting name for index settings updates #382
+- Use openjdk8 instead of oraclejdk8 for travis testing
+- Update json-tree to 0.3.0 #405
