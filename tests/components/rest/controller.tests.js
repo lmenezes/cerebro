@@ -10,9 +10,10 @@ describe('RestController', function() {
     this.AlertService = $injector.get('AlertService');
     this.ModalService = $injector.get('ModalService');
     this.AceEditorService = $injector.get('AceEditorService');
+    this.ClipboardService = $injector.get('ClipboardService');
     this.createController = function() {
       return $controller('RestController',
-        {$scope: this.scope}, this.$http, this.$window, this.RestDataService, this.AlertService, this.ModalService, this.AceEditorService);
+        {$scope: this.scope}, this.$http, this.$window, this.RestDataService, this.AlertService, this.ModalService, this.AceEditorService, this.ClipboardService);
     };
     this._controller = this.createController();
   }));
@@ -180,6 +181,23 @@ describe('RestController', function() {
       expect(this.scope.method).toEqual('DELETE');
       expect(this.scope.editor.setValue).toHaveBeenCalledWith('somebody');
       expect(this.scope.editor.format).toHaveBeenCalled();
+    });
+  });
+
+  describe('copyAsCURLCommand', function() {
+    it('copy given requests as a curl command with correct escaping', function() {
+      this.scope.path = "_reindex"
+      this.scope.host = "http://localhost:9200"
+      this.scope.editor = {
+        getValue: function() {
+          return {
+            "script": "'metricbeat-' + '1234'" 
+          }
+        }
+      };
+      spyOn(this.ClipboardService, 'copy')
+      this.scope.copyAsCURLCommand();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith('curl -XPOST \'http://localhost:9200/_reindex\' -d \'{\n\ "script": "\'\\\'\'metricbeat-\'\\\'\' + \'\\\'\'1234\'\\\'\'"\n}\'', jasmine.any(Function), jasmine.any(Function));
     });
   });
 

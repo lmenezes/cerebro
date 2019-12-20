@@ -81,10 +81,11 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
       }
-      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
       var curl = 'curl -X' + method + ' \'' + $scope.host + path + '\'';
       if (['POST', 'PUT'].indexOf(method) >= 0) {
-        curl += ' -d \'' + body + '\'';
+        var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+        var escapedBody = body.replace(/'/g, '\'\\\'\'');
+        curl += ' -d \'' + escapedBody + '\'';
       }
       ClipboardService.copy(
         curl,
