@@ -44,8 +44,8 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
       DataService.send('overview/enable_shard_allocation', {}, success, error);
     };
 
-    this.disableShardAllocation = function(success, error) {
-      DataService.send('overview/disable_shard_allocation', {}, success, error);
+    this.disableShardAllocation = function(kind, success, error) {
+      DataService.send('overview/disable_shard_allocation', {kind: kind}, success, error);
     };
 
     this.getShardStats = function(index, node, shard, success, error) {

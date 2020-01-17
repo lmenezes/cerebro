@@ -43,10 +43,25 @@
       <td>
         <div class="row">
           <div class="col-lg-3 col-md-6">
+            <div class="dropdown" ng-show="shardAllocation">
+              <span class="title normal-action" type="button" id="dropallocation" data-toggle="dropdown"
+                                  aria-haspopup="true" aria-expanded="false" title="disable shard allocation">
+                <i class="fa fa-unlock fa-2x table-control"></i>
+              </span>
+              <ul class="dropdown-menu" aria-labelledby="dropallocation">
+                <li ng-click="disableShardAllocation('none')" data-toggle="modal" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-lock"> </i> none (default)</a>
+                </li>
+                <li ng-click="disableShardAllocation('primaries')" data-toggle="modal" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-lock"> </i> primaries</a>
+                </li>
+                <li ng-click="disableShardAllocation('new_primaries')" data-toggle="modal" target="_self">
+                  <a target="_self"><i class="fa fa-fw fa-lock"> </i> new primaries</a>
+                </li>
+              </ul>
+            </div>
             <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" ng-click="enableShardAllocation()"
                ng-hide="shardAllocation"></i>
-            <i class="fa fa-unlock fa-2x table-control normal-action" title="disable shard allocation" ng-click="disableShardAllocation()"
-               ng-show="shardAllocation"></i>
           </div>
           <div class="col-lg-3 col-md-6">
             <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView"

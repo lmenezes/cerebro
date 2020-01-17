@@ -56,7 +56,7 @@ trait ElasticClient {
 
   def enableShardAllocation(target: ElasticServer): Future[ElasticResponse]
 
-  def disableShardAllocation(target: ElasticServer): Future[ElasticResponse]
+  def disableShardAllocation(target: ElasticServer, kind: String): Future[ElasticResponse]
 
   def getShardStats(index: String, target: ElasticServer): Future[ElasticResponse]
 

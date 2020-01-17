@@ -21,7 +21,8 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
   }
 
   def disableShardAllocation = process { request =>
-    client.disableShardAllocation(request.target).map { response =>
+    val kind = request.get("kind")
+    client.disableShardAllocation(request.target, kind).map { response =>
       CerebroResponse(response.status, response.body)
     }
   }

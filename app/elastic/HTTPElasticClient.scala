@@ -124,8 +124,8 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
   def enableShardAllocation(target: ElasticServer) =
     putClusterSettings(allocationSettings("all"), target)
 
-  def disableShardAllocation(target: ElasticServer) =
-    putClusterSettings(allocationSettings("none"), target)
+  def disableShardAllocation(target: ElasticServer, kind: String) =
+    putClusterSettings(allocationSettings(kind), target)
 
   def getShardStats(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_stats?level=shards&human=true"

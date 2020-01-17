@@ -269,8 +269,8 @@ object OverviewControllerSpec extends MockedServices {
         |}
       """.stripMargin
     )
-    val body = Json.obj("host" -> "somehost")
-    client.disableShardAllocation(ElasticServer(Host("somehost", None))) returns Future.successful(Success(200, expectedResponse))
+    val body = Json.obj("host" -> "somehost", "kind" -> "none")
+    client.disableShardAllocation(ElasticServer(Host("somehost", None)), "none") returns Future.successful(Success(200, expectedResponse))
     val result = route(application, FakeRequest(POST, "/overview/disable_shard_allocation").withBody(body)).get
     ensure(result, 200, expectedResponse)
   }
