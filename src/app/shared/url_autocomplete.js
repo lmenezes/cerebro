@@ -1,9 +1,6 @@
 function URLAutocomplete(indices) {
 
   var PATHS = [
-    // Suggest
-    '_suggest',
-    '{index}/_suggest',
     // Multi Search
     '_msearch',
     '{index}/_msearch',
@@ -13,9 +10,7 @@ function URLAutocomplete(indices) {
     '_search',
     '{index}/_search',
     '_search/template',
-    '{index}/_search/template',
-    '_search/exists',
-    '{index}/_search/exists',
+    '{index}/_search/template'
   ];
 
   var format = function(previousTokens, suggestedToken) {
