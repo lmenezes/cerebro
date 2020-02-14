@@ -10,9 +10,18 @@ describe('RestController', function() {
     this.AlertService = $injector.get('AlertService');
     this.ModalService = $injector.get('ModalService');
     this.AceEditorService = $injector.get('AceEditorService');
+    this.ClipboardService = $injector.get('ClipboardService');
     this.createController = function() {
       return $controller('RestController',
-        {$scope: this.scope}, this.$http, this.$window, this.RestDataService, this.AlertService, this.ModalService, this.AceEditorService);
+          {$scope: this.scope},
+          this.$http,
+          this.$window,
+          this.RestDataService,
+          this.AlertService,
+          this.ModalService,
+          this.AceEditorService,
+          this.ClipboardService
+      );
     };
     this._controller = this.createController();
   }));
@@ -129,7 +138,7 @@ describe('RestController', function() {
     it('loads all possible autocompletion options', function() {
       this.scope.indices = [];
       this.scope.updateOptions("");
-      expect(this.scope.options).toEqual(['_msearch', '_search', '_suggest']);
+      expect(this.scope.options).toEqual(['_msearch', '_search']);
     });
     it('skip autocompletion if indices is absent', function() {
       this.scope.indices = undefined;
@@ -180,6 +189,66 @@ describe('RestController', function() {
       expect(this.scope.method).toEqual('DELETE');
       expect(this.scope.editor.setValue).toHaveBeenCalledWith('somebody');
       expect(this.scope.editor.format).toHaveBeenCalled();
+    });
+  });
+
+  describe('copyAsCURLCommand', function() {
+    it('copy json call to clipboard', function() {
+      this.scope.path = 'wot/_search';
+      this.scope.method = 'GET';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getValue: function(){} };
+      spyOn(this.scope.editor, 'getValue').and.returnValue({'k': 'v'});
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/json\' -XGET \'http://localhost:9200/wot/_search\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
+    });
+
+    it('copy x-ndjson call to clipboard for _bulk', function() {
+      this.scope.path = 'wot/_bulk';
+      this.scope.method = 'POST';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getStringValue: function(){} };
+      var body = '{"header": ""}\n{"query": "query"}\n{"header": ""}\n{"query": "query"}\n';
+      spyOn(this.scope.editor, 'getStringValue').and.returnValue(body);
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getStringValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/x-ndjson\' -XPOST \'http://localhost:9200/wot/_bulk\' -d \'{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '\n\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
+    });
+
+    it('copy x-ndjson call to clipboard for _msearch', function() {
+      this.scope.path = 'wot/_msearch';
+      this.scope.method = 'POST';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getStringValue: function(){} };
+      var body = '{"header": ""}\n{"query": "query"}\n{"header": ""}\n{"query": "query"}\n';
+      spyOn(this.scope.editor, 'getStringValue').and.returnValue(body);
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getStringValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/x-ndjson\' -XPOST \'http://localhost:9200/wot/_msearch\' -d \'{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '\n\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
     });
   });
 

@@ -81,8 +81,31 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
       }
-      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
-      var curl = 'curl -X' + method + ' \'' + $scope.host + path + '\'';
+
+      var matchesAPI = function(path, api) {
+        return path.indexOf(api) === (path.length - api.length);
+      };
+
+      var contentType = 'application/json';
+      var body = '';
+
+      try {
+        if (matchesAPI(path, '_bulk') || matchesAPI(path, '_msearch')) {
+          contentType = 'application/x-ndjson';
+          body = $scope.editor.getStringValue().split('\n').map(function(line) {
+            return line === '' ? '\n' : JSON.stringify(JSON.parse(line));
+          }).join('\n');
+        } else {
+          body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+        }
+      } catch (e) {
+        AlertService.error('Unexpected content format for [' + path + ']');
+        return;
+      }
+
+      var curl = 'curl';
+      curl += ' -H \'Content-type: ' + contentType + '\'';
+      curl += ' -X' + method + ' \'' + $scope.host + path + '\'';
       if (['POST', 'PUT'].indexOf(method) >= 0) {
         curl += ' -d \'' + body + '\'';
       }
