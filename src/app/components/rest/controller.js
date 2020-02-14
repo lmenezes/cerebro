@@ -7,7 +7,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.editor = undefined;
     $scope.response = undefined;
 
-    $scope.mappings = undefined;
+    $scope.indices = undefined;
     $scope.host = undefined;
 
     $scope.method = 'POST';
@@ -40,11 +40,11 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       RestDataService.load(
         function(response) {
           $scope.host = response.host;
-          $scope.mappings = response.mappings;
+          $scope.indices = response.indices;
           $scope.updateOptions($scope.path);
         },
         function(error) {
-          AlertService.error('Error while loading cluster mappings', error);
+          AlertService.error('Error while loading cluster indices', error);
         }
       );
       $scope.loadHistory();
@@ -69,8 +69,8 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     };
 
     $scope.updateOptions = function(text) {
-      if ($scope.mappings) {
-        var autocomplete = new URLAutocomplete($scope.mappings);
+      if ($scope.indices) {
+        var autocomplete = new URLAutocomplete($scope.indices);
         $scope.options = autocomplete.getAlternatives(text);
       }
     };

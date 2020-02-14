@@ -19,7 +19,7 @@ describe('RestController', function() {
 
   it('should have intial state correctly set', function() {
     expect(this.scope.response).toEqual(undefined);
-    expect(this.scope.mappings).toEqual(undefined);
+    expect(this.scope.indices).toEqual(undefined);
     expect(this.scope.method).toEqual("POST");
     expect(this.scope.path).toEqual("");
     expect(this.scope.options).toEqual([]);
@@ -37,25 +37,25 @@ describe('RestController', function() {
       expect(this.scope.editor).toEqual(fakeEditor);
     });
 
-    it('loads mappings & host', function() {
+    it('loads indices & host', function() {
       var fakeEditor = {
         setValue: function() {
         }
       };
       spyOn(this.AceEditorService, "init").and.returnValue(fakeEditor);
       this.RestDataService.load = function(success, error) {
-        success({"mappings": "mappingsValue", "host": "somehost"});
+        success({"indices": "indicesValue", "host": "somehost"});
       };
       spyOn(this.RestDataService, "load").and.callThrough();
       spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.RestDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.mappings).toEqual("mappingsValue");
+      expect(this.scope.indices).toEqual("indicesValue");
       expect(this.scope.host).toEqual("somehost");
       expect(this.scope.updateOptions).toHaveBeenCalled();
     });
 
-    it('alerts when loading mappings fail', function() {
+    it('alerts when loading indices fail', function() {
       var fakeEditor = {
         setValue: function() {
         }
@@ -69,7 +69,7 @@ describe('RestController', function() {
       spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.scope.updateOptions).not.toHaveBeenCalled();
-      expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster mappings', 'some reason');
+      expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster indices', 'some reason');
     });
   });
 
@@ -127,12 +127,12 @@ describe('RestController', function() {
 
   describe('updateOptions', function() {
     it('loads all possible autocompletion options', function() {
-      this.scope.mappings = {};
+      this.scope.indices = [];
       this.scope.updateOptions("");
       expect(this.scope.options).toEqual(['_msearch', '_search', '_suggest']);
     });
-    it('skip autocompletion if mappings is absent', function() {
-      this.scope.mappings = undefined;
+    it('skip autocompletion if indices is absent', function() {
+      this.scope.indices = undefined;
       this.scope.updateOptions("");
       expect(this.scope.options).toEqual([]);
     });

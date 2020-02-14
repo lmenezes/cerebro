@@ -2,12 +2,13 @@ package controllers
 
 import java.sql.Date
 import java.text.SimpleDateFormat
-import javax.inject.Inject
 
+import javax.inject.Inject
 import controllers.auth.AuthenticationModule
 import dao.{DAOException, RestHistoryDAO, RestRequest}
 import elastic.{ElasticClient, Error, Success}
-import models.{CerebroResponse, ClusterMapping, Hosts}
+import models.rest.AutocompletionIndices
+import models.{CerebroResponse, Hosts}
 import play.api.libs.json.{JsArray, JsString, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,7 +47,7 @@ class RestController @Inject()(val authentication: AuthenticationModule,
     client.getClusterMapping(request.target).map {
       case Success(status, body) =>
         val data = Json.obj(
-          "mappings" -> ClusterMapping(body),
+          "indices" -> AutocompletionIndices(body),
           "host"    -> request.target.host.name
         )
         CerebroResponse(status, data)

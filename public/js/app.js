@@ -1674,7 +1674,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.editor = undefined;
     $scope.response = undefined;
 
-    $scope.mappings = undefined;
+    $scope.indices = undefined;
     $scope.host = undefined;
 
     $scope.method = 'POST';
@@ -1707,11 +1707,11 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       RestDataService.load(
         function(response) {
           $scope.host = response.host;
-          $scope.mappings = response.mappings;
+          $scope.indices = response.indices;
           $scope.updateOptions($scope.path);
         },
         function(error) {
-          AlertService.error('Error while loading cluster mappings', error);
+          AlertService.error('Error while loading cluster indices', error);
         }
       );
       $scope.loadHistory();
@@ -1736,8 +1736,8 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     };
 
     $scope.updateOptions = function(text) {
-      if ($scope.mappings) {
-        var autocomplete = new URLAutocomplete($scope.mappings);
+      if ($scope.indices) {
+        var autocomplete = new URLAutocomplete($scope.indices);
         $scope.options = autocomplete.getAlternatives(text);
       }
     };
@@ -2656,7 +2656,7 @@ angular.module('cerebro').filter('timeInterval', function() {
 
 });
 
-function URLAutocomplete(mappings) {
+function URLAutocomplete(indices) {
 
   var PATHS = [
     // Suggest
@@ -2665,20 +2665,15 @@ function URLAutocomplete(mappings) {
     // Multi Search
     '_msearch',
     '{index}/_msearch',
-    '{index}/{type}/_msearch',
     '_msearch/template',
     '{index}/_msearch/template',
-    '{index}/{type}/_msearch/template',
     // Search
     '_search',
     '{index}/_search',
-    '{index}/{type}/_search',
     '_search/template',
     '{index}/_search/template',
-    '{index}/{type}/_search/template',
     '_search/exists',
     '{index}/_search/exists',
-    '{index}/{type}/_search/exists'
   ];
 
   var format = function(previousTokens, suggestedToken) {
@@ -2699,7 +2694,7 @@ function URLAutocomplete(mappings) {
     var suggestedTokenIndex = pathTokens.length - 1;
 
     /**
-     * Replaces the variables on suggestedPathTokens({index}, {type}...) for
+     * Replaces the variables on suggestedPathTokens({index}) for
      * actual values extracted from pathTokens
      *
      * @param {Array} pathTokens tokens for the path to be suggested
@@ -2730,16 +2725,10 @@ function URLAutocomplete(mappings) {
       var valid = true;
       suggestedPathTokens.forEach(function(token, index) {
         if (valid && index < pathTokens.length - 1) {
-          switch (token) {
-            case '{index}':
-              valid = Object.keys(mappings).indexOf(pathTokens[index]) >= 0;
-              break;
-            case '{type}':
-              var types = mappings[pathTokens[index - 1]].types;
-              valid = types.indexOf(pathTokens[index]) >= 0;
-              break;
-            default:
-              valid = pathTokens[index] === token;
+          if (token === '{index}') {
+            valid = indices.indexOf(pathTokens[index]) >= 0;
+          } else {
+            valid = pathTokens[index] === token;
           }
         }
       });
@@ -2763,20 +2752,12 @@ function URLAutocomplete(mappings) {
           suggestedPathTokens
         );
         var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
-        switch (suggestedToken) {
-          case '{index}':
-            Object.keys(mappings).forEach(function(index) {
-              addIfNotPresent(alternatives, format(pathTokens, index));
-            });
-            break;
-          case '{type}':
-            var pathIndex = pathTokens[suggestedTokenIndex - 1];
-            mappings[pathIndex].types.forEach(function(type) {
-              addIfNotPresent(alternatives, format(pathTokens, type));
-            });
-            break;
-          default:
-            addIfNotPresent(alternatives, format(pathTokens, suggestedToken));
+        if (suggestedToken === '{index}') {
+          indices.forEach(function(index) {
+            addIfNotPresent(alternatives, format(pathTokens, index));
+          });
+        } else {
+          addIfNotPresent(alternatives, format(pathTokens, suggestedToken));
         }
       }
     });
