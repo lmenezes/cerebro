@@ -44,7 +44,7 @@ class RestController @Inject()(val authentication: AuthenticationModule,
   }
 
   def index = process { request =>
-    client.getClusterMapping(request.target).map {
+    client.getAliases(request.target).map {
       case Success(status, body) =>
         val data = Json.obj(
           "indices" -> AutocompletionIndices(body),

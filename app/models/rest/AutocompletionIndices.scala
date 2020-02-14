@@ -4,7 +4,11 @@ import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 
 object AutocompletionIndices {
 
-  def apply(mappings: JsValue): JsArray =
-    JsArray(mappings.as[JsObject].value.keys.map(i => JsString(i)).toSeq)
+  def apply(aliases: JsValue): JsArray =
+    JsArray(
+      aliases.as[JsObject].value.flatMap { case (idx, data) =>
+        (data \ "aliases").as[JsObject].keys + idx
+      }.toSeq.distinct.map(JsString)
+    )
 
 }
