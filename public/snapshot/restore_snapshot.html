@@ -27,7 +27,7 @@
   <div class="col-lg-6">
     <div class="form-group">
       <label class="form-label">indices (defaults to all if none is selected)</label>
-      <select multiple="multiple" ng-model="form.indices" ng-options="i as i for i in snapshot.indices"
+      <select multiple="multiple" ng-model="form.indices" ng-options="i as i for i in snapshot.indices | orderBy"
               class="form-control" size="13">
         <option value="">Default is All</option>
       </select>
