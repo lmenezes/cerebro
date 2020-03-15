@@ -8,13 +8,8 @@ module.exports = function(config) {
     basePath: '', // base path, that will be used to resolve files and exclude
     frameworks: ['jasmine'], // frameworks to use
     files: [ // list of files / patterns to load in the browser
-      absolute_root + '/src/assets/libs/jquery/jquery-2.2.3.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular-route.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular-animate.min.js',
-      absolute_root + '/src/assets/libs/typeahead/typeahead.min.js',
-      absolute_root + '/src/assets/libs/ace/*.js',
-      absolute_root + '/src/assets/libs/jsontree/*.js',
+      absolute_root + '/public/js/lib.js',
+      absolute_root + '/public/js/ace/*.js',
       absolute_root + '/src/app/*.js',
       absolute_root + '/src/app/*/*.js',
       absolute_root + '/src/app/*/*/*.js',

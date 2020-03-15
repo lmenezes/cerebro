@@ -38,7 +38,6 @@ module.exports = function(grunt) {
           'src/assets/libs/jsontree/jsontree.min.js',
           'node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
           'node_modules/ace-builds/src-min/ace.js',
-          'node_modules/ace-builds/src-min/'
         ],
         dest: 'public/js/lib.js'
       },
