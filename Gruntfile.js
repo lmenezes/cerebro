@@ -94,5 +94,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask('dev', ['watch'])
   grunt.registerTask('build', ['clean', 'jshint', 'eslint', 'less', 'concat', 'copy', 'cssmin', 'qunit']);
-  grunt.registerTask('test', ['karma'])
+  grunt.registerTask('test', ['build', 'karma'])
 };
