@@ -10,10 +10,7 @@ module.exports = function(config) {
     files: [ // list of files / patterns to load in the browser
       absolute_root + '/public/js/lib.js',
       absolute_root + '/public/js/ace/*.js',
-      absolute_root + '/src/app/*.js',
-      absolute_root + '/src/app/*/*.js',
-      absolute_root + '/src/app/*/*/*.js',
-      absolute_root + '/src/**/*.js',
+      absolute_root + '/src/app/**/*.js',
       absolute_root + '/tests/angular-mocks.js',
       absolute_root + '/**/*.tests.js'
     ],
