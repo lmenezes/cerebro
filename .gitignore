@@ -20,5 +20,11 @@ server.pid
 *.iml
 *.eml
 activator-*.sbt
-node_modules
 cerebro.db
+
+# assets
+node_modules
+public/js
+public/css
+public/fonts
+src/assets/temp
