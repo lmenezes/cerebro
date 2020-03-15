@@ -1,0 +1,16 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "$": true,
+    "angular": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "google"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 5
+  }
+}
