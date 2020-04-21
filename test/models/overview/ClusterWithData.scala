@@ -125,6 +125,24 @@ trait ClusterWithData extends ClusterStub {
       |            }
       |          ]
       |        }
+      |      },
+      |      "complete": {
+      |        "shards": {
+      |          "0": [
+      |            {
+      |              "state": "STARTED",
+      |              "primary": true,
+      |              "node": "cPsT9o5FQ3WRnvqSTXHiVQ",
+      |              "relocating_node": null,
+      |              "shard": 0,
+      |              "index": "complete",
+      |              "version": 3,
+      |              "allocation_id": {
+      |                "id": "GtL-xGXKR4eyOhrIYU2YoQ"
+      |              }
+      |            }
+      |          ]
+      |        }
       |      }
       |    }
       |  }
@@ -453,6 +471,28 @@ trait ClusterWithData extends ClusterStub {
       |          "throttle_time_in_millis": 0
       |        }
       |      }
+      |    },
+      |    "complete": {
+      |      "primaries": {
+      |        "docs": {
+      |          "count": 5,
+      |          "deleted": 0
+      |        },
+      |        "store": {
+      |          "size_in_bytes": 33620,
+      |          "throttle_time_in_millis": 0
+      |        }
+      |      },
+      |      "total": {
+      |        "docs": {
+      |          "count": 5,
+      |          "deleted": 0
+      |        },
+      |        "store": {
+      |          "size_in_bytes": 33620,
+      |          "throttle_time_in_millis": 0
+      |        }
+      |      }
       |    }
       |  }
       |}
@@ -477,6 +517,9 @@ trait ClusterWithData extends ClusterStub {
       |    }
       |  },
       |  ".foobar": {
+      |    "aliases": {}
+      |  },
+      |  "complete": {
       |    "aliases": {}
       |  }
       |}
@@ -603,6 +646,22 @@ trait ClusterWithData extends ClusterStub {
       |          "Par Survivor Space",
       |          "CMS Old Gen"
       |        ]
+      |      }
+      |    }
+      |  }
+      |}
+    """.stripMargin
+  )
+
+  val indexingComplete = Json.parse(
+    """
+      |{
+      |  "complete": {
+      |    "settings": {
+      |      "index": {
+      |        "lifecycle": {
+      |          "indexing_complete": "true"
+      |        }
       |      }
       |    }
       |  }

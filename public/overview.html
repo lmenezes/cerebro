@@ -8,17 +8,24 @@
                  ng-model-options='{ debounce: 250 }'
                  placeholder="filter indices by name or aliases">
         </div>
-        <div class="col-lg-3 col-sm-3 col-xs-6 form-group">
+        <div class="col-lg-2 col-sm-2 col-xs-4 form-group">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="paginator.filter.closed"> closed ({{closed_indices}})
             </label>
           </div>
         </div>
-        <div class="col-lg-3 col-sm-3 col-xs-6 form-group">
+        <div class="col-lg-2 col-sm-2 col-xs-4 form-group">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="paginator.filter.special"> .special ({{special_indices}})
+            </label>
+          </div>
+        </div>
+        <div class="col-lg-2 col-sm-2 col-xs-4 form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="paginator.filter.indexing_complete"> complete ({{indexing_complete_indices}})
             </label>
           </div>
         </div>

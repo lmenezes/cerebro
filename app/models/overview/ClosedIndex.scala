@@ -1,6 +1,6 @@
 package models.overview
 
-import play.api.libs.json.{JsBoolean, JsString, Json}
+import play.api.libs.json.{JsBoolean, JsFalse, JsString, Json}
 
 object ClosedIndex {
 
@@ -8,7 +8,8 @@ object ClosedIndex {
     Json.obj(
       "name" -> JsString(name),
       "closed" -> JsBoolean(true),
-      "special" -> JsBoolean(name.startsWith("."))
+      "special" -> JsBoolean(name.startsWith(".")),
+      "indexing_complete" -> JsFalse
     )
 
 }

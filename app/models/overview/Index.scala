@@ -4,13 +4,14 @@ import play.api.libs.json._
 
 object Index {
 
-  def apply(name: String, stats: JsValue, routingTable: JsValue, aliases: JsValue, indexBlock: JsObject): JsValue = {
+  def apply(name: String, stats: JsValue, routingTable: JsValue, aliases: JsValue, indexBlock: JsObject, indexingComplete: JsBoolean): JsValue = {
     val shardMap = createShardMap(routingTable)
 
     JsObject(Seq(
       "name" -> JsString(name),
       "closed" -> isClosed(indexBlock),
       "special" -> JsBoolean(name.startsWith(".")),
+      "indexing_complete" -> indexingComplete,
       "unhealthy" -> JsBoolean(isIndexUnhealthy(shardMap)),
       "doc_count" -> (stats \ "primaries" \ "docs" \ "count").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "deleted_docs" -> (stats \ "primaries" \ "docs" \ "deleted").asOpt[JsNumber].getOrElse(JsNumber(0)),

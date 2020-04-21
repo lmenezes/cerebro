@@ -1136,9 +1136,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.initializing_shards = 0;
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
+    $scope.indexing_complete_indices = 0;
     $scope.shardAllocation = true;
 
-    $scope.indices_filter = new IndexFilter('', false, false, true, true, 0);
+    $scope.indices_filter =
+      new IndexFilter('', false, false, false, true, true, 0);
     $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
 
     $scope.getPageSize = function() {
@@ -1181,6 +1183,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.initializing_shards = data.initializing_shards;
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
+          $scope.indexing_complete_indices = data.indexing_complete_indices;
           $scope.shardAllocation = data.shard_allocation;
           if (!$scope.unassigned_shards &&
             !$scope.relocating_shards &&
@@ -1198,6 +1201,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.initializing_shards = 0;
           $scope.closed_indices = 0;
           $scope.special_indices = 0;
+          $scope.indexing_complete_indices = 0;
           $scope.shardAllocation = true;
         }
       );
@@ -2310,10 +2314,11 @@ function GroupedSettings(settings) {
   this.groups = Object.values(groups);
 }
 
-function IndexFilter(name, closed, special, healthy, asc, timestamp) {
+function IndexFilter(name, closed, special, complete, healthy, asc, timestamp) {
   this.name = name;
   this.closed = closed;
   this.special = special;
+  this.complete = complete;
   this.healthy = healthy;
   this.sort = 'name';
   this.asc = asc;
@@ -2340,6 +2345,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       this.name,
       this.closed,
       this.special,
+      this.complete,
       this.healthy,
       this.asc,
       this.timestamp
@@ -2352,6 +2358,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       this.name === other.name &&
       this.closed === other.closed &&
       this.special === other.special &&
+      this.complete === other.complete &&
       this.healthy === other.healthy &&
       this.asc === other.asc &&
       this.timestamp === other.timestamp
@@ -2363,6 +2370,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
       !this.name &&
       this.closed &&
       this.special &&
+      this,complete &&
       this.healthy &&
       this.asc
     );
@@ -2370,6 +2378,9 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
 
   this.matches = function(index) {
     var matches = true;
+    if (!this.complete && index.complete) {
+      matches = false;
+    }
     if (!this.special && index.special) {
       matches = false;
     }

@@ -1,7 +1,7 @@
 package models.overview
 
 import org.specs2.Specification
-import play.api.libs.json.Json
+import play.api.libs.json.{ JsFalse, JsTrue, Json }
 
 object IndexSpec extends Specification {
 
@@ -13,6 +13,7 @@ object IndexSpec extends Specification {
       build an index with relocating shards    $relocating
       build an index with unassigned shards    $unassigned
       build a special index                    $special
+      build an indexing complete index         $indexingComplete
       build a closed index                     $closed
 
       """
@@ -24,6 +25,7 @@ object IndexSpec extends Specification {
         |  "name": "ipsum",
         |  "closed": false,
         |  "special": false,
+        |  "indexing_complete": false,
         |  "unhealthy": false,
         |  "doc_count": 62064,
         |  "deleted_docs": 0,
@@ -98,7 +100,7 @@ object IndexSpec extends Specification {
         |}
       """.stripMargin
     )
-    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, Json.obj())
+    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, Json.obj(), JsFalse)
     index mustEqual expected
   }
 
@@ -109,6 +111,7 @@ object IndexSpec extends Specification {
         |  "name": "ipsum",
         |  "closed": false,
         |  "special": false,
+        |  "indexing_complete": false,
         |  "unhealthy": true,
         |  "doc_count": 62064,
         |  "deleted_docs": 0,
@@ -192,7 +195,7 @@ object IndexSpec extends Specification {
         |}
       """.stripMargin
     )
-    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.relocatingShard, IndexAliases.aliases, Json.obj())
+    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.relocatingShard, IndexAliases.aliases, Json.obj(), JsFalse)
     index mustEqual expected
   }
 
@@ -203,6 +206,7 @@ object IndexSpec extends Specification {
         |  "name": "ipsum",
         |  "closed": false,
         |  "special": false,
+        |  "indexing_complete": false,
         |  "unhealthy": true,
         |  "doc_count": 62064,
         |  "deleted_docs": 0,
@@ -285,7 +289,7 @@ object IndexSpec extends Specification {
         |}
       """.stripMargin
     )
-    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.unassignedShard, IndexAliases.aliases, Json.obj())
+    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.unassignedShard, IndexAliases.aliases, Json.obj(), JsFalse)
     index mustEqual expected
   }
 
@@ -293,9 +297,10 @@ object IndexSpec extends Specification {
     val expected = Json.parse(
       """
         |{
-        |  "name": ".ipsum",
+        |  "name": "ipsum",
         |  "closed": false,
-        |  "special": true,
+        |  "special": false,
+        |  "indexing_complete": true,
         |  "unhealthy": false,
         |  "doc_count": 62064,
         |  "deleted_docs": 0,
@@ -370,7 +375,93 @@ object IndexSpec extends Specification {
         |}
       """.stripMargin
     )
-    val index = Index(".ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, Json.obj())
+    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, Json.obj(), JsTrue)
+    index mustEqual expected
+  }
+
+  def indexingComplete = {
+    val expected = Json.parse(
+      """
+        |{
+        |  "name": ".ipsum",
+        |  "closed": false,
+        |  "special": true,
+        |  "indexing_complete": false,
+        |  "unhealthy": false,
+        |  "doc_count": 62064,
+        |  "deleted_docs": 0,
+        |  "size_in_bytes": 163291998,
+        |  "total_size_in_bytes": 326583996,
+        |  "aliases": [
+        |    "fancyAlias"
+        |  ],
+        |  "num_shards": 5,
+        |  "num_replicas": 0,
+        |  "shards": {
+        |    "ZqGi3UPESiSa0Z4Sf4NlPg": [
+        |      {
+        |        "state": "STARTED",
+        |        "primary": true,
+        |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        |        "relocating_node": null,
+        |        "shard": 4,
+        |        "index": "some",
+        |        "allocation_id": {
+        |          "id": "oWmBTuCFSuGA4krn5diK3w"
+        |        }
+        |      },
+        |      {
+        |        "state": "STARTED",
+        |        "primary": true,
+        |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        |        "relocating_node": null,
+        |        "shard": 1,
+        |        "index": "some",
+        |        "allocation_id": {
+        |          "id": "YUY5QiPmQJulsereqC1VBQ"
+        |        }
+        |      },
+        |      {
+        |        "state": "STARTED",
+        |        "primary": true,
+        |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        |        "relocating_node": null,
+        |        "shard": 0,
+        |        "index": "some",
+        |        "allocation_id": {
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |        }
+        |      }
+        |    ],
+        |    "H-4gqX87SYqmQKtsatg92w": [
+        |      {
+        |        "state": "STARTED",
+        |        "primary": true,
+        |        "node": "H-4gqX87SYqmQKtsatg92w",
+        |        "relocating_node": null,
+        |        "shard": 2,
+        |        "index": "some",
+        |        "allocation_id": {
+        |          "id": "LXEh1othSz6IE5ueTITF-Q"
+        |        }
+        |      },
+        |      {
+        |        "state": "STARTED",
+        |        "primary": true,
+        |        "node": "H-4gqX87SYqmQKtsatg92w",
+        |        "relocating_node": null,
+        |        "shard": 3,
+        |        "index": "some",
+        |        "allocation_id": {
+        |          "id": "6X6SMPvvQbOdUct5k3bo6w"
+        |        }
+        |      }
+        |    ]
+        |  }
+        |}
+      """.stripMargin
+    )
+    val index = Index(".ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, Json.obj(), JsFalse)
     index mustEqual expected
   }
 
@@ -381,6 +472,7 @@ object IndexSpec extends Specification {
         |  "name": "ipsum",
         |  "closed": true,
         |  "special": false,
+        |  "indexing_complete": false,
         |  "unhealthy": false,
         |  "doc_count": 62064,
         |  "deleted_docs": 0,
@@ -455,7 +547,7 @@ object IndexSpec extends Specification {
         |}
       """.stripMargin
     )
-    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, IndexBlocks.closed)
+    val index = Index("ipsum", IndexStats.stats, IndexRoutingTable.healthyShards, IndexAliases.aliases, IndexBlocks.closed, JsFalse)
     index mustEqual expected
   }
 
