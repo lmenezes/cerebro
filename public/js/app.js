@@ -1677,7 +1677,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.indices = undefined;
     $scope.host = undefined;
 
-    $scope.method = 'POST';
+    $scope.method = 'GET';
     $scope.path = '';
     $scope.options = [];
 
