@@ -33,7 +33,7 @@ object ClusterOverview {
       "total_indices" -> JsNumber(indices.size),
       "closed_indices" -> JsNumber(indices.count { idx => (idx \ "closed").as[Boolean] }),
       "special_indices" -> JsNumber(indices.count { idx => (idx \ "special").as[Boolean] }),
-      "indexing_complete_indices" -> JsNumber(indices.count { idx => (idx \ "indexing_complete").as[Boolean] }),
+      "complete_indices" -> JsNumber(indices.count { idx => (idx \ "complete").as[Boolean] }),
       "indices" -> JsArray(indices),
       "nodes" -> buildNodes(masterNodeId, nodesInfo, nodesStats),
       "shard_allocation" -> JsBoolean(shardAllocation)

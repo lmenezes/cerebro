@@ -13,7 +13,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.initializing_shards = 0;
     $scope.closed_indices = 0;
     $scope.special_indices = 0;
-    $scope.indexing_complete_indices = 0;
+    $scope.complete_indices = 0;
     $scope.shardAllocation = true;
 
     $scope.indices_filter =
@@ -60,7 +60,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.initializing_shards = data.initializing_shards;
           $scope.closed_indices = data.closed_indices;
           $scope.special_indices = data.special_indices;
-          $scope.indexing_complete_indices = data.indexing_complete_indices;
+          $scope.complete_indices = data.complete_indices;
           $scope.shardAllocation = data.shard_allocation;
           if (!$scope.unassigned_shards &&
             !$scope.relocating_shards &&
@@ -78,7 +78,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
           $scope.initializing_shards = 0;
           $scope.closed_indices = 0;
           $scope.special_indices = 0;
-          $scope.indexing_complete_indices = 0;
+          $scope.complete_indices = 0;
           $scope.shardAllocation = true;
         }
       );

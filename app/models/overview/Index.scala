@@ -11,7 +11,7 @@ object Index {
       "name" -> JsString(name),
       "closed" -> isClosed(indexBlock),
       "special" -> JsBoolean(name.startsWith(".")),
-      "indexing_complete" -> indexingComplete,
+      "complete" -> indexingComplete,
       "unhealthy" -> JsBoolean(isIndexUnhealthy(shardMap)),
       "doc_count" -> (stats \ "primaries" \ "docs" \ "count").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "deleted_docs" -> (stats \ "primaries" \ "docs" \ "deleted").asOpt[JsNumber].getOrElse(JsNumber(0)),

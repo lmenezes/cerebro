@@ -9,7 +9,7 @@ object ClosedIndex {
       "name" -> JsString(name),
       "closed" -> JsBoolean(true),
       "special" -> JsBoolean(name.startsWith(".")),
-      "indexing_complete" -> JsFalse
+      "complete" -> JsFalse
     )
 
 }
