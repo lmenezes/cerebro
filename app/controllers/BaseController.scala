@@ -5,7 +5,7 @@ import exceptions.MissingRequiredParamException
 import models.{CerebroRequest, CerebroResponse, Hosts}
 import play.api.Logger
 import play.api.libs.json._
-import play.api.mvc.{Controller, InjectedController, Result}
+import play.api.mvc.{InjectedController, Result}
 import services.exception.RequestFailedException
 
 import scala.concurrent.ExecutionContext.Implicits.global
