@@ -288,3 +288,23 @@ First cerebro release.
 - Use full setting name for index settings updates #382
 - Use openjdk8 instead of oraclejdk8 for travis testing
 - Update json-tree to 0.3.0 #405
+
+### v0.9.0 - April 24th, 2020
+
+#### Enhancements
+
+- GET as default verb in the REST console #437
+- Upgrade to the latest Play and other core libraries #439
+- Added possibility of configuring port using CEREBRO_PORT environment var. #438
+- Allow selecting kind of shard allocation in overview #423
+- Sort indices on snapshot restore (5317ddd54de574708dbf02e713b5e2d0865441e0). Closes #419
+- Change login user input tooltip (66b73ddd5ab818534760bc64895899825a20ec62). Closes #424
+- Add content-type to copied curl command (e93ab9948c3c650a9fcdd5be2a7edbe1976cab05). Closes #426
+- Include aliases in rest autocompletion (abb8ab73992dfe9708b2b34f8ba2b75924d4d7ec)
+- Drop support for deprecated endpoints.
+- Drop type support on rest autocomplete. 
+
+#### Bug fixes
+
+- Tolerate missing settings for repositories (2bed3327b056295b215e6a809dcbf50e8b0e7926). Closes #409
+- Handle post typeless indices mappings on analysis (9dbece339a014971307506977ec71045e977d576). Closes #412
