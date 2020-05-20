@@ -308,3 +308,8 @@ First cerebro release.
 
 - Tolerate missing settings for repositories (2bed3327b056295b215e6a809dcbf50e8b0e7926). Closes #409
 - Handle post typeless indices mappings on analysis (9dbece339a014971307506977ec71045e977d576). Closes #412
+
+### v0.9.1 - May 20th, 2020
+
+#### Enhancements
+- Display node attributes on overview / nodes view

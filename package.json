@@ -1,6 +1,6 @@
 {
   "name": "cerebro",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "cerebro - elasticsearch admin",
   "main": "index.html",
   "scripts": {
