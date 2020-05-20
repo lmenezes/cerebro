@@ -347,6 +347,11 @@ object ClusterWithoutData extends ClusterStub {
       |      "version":"2.1.0",
       |      "build":"72cd1f1",
       |      "http_address":"127.0.0.1:9201",
+      |      "attributes": {
+      |        "aws_availability_zone": "eu-west-1c",
+      |        "node_type": "warm",
+      |        "xpack.installed": "true"
+      |      },
       |      "os":{
       |        "refresh_interval_in_millis":1000,
       |        "available_processors":8,
@@ -388,6 +393,11 @@ object ClusterWithoutData extends ClusterStub {
       |      "version":"2.1.0",
       |      "build":"72cd1f1",
       |      "http_address":"127.0.0.1:9200",
+      |      "attributes": {
+      |        "aws_availability_zone": "eu-west-1c",
+      |        "node_type": "warm",
+      |        "xpack.installed": "true"
+      |      },
       |      "os":{
       |        "refresh_interval_in_millis":1000,
       |        "name":"Mac OS X",

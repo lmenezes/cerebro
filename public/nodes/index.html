@@ -81,9 +81,16 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-xs-12 node-attrs">
+            <span ng-repeat="(attr, value) in node.attributes">
+              <span class="label label-success">{{value}}</span>
+            </span>
+        </div>
+      </div>
       <div class="node-labels">
-        <span class="label label-details" ng-show="node.jvm">JVM: {{node.jvm}}</span>
-        <span class="label label-details">ES: {{node.version}}</span>
+        <span class="label label-primary" ng-show="node.jvm">JVM: {{node.jvm}}</span>
+        <span class="label label-primary">ES: {{node.version}}</span>
       </div>
     </td>
     <td>

@@ -43,6 +43,7 @@ table.shard-map { table-layout: fixed; }
 .stat-description { font-size: 12px;  font-weight: 300; }
 
 /** node cells **/
+.node-attrs { overflow: hidden; text-overflow: ellipsis; }
 .node-badges { width: 20px; display: inline-block; float: left; }
 .node-info { margin-left: 20px; }
 .node-labels { padding-top: 5px; }

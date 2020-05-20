@@ -3,6 +3,8 @@ package models.overview
 import models.commons.NodeRoles
 import play.api.libs.json._
 
+import scala.collection.Map
+
 object Node {
 
   def apply(id: String, info: JsValue, stats: JsValue, masterNodeId: String) = {
@@ -35,9 +37,13 @@ object Node {
         "used_percent" -> (stats \ "jvm" \ "mem" \ "heap_used_percent").as[JsNumber],
         "max" -> (stats \ "jvm" \ "mem" \ "heap_max_in_bytes").as[JsNumber]
       ),
-      "disk" -> disk(stats)
+      "disk" -> disk(stats),
+      "attributes" -> attrs(info)
     )
   }
+
+  def attrs(info: JsValue): Map[String, JsValue] =
+    (info \ "attributes").as[JsObject].value.filterKeys(_ != "xpack.installed")
 
   def disk(stats: JsValue): JsObject = {
     val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)

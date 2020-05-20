@@ -10,6 +10,11 @@ object NodesInfo {
       |  "build_hash": "5395e21",
       |  "host": "127.0.0.1",
       |  "ip": "127.0.0.1",
+      |  "attributes": {
+      |    "aws_availability_zone": "eu-west-1c",
+      |    "node_type": "warm",
+      |    "xpack.installed": "true"
+      |  },
       |  "jvm": {
       |    "gc_collectors": [
       |      "ParNew",
@@ -69,6 +74,11 @@ object NodesInfo {
     """
       |{
       |  "build_hash": "5395e21",
+      |  "attributes": {
+      |    "aws_availability_zone": "eu-west-1c",
+      |    "node_type": "warm",
+      |    "xpack.installed": "true"
+      |  },
       |  "jvm": {
       |    "mem": {
       |      "direct_max": "1.9gb",

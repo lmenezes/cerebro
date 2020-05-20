@@ -41,6 +41,10 @@ object NodeSpec extends Specification {
         |    "total": 249804886016,
         |    "free": 41567444992,
         |    "used_percent": 84
+        |  },
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
         |  }
         |}
       """.stripMargin
@@ -77,6 +81,10 @@ object NodeSpec extends Specification {
         |    "total": 249804886016,
         |    "free": 41567444992,
         |    "used_percent": 84
+        |  },
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
         |  }
         |}
       """.stripMargin

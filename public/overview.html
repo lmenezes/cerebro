@@ -230,6 +230,17 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-xs-12 node-attrs">
+            <span ng-repeat="(attr, value) in node.attributes">
+              <span class="label label-success">{{value}}</span>
+            </span>
+          </div>
+        </div>
+        <div ng-show="expandedView" class="node-labels">
+          <span class="label label-primary">JVM: {{node.jvm_version}}</span>
+          <span class="label label-primary">ES: {{node.es_version}}</span>
+        </div>
         <div class="row row-condensed">
           <div class="col-lg-3 col-condensed">
             <ng-progress
@@ -263,10 +274,6 @@
               tooltip="'1min avg.: ' + (node.load_average | number:2)"
             />
           </div>
-        </div>
-        <div ng-show="expandedView" class="node-labels">
-          <span class="label label-details">JVM: {{node.jvm_version}}</span>
-          <span class="label label-details">ES: {{node.es_version}}</span>
         </div>
       </td>
       <td ng-repeat="index in page.elements track by $index">

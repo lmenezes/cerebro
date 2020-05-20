@@ -42,7 +42,11 @@ object NodeSpec extends Specification {
         |  "name": "-qkZcMt",
         |  "uptime": 109228,
         |  "version": "5.1.1",
-        |  "host": "127.0.0.1"
+        |  "host": "127.0.0.1",
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
+        |  }
         |}
       """.stripMargin
     )
@@ -79,7 +83,11 @@ object NodeSpec extends Specification {
         |  "name": "007ywNv",
         |  "uptime": 492790575,
         |  "version": "5.1.1",
-        |  "host": null
+        |  "host": null,
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
+        |  }
         |}
       """.stripMargin
     )
