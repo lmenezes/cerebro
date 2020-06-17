@@ -313,3 +313,8 @@ First cerebro release.
 
 #### Enhancements
 - Display node attributes on overview / nodes view
+
+### v0.9.2 - June 18th, 2020
+
+#### Bug fixes
+- Handle node info for nodes without defined attributes Closes #448
