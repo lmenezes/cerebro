@@ -1,8 +1,8 @@
-package models.nodes
+package models.commons
 
 import play.api.libs.json.Json
 
-object NodesInfo {
+object NodeInfoData {
 
   val nodeInfo5 = Json.parse(
     """
@@ -114,5 +114,43 @@ object NodesInfo {
     """.stripMargin
   )
 
+  val noAttributesNode = Json.parse(
+    """
+      |{
+      |  "build_hash": "5395e21",
+      |  "jvm": {
+      |    "mem": {
+      |      "direct_max": "1.9gb",
+      |      "direct_max_in_bytes": 2130051072,
+      |      "heap_init": "2gb",
+      |      "heap_init_in_bytes": 2147483648,
+      |      "heap_max": "1.9gb",
+      |      "heap_max_in_bytes": 2130051072,
+      |      "non_heap_init": "2.4mb",
+      |      "non_heap_init_in_bytes": 2555904,
+      |      "non_heap_max": "0b",
+      |      "non_heap_max_in_bytes": 0
+      |    },
+      |    "pid": 4463,
+      |    "start_time": "2017-05-18T14:14:43.665Z",
+      |    "start_time_in_millis": 1495116883665,
+      |    "using_compressed_ordinary_object_pointers": "true"
+      |  },
+      |  "name": "007ywNv",
+      |  "os": {
+      |    "allocated_processors": 2,
+      |    "available_processors": 2,
+      |    "refresh_interval": "1s",
+      |    "refresh_interval_in_millis": 1000
+      |  },
+      |  "roles": [
+      |    "master",
+      |    "data",
+      |    "ingest"
+      |  ],
+      |  "version": "5.1.1"
+      |}
+    """.stripMargin
+  )
 
 }

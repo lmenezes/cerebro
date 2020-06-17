@@ -1,11 +1,9 @@
 package models.nodes
 
-import models.commons.NodeRoles
+import models.commons.{NodeInfo, NodeRoles}
 import play.api.libs.json._
 
-import scala.collection.Map
-
-object Node {
+object Node extends NodeInfo {
 
   def apply(id: String, currentMaster: Boolean, info: JsValue, stats: JsValue): JsValue = {
     val jvmVersion = (info \ "jvm" \ "version").asOpt[JsString].getOrElse(JsNull)
@@ -34,9 +32,6 @@ object Node {
       "data" -> JsBoolean(roles.data)
     )
   }
-
-  def attrs(info: JsValue): Map[String, JsValue] =
-    (info \ "attributes").as[JsObject].value.filterKeys(_ != "xpack.installed")
 
   private def cpu(stats: JsValue): JsValue = {
     val load = (stats \ "os" \ "cpu" \ "load_average" \ "1m").asOpt[JsValue].getOrElse(// 5.X

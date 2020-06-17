@@ -1,11 +1,9 @@
 package models.overview
 
-import models.commons.NodeRoles
+import models.commons.{NodeInfo, NodeRoles}
 import play.api.libs.json._
 
-import scala.collection.Map
-
-object Node {
+object Node extends NodeInfo {
 
   def apply(id: String, info: JsValue, stats: JsValue, masterNodeId: String) = {
     val nodeRoles = NodeRoles(stats)
@@ -41,9 +39,6 @@ object Node {
       "attributes" -> attrs(info)
     )
   }
-
-  def attrs(info: JsValue): Map[String, JsValue] =
-    (info \ "attributes").as[JsObject].value.filterKeys(_ != "xpack.installed")
 
   def disk(stats: JsValue): JsObject = {
     val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)
