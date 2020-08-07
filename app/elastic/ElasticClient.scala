@@ -121,4 +121,5 @@ trait ElasticClient {
 
   def executeRequest(method: String, path: String, data: Option[JsValue], target: ElasticServer): Future[ElasticResponse]
 
+  def getIndicesStats(target: ElasticServer): Future[ElasticResponse]
 }

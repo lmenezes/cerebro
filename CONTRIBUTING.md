@@ -47,3 +47,9 @@ Running "watch" task
 Waiting...(node:20784) DeprecationWarning: process.EventEmitter is deprecated. 
 Use require('events') instead.
 ```
+### Package
+
+execute command in workDir
+```
+    sbt dist
+```
