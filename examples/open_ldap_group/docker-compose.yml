@@ -1,0 +1,25 @@
+version: '3'
+services:
+  cerebro:
+    image: lmenezes/cerebro
+    environment: 
+      - AUTH_TYPE=ldap
+      - LDAP_URL=ldap://ldap:389
+      - LDAP_BASE_DN=ou=people,dc=example,dc=org
+      - LDAP_METHOD=simple
+      - LDAP_USER_TEMPLATE=uid=%s,%s
+      - LDAP_BIND_DN=cn=admin,dc=example,dc=org
+      - LDAP_BIND_PWD=admin
+      - LDAP_USER_ATTR=uid
+      - LDAP_USER_ATTR_TEMPLATE=%s
+      - "LDAP_GROUP=memberof=cn=cerebro,ou=groups,dc=example,dc=org"
+    ports: 
+      - 9000:9000
+  open_ldap:
+    image: osixia/openldap:1.4.0
+    container_name: ldap
+    ports: 
+      - 389:389
+      - 636:636
+    volumes: 
+      - ./ldif:/opt
