@@ -37,8 +37,8 @@ class LDAPAuthService @Inject()(globalConfig: Configuration) extends AuthService
 
   def checkGroupMembership(username: String, groupConfig: LDAPGroupSearchConfig): Boolean = {
     val props = new Hashtable[String, String]()
-    props.put(Context.SECURITY_PRINCIPAL, config.bindDN)
-    props.put(Context.SECURITY_CREDENTIALS, config.bindPwd)
+    props.put(Context.SECURITY_PRINCIPAL, groupConfig.bindDN)
+    props.put(Context.SECURITY_CREDENTIALS, groupConfig.bindPwd)
     props.put(Context.REFERRAL, "follow")
     val user     = groupConfig.userAttrTemplate.format(username, config.baseDN)
     val controls = new SearchControls()
