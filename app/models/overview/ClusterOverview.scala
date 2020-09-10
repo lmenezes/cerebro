@@ -49,10 +49,13 @@ object ClusterOverview {
   def buildIndices(clusterState: JsValue, indicesStats: JsValue, aliases: JsValue): Seq[JsValue] = {
     val routingTable = (clusterState \ "routing_table" \ "indices").as[JsObject].value
     val blocks = (clusterState \ "blocks" \ "indices").asOpt[JsObject].getOrElse(Json.obj())
+    val stats = (indicesStats \ "indices").asOpt[JsObject].getOrElse(Json.obj())
     val indices = routingTable.map { case (index, shards) =>
-      val indexStats   = (indicesStats \ "indices" \ index).asOpt[JsObject].getOrElse(Json.obj())
+      // Since stats and blocks are JsObject objects potentially big, it's checked that key exists in that object.
+      // This way, it avoids building a JsUndefined instance with a big string as explained in #467
+      val indexStats = if (stats.value contains index) (stats \ index).asOpt[JsObject].getOrElse(Json.obj()) else Json.obj()
+      val indexBlock = if (blocks.value contains index ) (blocks \ index).asOpt[JsObject].getOrElse(Json.obj()) else Json.obj()
       val indexAliases = (aliases \ index \ "aliases").asOpt[JsObject].getOrElse(Json.obj()) // 1.4 < does not return aliases obj
-      val indexBlock = (blocks \ index).asOpt[JsObject].getOrElse(Json.obj())
       Index(index, indexStats, shards, indexAliases, indexBlock)
     }.toSeq
 
