@@ -75,6 +75,12 @@
             <i class="fa fa-sort-alpha-desc fa-2x normal-action table-control" title="sort descending"
                ng-hide="indices_filter.asc" ng-click="indices_filter.asc = true"></i>
           </div>
+          <div class="col-lg-2 col-md-6">
+            <i class="fa fa-eye fa-2x normal-action table-control" ng-hide="showAllAliases"
+               title="show all aliases" ng-click="showAllAliases = true"></i>
+            <i class="fa fa-eye-slash fa-2x normal-action table-control" ng-show="showAllAliases"
+               title="show single alias" ng-click="showAllAliases = false"></i>
+          </div>
           <div class="col-lg-3 col-md-6">
             <div class="dropdown">
               <span class="title normal-action" type="button" id="dropcluster" data-toggle="dropdown"
@@ -107,12 +113,6 @@
                 </li>
               </ul>
             </div>
-          </div>
-          <div class="col-lg-2 col-md-6">
-            <i class="fa fa-eye fa-2x normal-action table-control" ng-hide="showAllAliases"
-               title="show all aliases" ng-click="showAllAliases = true"></i>
-            <i class="fa fa-eye-slash fa-2x normal-action table-control" ng-show="showAllAliases"
-               title="show single alias" ng-click="showAllAliases = false"></i>
           </div>
         </div>
       </td>

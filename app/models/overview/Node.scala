@@ -59,8 +59,10 @@ object Node extends NodeInfo {
   }
 
   def cpuPercent(nodeStats: JsValue): JsNumber = {
-    val cpu = (nodeStats \ "os" \ "cpu" \ "percent").asOpt[Int].getOrElse(// 5.X
-      (nodeStats \ "os" \ "cpu_percent").asOpt[Int].getOrElse(0) // FIXME 2.X
+    val cpu = (nodeStats \ "os" \ "cpu" \ "percent").asOpt[Int].filter(i => i > 0).getOrElse(// 5.X
+      (nodeStats \ "process" \ "cpu" \ "percent").asOpt[Int].filter(i => i > 0).getOrElse( // 7.X
+        (nodeStats \ "os" \ "cpu_percent").asOpt[Int].getOrElse(0) // FIXME 2.X
+      )
     )
     JsNumber(BigDecimal(cpu))
   }
