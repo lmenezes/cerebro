@@ -288,8 +288,8 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       OverviewDataService.getIndexMapping(index, displayInfo, error);
     };
 
-    $scope.disableShardAllocation = function() {
-      OverviewDataService.disableShardAllocation(success, error);
+    $scope.disableShardAllocation = function(kind) {
+      OverviewDataService.disableShardAllocation(kind, success, error);
     };
 
     $scope.enableShardAllocation = function() {

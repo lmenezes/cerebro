@@ -10,16 +10,25 @@ describe('RestController', function() {
     this.AlertService = $injector.get('AlertService');
     this.ModalService = $injector.get('ModalService');
     this.AceEditorService = $injector.get('AceEditorService');
+    this.ClipboardService = $injector.get('ClipboardService');
     this.createController = function() {
       return $controller('RestController',
-        {$scope: this.scope}, this.$http, this.$window, this.RestDataService, this.AlertService, this.ModalService, this.AceEditorService);
+          {$scope: this.scope},
+          this.$http,
+          this.$window,
+          this.RestDataService,
+          this.AlertService,
+          this.ModalService,
+          this.AceEditorService,
+          this.ClipboardService
+      );
     };
     this._controller = this.createController();
   }));
 
   it('should have intial state correctly set', function() {
     expect(this.scope.response).toEqual(undefined);
-    expect(this.scope.mappings).toEqual(undefined);
+    expect(this.scope.indices).toEqual(undefined);
     expect(this.scope.method).toEqual("POST");
     expect(this.scope.path).toEqual("");
     expect(this.scope.options).toEqual([]);
@@ -37,25 +46,25 @@ describe('RestController', function() {
       expect(this.scope.editor).toEqual(fakeEditor);
     });
 
-    it('loads mappings & host', function() {
+    it('loads indices & host', function() {
       var fakeEditor = {
         setValue: function() {
         }
       };
       spyOn(this.AceEditorService, "init").and.returnValue(fakeEditor);
       this.RestDataService.load = function(success, error) {
-        success({"mappings": "mappingsValue", "host": "somehost"});
+        success({"indices": "indicesValue", "host": "somehost"});
       };
       spyOn(this.RestDataService, "load").and.callThrough();
       spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.RestDataService.load).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
-      expect(this.scope.mappings).toEqual("mappingsValue");
+      expect(this.scope.indices).toEqual("indicesValue");
       expect(this.scope.host).toEqual("somehost");
       expect(this.scope.updateOptions).toHaveBeenCalled();
     });
 
-    it('alerts when loading mappings fail', function() {
+    it('alerts when loading indices fail', function() {
       var fakeEditor = {
         setValue: function() {
         }
@@ -69,7 +78,7 @@ describe('RestController', function() {
       spyOn(this.scope, "updateOptions").and.returnValue();
       this.scope.setup();
       expect(this.scope.updateOptions).not.toHaveBeenCalled();
-      expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster mappings', 'some reason');
+      expect(this.AlertService.error).toHaveBeenCalledWith('Error while loading cluster indices', 'some reason');
     });
   });
 
@@ -127,12 +136,12 @@ describe('RestController', function() {
 
   describe('updateOptions', function() {
     it('loads all possible autocompletion options', function() {
-      this.scope.mappings = {};
+      this.scope.indices = [];
       this.scope.updateOptions("");
-      expect(this.scope.options).toEqual(['_msearch', '_search', '_suggest']);
+      expect(this.scope.options).toEqual(['_msearch', '_search']);
     });
-    it('skip autocompletion if mappings is absent', function() {
-      this.scope.mappings = undefined;
+    it('skip autocompletion if indices is absent', function() {
+      this.scope.indices = undefined;
       this.scope.updateOptions("");
       expect(this.scope.options).toEqual([]);
     });
@@ -180,6 +189,66 @@ describe('RestController', function() {
       expect(this.scope.method).toEqual('DELETE');
       expect(this.scope.editor.setValue).toHaveBeenCalledWith('somebody');
       expect(this.scope.editor.format).toHaveBeenCalled();
+    });
+  });
+
+  describe('copyAsCURLCommand', function() {
+    it('copy json call to clipboard', function() {
+      this.scope.path = 'wot/_search';
+      this.scope.method = 'GET';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getValue: function(){} };
+      spyOn(this.scope.editor, 'getValue').and.returnValue({'k': 'v'});
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/json\' -XGET \'http://localhost:9200/wot/_search\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
+    });
+
+    it('copy x-ndjson call to clipboard for _bulk', function() {
+      this.scope.path = 'wot/_bulk';
+      this.scope.method = 'POST';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getStringValue: function(){} };
+      var body = '{"header": ""}\n{"query": "query"}\n{"header": ""}\n{"query": "query"}\n';
+      spyOn(this.scope.editor, 'getStringValue').and.returnValue(body);
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getStringValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/x-ndjson\' -XPOST \'http://localhost:9200/wot/_bulk\' -d \'{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '\n\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
+    });
+
+    it('copy x-ndjson call to clipboard for _msearch', function() {
+      this.scope.path = 'wot/_msearch';
+      this.scope.method = 'POST';
+      this.scope.host = 'http://localhost:9200';
+      this.scope.editor = { getStringValue: function(){} };
+      var body = '{"header": ""}\n{"query": "query"}\n{"header": ""}\n{"query": "query"}\n';
+      spyOn(this.scope.editor, 'getStringValue').and.returnValue(body);
+      spyOn(this.ClipboardService, 'copy');
+      this.scope.copyAsCURLCommand();
+      expect(this.scope.editor.getStringValue).toHaveBeenCalled();
+      expect(this.ClipboardService.copy).toHaveBeenCalledWith(
+          'curl -H \'Content-type: application/x-ndjson\' -XPOST \'http://localhost:9200/wot/_msearch\' -d \'{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '{"header":""}\n' +
+          '{"query":"query"}\n' +
+          '\n\'',
+          jasmine.any(Function),
+          jasmine.any(Function)
+      );
     });
   });
 

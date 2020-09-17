@@ -9,7 +9,7 @@ object IndexFieldsSpec extends Specification {
     s2"""
     IndexField should
         should return only string fields                   $regularFields
-        should return fields from all types                $multipleTypes
+        should return fields from all types                $multipleTypes FIXME < 7
         should return sub fields on multi fields fields    $multiFields
         should return properties of object fields          $objects
 
@@ -21,18 +21,16 @@ object IndexFieldsSpec extends Specification {
         |{
         |  "index_name": {
         |    "mappings": {
-        |      "type_1": {
-        |        "properties": {
-        |          "regular_field": {
-        |            "type": "string"
-        |          },
-        |          "regular_field_2": {
-        |            "type": "string",
-        |            "analyzer": "standard"
-        |          },
-        |          "ignored_field": {
-        |            "type": "integer"
-        |          }
+        |      "properties": {
+        |        "regular_field": {
+        |          "type": "string"
+        |        },
+        |        "regular_field_2": {
+        |          "type": "string",
+        |          "analyzer": "standard"
+        |        },
+        |        "ignored_field": {
+        |          "type": "integer"
         |        }
         |      }
         |    }
@@ -78,17 +76,15 @@ object IndexFieldsSpec extends Specification {
         |{
         |  "index_name": {
         |    "mappings": {
-        |      "type_1": {
-        |        "properties": {
-        |          "multi_field": {
-        |            "type": "string",
-        |            "fields": {
-        |              "sub_field": {
-        |                "type": "string"
-        |              },
-        |              "ignored_sub_field": {
-        |                "type": "integer"
-        |              }
+        |      "properties": {
+        |        "multi_field": {
+        |          "type": "string",
+        |          "fields": {
+        |            "sub_field": {
+        |              "type": "string"
+        |            },
+        |            "ignored_sub_field": {
+        |              "type": "integer"
         |            }
         |          }
         |        }
@@ -108,22 +104,20 @@ object IndexFieldsSpec extends Specification {
         |{
         |  "index_name": {
         |    "mappings": {
-        |      "type_1": {
-        |        "properties": {
-        |          "object_type": {
-        |            "properties": {
-        |              "first_level_property": {
-        |                "properties": {
-        |                  "second_level_property": {
-        |                    "type": "string"
-        |                  }
+        |      "properties": {
+        |        "object_type": {
+        |          "properties": {
+        |            "first_level_property": {
+        |              "properties": {
+        |                "second_level_property": {
+        |                  "type": "string"
         |                }
-        |              },
-        |              "first_level_property_2": {
-        |                "properties": {
-        |                  "second_level_property": {
-        |                    "type": "string"
-        |                  }
+        |              }
+        |            },
+        |            "first_level_property_2": {
+        |              "properties": {
+        |                "second_level_property": {
+        |                  "type": "string"
         |                }
         |              }
         |            }

@@ -1,5 +1,7 @@
 package models.nodes
 
+import models.commons.NodeInfoData
+import models.overview.NodeSpec.noAttributesNode
 import org.specs2.Specification
 import play.api.libs.json.Json
 
@@ -9,8 +11,9 @@ object NodeSpec extends Specification {
     s2"""
     Node should
 
-      parse a >= 5.0 ES node $nodeInfo5
-      parse a AWS node       $awsNode
+      parse a >= 5.0 ES node           $nodeInfo5
+      parse a AWS node                 $awsNode
+      parse a node without attributes  $noAttributesNode
       """
 
   def nodeInfo5 = {
@@ -42,11 +45,15 @@ object NodeSpec extends Specification {
         |  "name": "-qkZcMt",
         |  "uptime": 109228,
         |  "version": "5.1.1",
-        |  "host": "127.0.0.1"
+        |  "host": "127.0.0.1",
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
+        |  }
         |}
       """.stripMargin
     )
-    val node = Node("nodeId", true, NodesInfo.nodeInfo5, NodeStats.nodeStats5)
+    val node = Node("nodeId", true, NodeInfoData.nodeInfo5, NodeStats.nodeStats5)
     node mustEqual expected
   }
 
@@ -79,11 +86,54 @@ object NodeSpec extends Specification {
         |  "name": "007ywNv",
         |  "uptime": 492790575,
         |  "version": "5.1.1",
-        |  "host": null
+        |  "host": null,
+        |  "attributes": {
+        |    "aws_availability_zone": "eu-west-1c",
+        |    "node_type": "warm"
+        |  }
         |}
       """.stripMargin
     )
-    val node = Node("nodeId", true, NodesInfo.awsInfo, NodeStats.awsNodeStats5)
+    val node = Node("nodeId", true, NodeInfoData.awsInfo, NodeStats.awsNodeStats5)
+    node mustEqual expected
+  }
+
+  def noAttributesNode = {
+    val expected = Json.parse(
+      """
+        |{
+        |  "coordinating": false,
+        |  "cpu": {
+        |    "load": 0.02,
+        |    "os": 0,
+        |    "process": 0
+        |  },
+        |  "current_master": true,
+        |  "data": true,
+        |  "disk": {
+        |    "available": 8744493056,
+        |    "percent": 16,
+        |    "total": 10434699264
+        |  },
+        |  "heap": {
+        |    "max": "1.9gb",
+        |    "percent": 30,
+        |    "used": "629.2mb"
+        |  },
+        |  "id": "nodeId",
+        |  "ingest": true,
+        |  "jvm": null,
+        |  "master": true,
+        |  "name": "007ywNv",
+        |  "uptime": 492790575,
+        |  "version": "5.1.1",
+        |  "host": null,
+        |  "attributes": {
+        |  }
+        |}
+      """.stripMargin
+    )
+    val node = Node("nodeId", true, NodeInfoData.noAttributesNode, NodeStats.awsNodeStats5)
     node mustEqual expected
   }
 

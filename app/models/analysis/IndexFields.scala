@@ -14,10 +14,15 @@ object IndexFields {
 
   def apply(index: String, data: JsValue) = {
     val docTypes = (data \ index \ "mappings").as[JsObject].keys
-    val fields = docTypes.flatMap { docType =>
-      extractProperties((data \ index \ "mappings" \ docType \ "properties").as[JsValue])
-    }.toSeq
-    JsArray(fields.map(JsString(_)))
+    val fields = if (docTypes.size == 1 && docTypes.head == "properties") {
+      extractProperties((data \ index \ "mappings" \ "properties").as[JsValue])
+    } else { // FIXME: ES < 7
+      docTypes.flatMap { docType =>
+        extractProperties((data \ index \ "mappings" \ docType \ "properties").as[JsValue])
+      }.toSeq
+    }
+
+    JsArray(fields.map(JsString))
   }
 
   def extractProperties(data: JsValue): Seq[String] = {

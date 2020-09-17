@@ -1,0 +1,5 @@
+dn: cn=cerebro,ou=groups,dc=example,dc=org
+objectClass: groupofuniquenames
+cn: cerebro
+description: All users
+uniquemember: uid=test,ou=people,dc=example,dc=org

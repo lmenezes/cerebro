@@ -1,9 +1,9 @@
 package models.nodes
 
-import models.commons.NodeRoles
+import models.commons.{NodeInfo, NodeRoles}
 import play.api.libs.json._
 
-object Node {
+object Node extends NodeInfo {
 
   def apply(id: String, currentMaster: Boolean, info: JsValue, stats: JsValue): JsValue = {
     val jvmVersion = (info \ "jvm" \ "version").asOpt[JsString].getOrElse(JsNull)
@@ -18,6 +18,7 @@ object Node {
       "cpu" -> cpu(stats),
       "uptime" -> (stats \ "jvm" \ "uptime_in_millis").as[JsValue],
       "jvm" -> jvmVersion,
+      "attributes" -> attrs(info),
       "version" -> (info \ "version").as[JsValue]
     ) ++ roles(info)
   }

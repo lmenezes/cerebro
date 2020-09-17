@@ -82,6 +82,7 @@ You can the pass this file as argument using:
  docker run -p 9000:9000 --env-file env-ldap  lmenezes/cerebro
 ```
 
+There are some examples of configuration in the [examples folder](./examples).
 
 #### Other settings
 

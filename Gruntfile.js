@@ -84,6 +84,7 @@ module.exports = function(grunt) {
       ],
       options: {
         preset: 'google',
+        maximumLineLength: 120,
         requireCamelCaseOrUpperCaseIdentifiers: "ignoreProperties"
       }
     }

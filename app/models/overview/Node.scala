@@ -1,9 +1,9 @@
 package models.overview
 
-import models.commons.NodeRoles
+import models.commons.{NodeInfo, NodeRoles}
 import play.api.libs.json._
 
-object Node {
+object Node extends NodeInfo {
 
   def apply(id: String, info: JsValue, stats: JsValue, masterNodeId: String) = {
     val nodeRoles = NodeRoles(stats)
@@ -35,7 +35,8 @@ object Node {
         "used_percent" -> (stats \ "jvm" \ "mem" \ "heap_used_percent").as[JsNumber],
         "max" -> (stats \ "jvm" \ "mem" \ "heap_max_in_bytes").as[JsNumber]
       ),
-      "disk" -> disk(stats)
+      "disk" -> disk(stats),
+      "attributes" -> attrs(info)
     )
   }
 

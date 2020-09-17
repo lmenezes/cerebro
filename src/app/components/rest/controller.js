@@ -7,10 +7,10 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     $scope.editor = undefined;
     $scope.response = undefined;
 
-    $scope.mappings = undefined;
+    $scope.indices = undefined;
     $scope.host = undefined;
 
-    $scope.method = 'POST';
+    $scope.method = 'GET';
     $scope.path = '';
     $scope.options = [];
 
@@ -40,11 +40,11 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       RestDataService.load(
         function(response) {
           $scope.host = response.host;
-          $scope.mappings = response.mappings;
+          $scope.indices = response.indices;
           $scope.updateOptions($scope.path);
         },
         function(error) {
-          AlertService.error('Error while loading cluster mappings', error);
+          AlertService.error('Error while loading cluster indices', error);
         }
       );
       $scope.loadHistory();
@@ -69,8 +69,8 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
     };
 
     $scope.updateOptions = function(text) {
-      if ($scope.mappings) {
-        var autocomplete = new URLAutocomplete($scope.mappings);
+      if ($scope.indices) {
+        var autocomplete = new URLAutocomplete($scope.indices);
         $scope.options = autocomplete.getAlternatives(text);
       }
     };
@@ -81,8 +81,31 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
       }
-      var body = JSON.stringify($scope.editor.getValue(), undefined, 1);
-      var curl = 'curl -X' + method + ' \'' + $scope.host + path + '\'';
+
+      var matchesAPI = function(path, api) {
+        return path.indexOf(api) === (path.length - api.length);
+      };
+
+      var contentType = 'application/json';
+      var body = '';
+
+      try {
+        if (matchesAPI(path, '_bulk') || matchesAPI(path, '_msearch')) {
+          contentType = 'application/x-ndjson';
+          body = $scope.editor.getStringValue().split('\n').map(function(line) {
+            return line === '' ? '\n' : JSON.stringify(JSON.parse(line));
+          }).join('\n');
+        } else {
+          body = JSON.stringify($scope.editor.getValue(), undefined, 1);
+        }
+      } catch (e) {
+        AlertService.error('Unexpected content format for [' + path + ']');
+        return;
+      }
+
+      var curl = 'curl';
+      curl += ' -H \'Content-type: ' + contentType + '\'';
+      curl += ' -X' + method + ' \'' + $scope.host + path + '\'';
       if (['POST', 'PUT'].indexOf(method) >= 0) {
         curl += ' -d \'' + body + '\'';
       }

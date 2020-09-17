@@ -13,7 +13,7 @@ object Repositories {
             Json.obj(
               "name" -> name,
               "type" -> (info \ "type").as[JsValue],
-              "settings" -> (info \ "settings").as[JsValue]
+              "settings" -> (info \ "settings").asOpt[JsObject].getOrElse[JsObject](Json.obj())
             )
           }.toSeq
         )
