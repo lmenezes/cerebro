@@ -32,9 +32,9 @@ object NodeRoles {
         val client = truthy((nodeInfo \ "attributes" \ "client").asOpt[String].getOrElse("false"))
 
         NodeRoles(
-          master && !client,
-          data && !client,
-          false // 2.x doesnt support ingest
+          master = master && !client,
+          data = data && !client,
+          ingest = false // 2.x doesnt support ingest
         )
     }
   }
