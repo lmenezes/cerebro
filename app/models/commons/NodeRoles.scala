@@ -15,11 +15,14 @@ object NodeRoles {
   }
 
   def apply(nodeInfo: JsValue): NodeRoles = {
+    // >= 7.10
+    val dataRoles = Seq("data", "data_content", "data_hot", "data_warm", "data_cold").map(JsString)
+
     (nodeInfo \ "roles").asOpt[JsArray] match {
-      case Some(JsArray(roles)) => // 5.X
+      case Some(JsArray(roles)) => // >= 5.X
         NodeRoles(
           roles.contains(JsString("master")),
-          roles.contains(JsString("data")),
+          roles.exists(role => dataRoles.contains(role)),
           roles.contains(JsString("ingest"))
         )
 
