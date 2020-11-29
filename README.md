@@ -15,6 +15,17 @@ cerebro needs Java 1.8 or newer to run.
 - Run bin/cerebro(or bin/cerebro.bat if on Windows)
 - Access on http://localhost:9000
 
+### Chocolatey (Windows)
+
+You can install `cerebro` using [Chocolatey](https://chocolatey.org/):
+
+```sh
+choco install cerebro-es
+```
+
+Package creates windows service ```cerebro```.
+Access on http://localhost:9000
+
 ### Docker
 
 You can find the official docker images in the official [docker hub repo](https://hub.docker.com/r/lmenezes/cerebro/).
