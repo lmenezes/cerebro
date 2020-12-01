@@ -20,7 +20,8 @@ class OverviewDataService @Inject()(client: ElasticClient) {
       "_cluster/settings",
       "_aliases",
       "_cluster/health",
-      s"_nodes/_all/os,jvm?human=true"
+      "_nodes/_all/os,jvm?human=true",
+      "_all/_settings/index.lifecycle.indexing_complete"
     )
     Future.sequence(apis.map(client.executeRequest("GET", _, None, target))).map { responses =>
       responses.zipWithIndex.find(_._1.isInstanceOf[Error]) match {
@@ -35,7 +36,8 @@ class OverviewDataService @Inject()(client: ElasticClient) {
             responses(3).body, // cluster settings
             responses(4).body, // aliases
             responses(5).body, // cluster health
-            responses(6).body  // nodes
+            responses(6).body, // nodes
+            responses(7).body  // indexing_complete
           )
       }
     }

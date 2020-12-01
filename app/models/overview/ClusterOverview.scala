@@ -1,13 +1,15 @@
 package models.overview
 
+import java.lang.{ Boolean => JBoolean }
+
 import play.api.libs.json._
 
 object ClusterOverview {
 
   def apply(clusterState: JsValue, nodesStats: JsValue, indicesStats: JsValue,
             clusterSettings: JsValue, aliases: JsValue, clusterHealth: JsValue,
-            nodesInfo: JsValue): JsValue = {
-    val indices = buildIndices(clusterState, indicesStats, aliases)
+            nodesInfo: JsValue, indexingCompleteSettings: JsValue): JsValue = {
+    val indices = buildIndices(clusterState, indicesStats, aliases, indexingCompleteSettings)
 
     val masterNodeId = (clusterState \ "master_node").as[String]
 
@@ -31,6 +33,7 @@ object ClusterOverview {
       "total_indices" -> JsNumber(indices.size),
       "closed_indices" -> JsNumber(indices.count { idx => (idx \ "closed").as[Boolean] }),
       "special_indices" -> JsNumber(indices.count { idx => (idx \ "special").as[Boolean] }),
+      "complete_indices" -> JsNumber(indices.count { idx => (idx \ "complete").as[Boolean] }),
       "indices" -> JsArray(indices),
       "nodes" -> buildNodes(masterNodeId, nodesInfo, nodesStats),
       "shard_allocation" -> JsBoolean(shardAllocation)
@@ -46,17 +49,20 @@ object ClusterOverview {
       }.toSeq
     )
 
-  def buildIndices(clusterState: JsValue, indicesStats: JsValue, aliases: JsValue): Seq[JsValue] = {
+  def buildIndices(clusterState: JsValue, indicesStats: JsValue, aliases: JsValue, indexingCompleteSettings: JsValue): Seq[JsValue] = {
     val routingTable = (clusterState \ "routing_table" \ "indices").as[JsObject].value
     val blocks = (clusterState \ "blocks" \ "indices").asOpt[JsObject].getOrElse(Json.obj())
     val stats = (indicesStats \ "indices").asOpt[JsObject].getOrElse(Json.obj())
+    val completed = indexingCompleteSettings.as[JsObject].value.collect {
+      case (idx, value) if (value \\ "indexing_complete").map(ic => JBoolean.parseBoolean(ic.as[JsString].value)).exists(_ == true) => idx
+    }.toSet
     val indices = routingTable.map { case (index, shards) =>
       // Since stats and blocks are JsObject objects potentially big, it's checked that key exists in that object.
       // This way, it avoids building a JsUndefined instance with a big string as explained in #467
       val indexStats = if (stats.value contains index) (stats \ index).asOpt[JsObject].getOrElse(Json.obj()) else Json.obj()
       val indexBlock = if (blocks.value contains index ) (blocks \ index).asOpt[JsObject].getOrElse(Json.obj()) else Json.obj()
       val indexAliases = (aliases \ index \ "aliases").asOpt[JsObject].getOrElse(Json.obj()) // 1.4 < does not return aliases obj
-      Index(index, indexStats, shards, indexAliases, indexBlock)
+      Index(index, indexStats, shards, indexAliases, indexBlock, if (completed(index)) JsTrue else JsFalse)
     }.toSeq
 
     val closedIndices = blocks.value.collect { // ES < 7.X does not return routing_table for closed indices

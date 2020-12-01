@@ -22,3 +22,6 @@ server.pid
 activator-*.sbt
 node_modules
 cerebro.db
+
+# Ignore metals
+metals.sbt
