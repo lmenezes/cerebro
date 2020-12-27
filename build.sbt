@@ -18,7 +18,7 @@ rpmLicense := Some("MIT")
 rpmUrl := Some("http://github.com/lmenezes/cerebro")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play"                    % "2.8.1",
+  "com.typesafe.play" %% "play"                    % "2.8.7",
   "com.typesafe.play" %% "play-json"               % "2.8.1",
   "com.typesafe.play" %% "play-slick"              % "5.0.0",
   "com.typesafe.play" %% "play-slick-evolutions"   % "5.0.0",
