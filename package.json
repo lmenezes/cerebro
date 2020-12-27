@@ -16,6 +16,8 @@
     "url": "https://github.com/lmenezes/cerebro/issues"
   },
   "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-config-google": "^0.14.0",
     "grunt": "^1.1.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-concat": "^1.0.1",
@@ -24,7 +26,7 @@
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-qunit": "^3.1.0",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-jscs": "^3.0.1",
+    "grunt-eslint": "^23.0.0",
     "grunt-karma": "^4.0.0",
     "jasmine-core": "^2.8.0",
     "karma": "^5.0.9",
@@ -40,6 +42,5 @@
   },
   "directories": {
     "test": "tests"
-  },
-  "dependencies": {}
+  }
 }

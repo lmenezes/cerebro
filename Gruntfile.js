@@ -75,18 +75,17 @@ module.exports = function(grunt) {
     karma: {
       unit: {configFile: 'tests/karma.config.js', keepalive: true}
     },
-    jscs: {
-      src: [
+    eslint: {
+      options: {
+        configFile: 'conf/eslint.json',
+        fix: true
+      },
+      target: [
         'src/app/app.routes.js',
         'src/app/components/*/*.js',
         'src/app/shared/*.js',
         'src/app/shared/*/*.js'
-      ],
-      options: {
-        preset: 'google',
-        maximumLineLength: 120,
-        requireCamelCaseOrUpperCaseIdentifiers: "ignoreProperties"
-      }
+      ]
     }
   });
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -97,9 +96,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks("grunt-jscs");
-  grunt.registerTask('dev', ['watch'])
+  grunt.loadNpmTasks('grunt-eslint');
+  grunt.registerTask('dev', ['watch']);
   grunt.registerTask('build',
-    ['clean', 'jshint', 'jscs', 'concat', 'copy', 'qunit']);
+    ['clean', 'jshint', 'eslint', 'concat', 'copy', 'qunit']);
   grunt.registerTask('test', ['karma'])
 };
