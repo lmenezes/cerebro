@@ -38,7 +38,7 @@ class AuthController @Inject()(system: ActorSystem,
   }
 
   def login = Action { implicit request =>
-    LoginForm.form.bindFromRequest.fold(
+    LoginForm.form.bindFromRequest().fold(
       formWithErrors => {
         log.error(badFormMsg)
         BadRequest(badFormMsg)
@@ -53,7 +53,7 @@ class AuthController @Inject()(system: ActorSystem,
               }
             resp.withSession(AuthAction.SESSION_USER -> username)
           case None =>
-            Redirect(routes.AuthController.index).flashing(LOGIN_MSG -> "Incorrect username or password")
+            Redirect(routes.AuthController.index()).flashing(LOGIN_MSG -> "Incorrect username or password")
         }
       }
     )
