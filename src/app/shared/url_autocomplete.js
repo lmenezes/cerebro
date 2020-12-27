@@ -1,5 +1,5 @@
+// eslint-disable-next-line no-unused-vars
 function URLAutocomplete(indices) {
-
   var PATHS = [
     // Multi Search
     '_msearch',
@@ -10,7 +10,7 @@ function URLAutocomplete(indices) {
     '_search',
     '{index}/_search',
     '_search/template',
-    '{index}/_search/template'
+    '{index}/_search/template',
   ];
 
   var format = function(previousTokens, suggestedToken) {
@@ -36,7 +36,7 @@ function URLAutocomplete(indices) {
      *
      * @param {Array} pathTokens tokens for the path to be suggested
      * @param {Array} suggestedPathTokens tokens for the suggested path
-     * @returns {Array} a new array with the variables from suggestedPathTokens
+     * @return {Array} a new array with the variables from suggestedPathTokens
      * replaced by the actual values from pathTokens
      */
     var replaceVariables = function(pathTokens, suggestedPathTokens) {
@@ -56,7 +56,7 @@ function URLAutocomplete(indices) {
      *
      * @param {Array} pathTokens tokens of path to be autocompleted
      * @param {Array} suggestedPathTokens tokens of possible suggestion
-     * @returns {boolean} if suggestion is valid
+     * @return {boolean} if suggestion is valid
      */
     var isValidSuggestion = function(pathTokens, suggestedPathTokens) {
       var valid = true;
@@ -85,8 +85,8 @@ function URLAutocomplete(indices) {
       if (suggestedPathTokens.length > suggestedTokenIndex &&
         isValidSuggestion(pathTokens, suggestedPathTokens)) {
         suggestedPathTokens = replaceVariables(
-          pathTokens,
-          suggestedPathTokens
+            pathTokens,
+            suggestedPathTokens
         );
         var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
         if (suggestedToken === '{index}') {
@@ -105,5 +105,4 @@ function URLAutocomplete(indices) {
   };
 
   return this;
-
 }

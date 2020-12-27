@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
   function($http, DataService) {
-
     this.getHosts = function(success, error) {
       var config = {method: 'GET', url: 'connect/hosts'};
       var handleSuccess = function(data) {
@@ -33,6 +32,5 @@ angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
     };
 
     return this;
-
-  }
+  },
 ]);

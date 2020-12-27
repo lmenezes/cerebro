@@ -1,5 +1,4 @@
 angular.module('cerebro').filter('startsWith', function() {
-
   function strStartsWith(str, prefix) {
     return (str + '').indexOf(prefix) === 0;
   }

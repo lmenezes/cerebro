@@ -6,8 +6,8 @@ angular.module('cerebro').factory('ClipboardService', ['AlertService',
       position: 'absolute',
       left: '-9999px',
       top: (
-          $window.pageYOffset || $document[0].documentElement.scrollTop
-      ) + 'px'
+        $window.pageYOffset || $document[0].documentElement.scrollTop
+      ) + 'px',
     });
     textarea.attr({readonly: ''});
     angular.element($document[0].body).append(textarea);
@@ -24,5 +24,5 @@ angular.module('cerebro').factory('ClipboardService', ['AlertService',
     };
 
     return this;
-  }
+  },
 ]);

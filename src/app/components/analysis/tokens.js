@@ -1,8 +1,8 @@
 angular.module('cerebro').directive('analysisTokens', function() {
   return {
     scope: {
-      tokens: '=tokens'
+      tokens: '=tokens',
     },
-    templateUrl: 'analysis/tokens.html'
+    templateUrl: 'analysis/tokens.html',
   };
 });

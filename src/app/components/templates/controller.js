@@ -1,24 +1,23 @@
 angular.module('cerebro').controller('TemplatesController', ['$scope',
   'AlertService', 'AceEditorService', 'TemplatesDataService', 'ModalService',
   function($scope, AlertService, AceEditorService, TemplatesDataService,
-           ModalService) {
-
+      ModalService) {
     var TemplateBase = JSON.stringify(
-      {
-        template: 'template pattern(e.g.: index_name_*)',
-        settings: {},
-        mappings: {},
-        aliases: {}
-      },
-      undefined,
-      2
+        {
+          template: 'template pattern(e.g.: index_name_*)',
+          settings: {},
+          mappings: {},
+          aliases: {},
+        },
+        undefined,
+        2
     );
 
     $scope.editor = undefined;
     $scope.editMode = false;
 
     $scope.paginator = new Paginator(1, 10, [],
-      new IndexTemplateFilter('', ''));
+        new IndexTemplateFilter('', ''));
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
@@ -44,13 +43,13 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
 
     $scope.loadTemplates = function() {
       TemplatesDataService.getTemplates(
-        function(templates) {
-          $scope.paginator.setCollection(templates);
-          $scope.page = $scope.paginator.getPage();
-        },
-        function(error) {
-          AlertService.error('Error while loading templates', error);
-        }
+          function(templates) {
+            $scope.paginator.setCollection(templates);
+            $scope.page = $scope.paginator.getPage();
+          },
+          function(error) {
+            AlertService.error('Error while loading templates', error);
+          }
       );
     };
 
@@ -74,9 +73,8 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
           AlertService.error('Error creating template', response);
         };
         TemplatesDataService.create(name, template, success, errorCallback);
-      }
-      catch
-        (error) {
+      } catch
+      (error) {
         AlertService.error('Malformed template', error);
       }
     };
@@ -90,10 +88,10 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
         AlertService.error('Error deleting template', response);
       };
       ModalService.promptConfirmation(
-        'Delete template ' + name + '?',
-        function() {
-          TemplatesDataService.delete(name, success, errorCallback);
-        }
+          'Delete template ' + name + '?',
+          function() {
+            TemplatesDataService.delete(name, success, errorCallback);
+          }
       );
     };
 
@@ -101,5 +99,5 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       $scope.loadTemplates();
       $scope.initEditor();
     };
-  }
+  },
 ]);

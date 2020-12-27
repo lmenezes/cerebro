@@ -1,8 +1,7 @@
 angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
   '$http', '$location', 'RefreshService', 'AlertService', '$window',
   function($rootScope, $timeout, $http, $location, RefreshService,
-           AlertService, $window) {
-
+      AlertService, $window) {
     var host;
 
     var username;
@@ -88,12 +87,12 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         var defaultData = {
           host: host,
           username: username,
-          password: password
+          password: password,
         };
         var config = {
           method: 'POST',
           url: path,
-          data: angular.merge(data, defaultData) // adds host to data
+          data: angular.merge(data, defaultData), // adds host to data
         };
         request(config, success, error);
       }
@@ -131,6 +130,5 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     };
 
     return this;
-
-  }
+  },
 ]);

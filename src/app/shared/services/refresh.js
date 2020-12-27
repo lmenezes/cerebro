@@ -1,36 +1,37 @@
 angular.module('cerebro').factory('RefreshService',
-  function($rootScope, $timeout) {
+    function($rootScope, $timeout) {
+      var timestamp = new Date().getTime();
 
-    var timestamp = new Date().getTime();
+      var interval = 15000;
 
-    var interval = 15000;
+      this.getInterval = function() {
+        return interval;
+      };
 
-    this.getInterval = function() {
-      return interval;
-    };
+      this.setInterval = function(newInterval) {
+        if (interval > newInterval) {
+          this.refresh(); // makes change apparent quicker
+        }
+        interval = newInterval;
+      };
 
-    this.setInterval = function(newInterval) {
-      if (interval > newInterval) {
-        this.refresh(); // makes change apparent quicker
-      }
-      interval = newInterval;
-    };
+      this.lastUpdate = function() {
+        return timestamp;
+      };
 
-    this.lastUpdate = function() {
-      return timestamp;
-    };
+      this.refresh = function() {
+        timestamp = Math.max(timestamp, new Date().getTime()) + 1;
+      };
 
-    this.refresh = function() {
-      timestamp = Math.max(timestamp, new Date().getTime()) + 1;
-    };
+      var autoRefresh = function(instance) {
+        instance.refresh();
+        $timeout(function() {
+          autoRefresh(instance);
+        }, interval);
+      };
 
-    var autoRefresh = function(instance) {
-      instance.refresh();
-      $timeout(function() { autoRefresh(instance); }, interval);
-    };
+      autoRefresh(this);
 
-    autoRefresh(this);
-
-    return this;
-  }
+      return this;
+    }
 );

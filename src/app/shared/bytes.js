@@ -1,5 +1,4 @@
 angular.module('cerebro').filter('bytes', function() {
-
   var UNITS = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
   function stringify(bytes) {
@@ -14,5 +13,4 @@ angular.module('cerebro').filter('bytes', function() {
   return function(bytes) {
     return stringify(bytes);
   };
-
 });

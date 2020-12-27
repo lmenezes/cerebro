@@ -1,7 +1,6 @@
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'ConnectDataService', 'AlertService',
   function($scope, $location, ConnectDataService, AlertService) {
-
     $scope.hosts = undefined;
 
     $scope.connecting = false;
@@ -12,12 +11,12 @@ angular.module('cerebro').controller('ConnectController', [
 
     $scope.setup = function() {
       ConnectDataService.getHosts(
-        function(hosts) {
-          $scope.hosts = hosts;
-        },
-        function(error) {
-          AlertService.error('Error while fetching list of known hosts', error);
-        }
+          function(hosts) {
+            $scope.hosts = hosts;
+          },
+          function(error) {
+            AlertService.error('Error while fetching list of known hosts', error);
+          }
       );
       $scope.host = $location.search().host;
       $scope.unauthorized = $location.search().unauthorized;
@@ -75,5 +74,4 @@ angular.module('cerebro').controller('ConnectController', [
     var feedback = function(message) {
       $scope.feedback = message;
     };
-
   }]);

@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('OverviewDataService', ['DataService',
   function(DataService) {
-
     this.getOverview = function(success, error) {
       DataService.send('overview', {}, success, error);
     };
@@ -78,6 +77,5 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);

@@ -1,94 +1,91 @@
 'use strict';
 angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
-  .config(['$routeProvider',
-    function($routeProvider) {
-      $routeProvider
-        .when('/overview', {
-          templateUrl: 'overview.html',
-          controller: 'OverviewController'
-        })
-        .when('/nodes', {
-          templateUrl: 'nodes/index.html',
-          controller: 'NodesController'
-        })
-        .when('/connect', {
-          templateUrl: 'connect.html',
-          controller: 'ConnectController'
-        })
-        .when('/rest', {
-          templateUrl: 'rest/index.html',
-          controller: 'RestController'
-        })
-        .when('/aliases', {
-          templateUrl: 'aliases.html',
-          controller: 'AliasesController'
-        })
-        .when('/create', {
-          templateUrl: 'create_index.html',
-          controller: 'CreateIndexController'
-        })
-        .when('/analysis', {
-          templateUrl: 'analysis/index.html',
-          controller: 'AnalysisController'
-        })
-        .when('/templates', {
-          templateUrl: 'templates/index.html',
-          controller: 'TemplatesController'
-        })
-        .when('/cluster_settings', {
-          templateUrl: 'cluster_settings/index.html',
-          controller: 'ClusterSettingsController'
-        })
-        .when('/index_settings', {
-          templateUrl: 'index_settings/index.html',
-          controller: 'IndexSettingsController'
-        })
-        .when('/snapshot', {
-          templateUrl: 'snapshot/index.html',
-          controller: 'SnapshotController'
-        })
-        .when('/repository', {
-          templateUrl: 'repositories/index.html',
-          controller: 'RepositoriesController'
-        })
-        .when('/cat', {
-          templateUrl: 'cat/index.html',
-          controller: 'CatController'
-        })
-        .otherwise({
-            redirectTo: '/connect'
-          }
-        );
-    }
-  ]);
+    .config(['$routeProvider',
+      function($routeProvider) {
+        $routeProvider
+            .when('/overview', {
+              templateUrl: 'overview.html',
+              controller: 'OverviewController',
+            })
+            .when('/nodes', {
+              templateUrl: 'nodes/index.html',
+              controller: 'NodesController',
+            })
+            .when('/connect', {
+              templateUrl: 'connect.html',
+              controller: 'ConnectController',
+            })
+            .when('/rest', {
+              templateUrl: 'rest/index.html',
+              controller: 'RestController',
+            })
+            .when('/aliases', {
+              templateUrl: 'aliases.html',
+              controller: 'AliasesController',
+            })
+            .when('/create', {
+              templateUrl: 'create_index.html',
+              controller: 'CreateIndexController',
+            })
+            .when('/analysis', {
+              templateUrl: 'analysis/index.html',
+              controller: 'AnalysisController',
+            })
+            .when('/templates', {
+              templateUrl: 'templates/index.html',
+              controller: 'TemplatesController',
+            })
+            .when('/cluster_settings', {
+              templateUrl: 'cluster_settings/index.html',
+              controller: 'ClusterSettingsController',
+            })
+            .when('/index_settings', {
+              templateUrl: 'index_settings/index.html',
+              controller: 'IndexSettingsController',
+            })
+            .when('/snapshot', {
+              templateUrl: 'snapshot/index.html',
+              controller: 'SnapshotController',
+            })
+            .when('/repository', {
+              templateUrl: 'repositories/index.html',
+              controller: 'RepositoriesController',
+            })
+            .when('/cat', {
+              templateUrl: 'cat/index.html',
+              controller: 'CatController',
+            })
+            .otherwise({
+              redirectTo: '/connect',
+            }
+            );
+      },
+    ]);
 
 angular.module('cerebro').controller('AlertsController', ['$scope',
   'AlertService', function($scope, AlertService) {
-
     $scope.alerts = [];
 
     $scope.$watch(
-      function() {
-        return AlertService.alerts;
-      },
-      function(newValue, oldValue) {
-        $scope.alerts = AlertService.alerts;
-      }
+        function() {
+          return AlertService.alerts;
+        },
+        function(newValue, oldValue) {
+          $scope.alerts = AlertService.alerts;
+        }
     );
 
     $scope.remove = function(id) {
       AlertService.remove(id);
     };
-
-  }
+  },
 
 ]);
 
 angular.module('cerebro').controller('AliasesController', ['$scope',
   'AlertService', 'AceEditorService', 'DataService', 'RefreshService',
   function($scope, AlertService, AceEditorService, DataService,
-           RefreshService) {
-
+      RefreshService) {
     $scope.editor = undefined;
 
     $scope.paginator = new Paginator(1, 15, [], new AliasFilter('', ''));
@@ -152,24 +149,24 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
 
     $scope.loadAliases = function() {
       DataService.getAliases(
-        function(aliases) {
-          $scope.paginator.setCollection(aliases);
-          $scope.page = $scope.paginator.getPage();
-        },
-        function(error) {
-          AlertService.error('Error while fetching aliases', error);
-        }
+          function(aliases) {
+            $scope.paginator.setCollection(aliases);
+            $scope.page = $scope.paginator.getPage();
+          },
+          function(error) {
+            AlertService.error('Error while fetching aliases', error);
+          }
       );
     };
 
     $scope.loadIndices = function() {
       DataService.getIndices(
-        function(indices) {
-          $scope.indices = indices;
-        },
-        function(error) {
-          AlertService.error('Error loading indices', error);
-        }
+          function(indices) {
+            $scope.indices = indices;
+          },
+          function(error) {
+            AlertService.error('Error loading indices', error);
+          }
       );
     };
 
@@ -185,13 +182,12 @@ angular.module('cerebro').controller('AliasesController', ['$scope',
       }
       $scope.changes.splice(position, 1);
     };
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('AnalysisController', ['$scope',
   '$location', '$timeout', 'AlertService', 'AnalysisDataService',
   function($scope, $location, $timeout, AlertService, AnalysisDataService) {
-
     $scope.analyzerAnalysis = {index: undefined, analyzer: undefined};
     $scope.propertyAnalysis = {index: undefined, field: undefined};
 
@@ -201,25 +197,25 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
 
     $scope.loadAnalyzers = function(index) {
       AnalysisDataService.getIndexAnalyzers(index,
-        function(analyzers) {
-          $scope.analyzers = analyzers;
-        },
-        function(error) {
-          $scope.analyzers = [];
-          AlertService.error('Error loading index analyzers', error);
-        }
+          function(analyzers) {
+            $scope.analyzers = analyzers;
+          },
+          function(error) {
+            $scope.analyzers = [];
+            AlertService.error('Error loading index analyzers', error);
+          }
       );
     };
 
     $scope.loadFields = function(index) {
       AnalysisDataService.getIndexFields(index,
-        function(fields) {
-          $scope.fields = fields;
-        },
-        function(error) {
-          $scope.fields = [];
-          AlertService.error('Error loading index fields', error);
-        }
+          function(fields) {
+            $scope.fields = fields;
+          },
+          function(error) {
+            $scope.fields = [];
+            AlertService.error('Error loading index fields', error);
+          }
       );
     };
 
@@ -246,31 +242,29 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           AlertService.error('Error analyzing text by analyzer', error);
         };
         AnalysisDataService.analyzeByAnalyzer(
-          index,
-          analyzer,
-          text,
-          success, error
+            index,
+            analyzer,
+            text,
+            success, error
         );
       }
     };
 
     $scope.setup = function() {
       AnalysisDataService.getOpenIndices(
-        function(indices) {
-          $scope.indices = indices;
-        },
-        function(error) {
-          AlertService.error('Error loading indices', error);
-        }
+          function(indices) {
+            $scope.indices = indices;
+          },
+          function(error) {
+            AlertService.error('Error loading indices', error);
+          }
       );
     };
-
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('AnalysisDataService', ['DataService',
   function(DataService) {
-
     this.getOpenIndices = function(success, error) {
       DataService.send('analysis/indices', {}, success, error);
     };
@@ -294,23 +288,21 @@ angular.module('cerebro').factory('AnalysisDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').directive('analysisTokens', function() {
   return {
     scope: {
-      tokens: '=tokens'
+      tokens: '=tokens',
     },
-    templateUrl: 'analysis/tokens.html'
+    templateUrl: 'analysis/tokens.html',
   };
 });
 
 angular.module('cerebro').controller('CatController', ['$scope',
   'CatDataService', 'AlertService',
   function($scope, CatDataService, AlertService) {
-
     $scope.api = undefined;
 
     $scope.apis = [
@@ -329,7 +321,7 @@ angular.module('cerebro').controller('CatController', ['$scope',
       'repositories',
       'thread pool',
       'shards',
-      'segments'
+      'segments',
     ];
 
     $scope.headers = undefined;
@@ -339,20 +331,20 @@ angular.module('cerebro').controller('CatController', ['$scope',
 
     $scope.get = function(api) {
       CatDataService.get(
-        api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
-        function(data) {
-          if (data.length) {
-            $scope.headers = Object.keys(data[0]);
-            $scope.sort($scope.headers[0]);
-            $scope.data = data;
-          } else {
-            $scope.headers = [];
-            $scope.data = [];
+          api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
+          function(data) {
+            if (data.length) {
+              $scope.headers = Object.keys(data[0]);
+              $scope.sort($scope.headers[0]);
+              $scope.data = data;
+            } else {
+              $scope.headers = [];
+              $scope.data = [];
+            }
+          },
+          function(error) {
+            AlertService.error('Error executing request', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error executing request', error);
-        }
       );
     };
 
@@ -364,26 +356,22 @@ angular.module('cerebro').controller('CatController', ['$scope',
       }
       $scope.sortCol = col;
     };
-
   }]
 );
 
 angular.module('cerebro').factory('CatDataService', ['DataService',
   function(DataService) {
-
     this.get = function(api, success, error) {
       DataService.send('cat', {api: api}, success, error);
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
   'ClusterSettingsDataService', 'AlertService',
   function($scope, ClusterSettingsDataService, AlertService) {
-
     $scope.form = undefined;
     $scope.settings = undefined;
     $scope.groupedSettings = undefined;
@@ -443,48 +431,47 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
         settings[settingType][name] = value;
       });
       ClusterSettingsDataService.saveSettings(settings,
-        function(response) {
-          AlertService.info('Settings successfully saved', response);
-          $scope.setup();
-        },
-        function(error) {
-          AlertService.error('Error while saving settings', error);
-        }
+          function(response) {
+            AlertService.info('Settings successfully saved', response);
+            $scope.setup();
+          },
+          function(error) {
+            AlertService.error('Error while saving settings', error);
+          }
       );
     };
 
     $scope.setup = function() {
       ClusterSettingsDataService.getClusterSettings(
-        function(response) {
-          $scope.settings = {};
-          $scope.form = {};
-          $scope.changes = {};
-          $scope.pendingChanges = 0;
-          ['defaults', 'persistent', 'transient'].forEach(function(group) {
-            angular.forEach(response[group], function(value, setting) {
-              $scope.settings[setting] = value;
-              $scope.form[setting] = value;
+          function(response) {
+            $scope.settings = {};
+            $scope.form = {};
+            $scope.changes = {};
+            $scope.pendingChanges = 0;
+            ['defaults', 'persistent', 'transient'].forEach(function(group) {
+              angular.forEach(response[group], function(value, setting) {
+                $scope.settings[setting] = value;
+                $scope.form[setting] = value;
+              });
             });
-          });
-          if (!$scope.groupedSettings) {
-            $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form).map(function(setting) {
-                return {name: setting, static: !DynamicSettings.valid(setting)};
-              })
-            );
+            if (!$scope.groupedSettings) {
+              $scope.groupedSettings = new GroupedSettings(
+                  Object.keys($scope.form).map(function(setting) {
+                    return {name: setting, static: !DynamicSettings.valid(setting)};
+                  })
+              );
+            }
+          },
+          function(error) {
+            AlertService.error('Error loading cluster settings', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error loading cluster settings', error);
-        }
       );
     };
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
   function(DataService) {
-
     this.getClusterSettings = function(success, error) {
       DataService.send('cluster_settings', {}, success, error);
     };
@@ -495,10 +482,10 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
+// eslint-disable-next-line no-unused-vars
 var DynamicSettings = (function() {
   var settings = {
     'cluster.blocks.read_only': true,
@@ -570,13 +557,13 @@ var DynamicSettings = (function() {
     'xpack.watcher.history.cleaner_service.enabled': true,
     'action.auto_create_index': true,
     'action.destructive_requires_name': true,
-    'action.search.shard_count.limit': true
+    'action.search.shard_count.limit': true,
   };
 
   return {
     valid: function(setting) {
       return settings[setting] || false;
-    }
+    },
   };
 })();
 
@@ -584,7 +571,6 @@ var DynamicSettings = (function() {
 angular.module('cerebro').controller('ConnectController', [
   '$scope', '$location', 'ConnectDataService', 'AlertService',
   function($scope, $location, ConnectDataService, AlertService) {
-
     $scope.hosts = undefined;
 
     $scope.connecting = false;
@@ -595,12 +581,12 @@ angular.module('cerebro').controller('ConnectController', [
 
     $scope.setup = function() {
       ConnectDataService.getHosts(
-        function(hosts) {
-          $scope.hosts = hosts;
-        },
-        function(error) {
-          AlertService.error('Error while fetching list of known hosts', error);
-        }
+          function(hosts) {
+            $scope.hosts = hosts;
+          },
+          function(error) {
+            AlertService.error('Error while fetching list of known hosts', error);
+          }
       );
       $scope.host = $location.search().host;
       $scope.unauthorized = $location.search().unauthorized;
@@ -658,12 +644,10 @@ angular.module('cerebro').controller('ConnectController', [
     var feedback = function(message) {
       $scope.feedback = message;
     };
-
   }]);
 
 angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
   function($http, DataService) {
-
     this.getHosts = function(success, error) {
       var config = {method: 'GET', url: 'connect/hosts'};
       var handleSuccess = function(data) {
@@ -696,15 +680,13 @@ angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('CreateIndexController', ['$scope',
   'AlertService', 'DataService', 'AceEditorService', 'RefreshService',
   function($scope, AlertService, DataService, AceEditorService,
-           RefreshService) {
-
+      RefreshService) {
     $scope.editor = undefined;
     $scope.shards = '';
     $scope.replicas = '';
@@ -716,24 +698,24 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
         $scope.editor = AceEditorService.init('index-settings');
       }
       DataService.getIndices(
-        function(indices) {
-          $scope.indices = indices;
-        },
-        function(error) {
-          AlertService.error('Error loading indices', error);
-        }
+          function(indices) {
+            $scope.indices = indices;
+          },
+          function(error) {
+            AlertService.error('Error loading indices', error);
+          }
       );
     };
 
     $scope.loadIndexMetadata = function(index) {
       DataService.getIndexMetadata(index,
-        function(meta) {
-          var body = {settings: meta.settings, mappings: meta.mappings};
-          $scope.editor.setValue(JSON.stringify(body, null, 2));
-        },
-        function(error) {
-          AlertService.error('Error while loading index settings', error);
-        }
+          function(meta) {
+            var body = {settings: meta.settings, mappings: meta.mappings};
+            $scope.editor.setValue(JSON.stringify(body, null, 2));
+          },
+          function(error) {
+            AlertService.error('Error while loading index settings', error);
+          }
       );
     };
 
@@ -751,13 +733,13 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
             }
           }
           DataService.createIndex($scope.name, data,
-            function(response) {
-              RefreshService.refresh();
-              AlertService.success('Index successfully created');
-            },
-            function(error) {
-              AlertService.error('Error while creating index', error);
-            }
+              function(response) {
+                RefreshService.refresh();
+                AlertService.success('Index successfully created');
+              },
+              function(error) {
+                AlertService.error('Error while creating index', error);
+              }
           );
         } catch (error) {
           AlertService.error('Malformed settings', error);
@@ -766,14 +748,12 @@ angular.module('cerebro').controller('CreateIndexController', ['$scope',
         AlertService.error('You must specify a valid index name');
       }
     };
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('IndexSettingsController', ['$scope',
   '$location', 'IndexSettingsDataService', 'AlertService',
   function($scope, $location, IndexSettingsDataService, AlertService) {
-
     $scope.form = undefined;
     $scope.settings = undefined;
     $scope.groupedSettings = undefined;
@@ -824,55 +804,54 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
 
     $scope.save = function() {
       IndexSettingsDataService.update(
-        $scope.index,
-        $scope.changes,
-        function(response) {
-          AlertService.info('Settings successfully saved', response);
-          $scope.setup();
-        },
-        function(error) {
-          AlertService.error('Error while saving settings', error);
-        }
+          $scope.index,
+          $scope.changes,
+          function(response) {
+            AlertService.info('Settings successfully saved', response);
+            $scope.setup();
+          },
+          function(error) {
+            AlertService.error('Error while saving settings', error);
+          }
       );
     };
 
     $scope.setup = function() {
       IndexSettingsDataService.get(
-        $scope.index,
-        function(response) {
-          $scope.settings = {};
-          $scope.form = {};
-          $scope.changes = {};
-          $scope.pendingChanges = 0;
-          var settings = response[$scope.index];
-          ['defaults', 'settings'].forEach(function(group) {
-            angular.forEach(settings[group], function(value, setting) {
-              if (ValidIndexSettings.valid(setting)) {
-                $scope.settings[setting] = value;
-                $scope.form[setting] = value;
-              }
+          $scope.index,
+          function(response) {
+            $scope.settings = {};
+            $scope.form = {};
+            $scope.changes = {};
+            $scope.pendingChanges = 0;
+            var settings = response[$scope.index];
+            ['defaults', 'settings'].forEach(function(group) {
+              angular.forEach(settings[group], function(value, setting) {
+                if (ValidIndexSettings.valid(setting)) {
+                  $scope.settings[setting] = value;
+                  $scope.form[setting] = value;
+                }
+              });
             });
-          });
-          if (!$scope.groupedSettings) {
-            $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form).map(function(setting) {
-                var dynamic = DynamicIndexSettings.valid(setting);
-                return {name: setting, static: !dynamic};
-              })
-            );
+            if (!$scope.groupedSettings) {
+              $scope.groupedSettings = new GroupedSettings(
+                  Object.keys($scope.form).map(function(setting) {
+                    var dynamic = DynamicIndexSettings.valid(setting);
+                    return {name: setting, static: !dynamic};
+                  })
+              );
+            }
+          },
+          function(error) {
+            AlertService.error('Error loading index settings', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error loading index settings', error);
-        }
       );
     };
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
   function(DataService) {
-
     this.get = function(index, success, error) {
       DataService.send('index_settings', {index: index}, success, error);
     };
@@ -883,9 +862,10 @@ angular.module('cerebro').factory('IndexSettingsDataService', ['DataService',
     };
 
     return this;
-  }
+  },
 ]);
 
+// eslint-disable-next-line no-unused-vars
 var DynamicIndexSettings = (function() {
   var settings = {
     'index.mapper.dynamic': true,
@@ -949,23 +929,24 @@ var DynamicIndexSettings = (function() {
     'index.ttl.disable_purge': true,
     'index.unassigned.node_left.delayed_timeout': true,
     'index.warmer.enabled': true,
-    'index.write.wait_for_active_shards': true
+    'index.write.wait_for_active_shards': true,
   };
 
   return {
     valid: function(setting) {
       return settings[setting] || false;
-    }
+    },
   };
 })();
 
 
+// eslint-disable-next-line no-unused-vars
 var ValidIndexSettings = (function() {
   var invalidSettings = [
     'index.creation_date',
     'index.provided_name',
     'index.uuid',
-    'index.version.created'
+    'index.version.created',
   ];
 
   return {
@@ -975,14 +956,13 @@ var ValidIndexSettings = (function() {
         valid = valid && setting.indexOf(invalidSetting) == -1;
       });
       return valid;
-    }
+    },
   };
 })();
 
 
 angular.module('cerebro').controller('ModalController', ['$scope',
   'ModalService', function($scope, ModalService) {
-
     $scope.service = ModalService;
 
     $scope.close = function() {
@@ -992,14 +972,12 @@ angular.module('cerebro').controller('ModalController', ['$scope',
     $scope.confirm = function() {
       $scope.service.confirm();
     };
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
   'PageService', 'DataService', 'RefreshService',
   function($scope, $http, PageService, DataService, RefreshService) {
-
     $scope.status = undefined;
     $scope.cluster_name = undefined;
     $scope.host = undefined;
@@ -1020,35 +998,33 @@ angular.module('cerebro').controller('NavbarController', ['$scope', '$http',
     };
 
     $scope.$watch(
-      function() {
-        return RefreshService.lastUpdate();
-      },
-      function() {
-        DataService.getNavbarData(
-          function(data) {
-            $scope.status = data.status;
-            $scope.cluster_name = data.cluster_name;
-            $scope.username = data.username;
-            $scope.host = DataService.getHost();
-            PageService.setup($scope.cluster_name, $scope.status);
-          },
-          function(error) {
-            $scope.status = undefined;
-            $scope.cluster_name = undefined;
-            $scope.host = undefined;
-            PageService.setup();
-          }
-        );
-      }
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          DataService.getNavbarData(
+              function(data) {
+                $scope.status = data.status;
+                $scope.cluster_name = data.cluster_name;
+                $scope.username = data.username;
+                $scope.host = DataService.getHost();
+                PageService.setup($scope.cluster_name, $scope.status);
+              },
+              function(error) {
+                $scope.status = undefined;
+                $scope.cluster_name = undefined;
+                $scope.host = undefined;
+                PageService.setup();
+              }
+          );
+        }
     );
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('NodesController', ['$scope',
   'NodesDataService', 'AlertService', 'RefreshService',
   function($scope, NodesDataService, AlertService, RefreshService) {
-
     $scope._nodes = undefined; // keeps unfiltered list of nodes
     $scope.nodes = undefined;
 
@@ -1058,19 +1034,19 @@ angular.module('cerebro').controller('NodesController', ['$scope',
     $scope.filter = new NodeFilter('', true, true, true, true, 0);
 
     $scope.$watch(
-      function() {
-        return RefreshService.lastUpdate();
-      },
-      function() {
-        $scope.refresh();
-      },
-      true
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          $scope.refresh();
+        },
+        true
     );
 
     $scope.$watch('filter', function() {
-        $scope.refreshVisibleNodes();
-      },
-      true);
+      $scope.refreshVisibleNodes();
+    },
+    true);
 
     $scope.setSortBy = function(field) {
       if ($scope.sortBy === field) {
@@ -1096,37 +1072,33 @@ angular.module('cerebro').controller('NodesController', ['$scope',
 
     $scope.refresh = function() {
       NodesDataService.load(
-        function(nodes) {
-          $scope.setNodes(nodes);
-        },
-        function(error) {
-          $scope.setNodes(undefined);
-          AlertService.error('Error while loading nodes data', error);
-        }
+          function(nodes) {
+            $scope.setNodes(nodes);
+          },
+          function(error) {
+            $scope.setNodes(undefined);
+            AlertService.error('Error while loading nodes data', error);
+          }
       );
     };
-
   }]
 );
 
 angular.module('cerebro').factory('NodesDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('nodes', {}, success, error);
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
   '$window', '$location', 'OverviewDataService', 'AlertService', 'ModalService',
   'RefreshService',
   function($scope, $http, $window, $location, OverviewDataService, AlertService,
-           ModalService, RefreshService) {
-
+      ModalService, RefreshService) {
     $scope.data = undefined;
 
     $scope.indices = undefined;
@@ -1146,10 +1118,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.paginator = new Paginator(
-      1,
-      $scope.getPageSize(),
-      [],
-      $scope.indices_filter)
+        1,
+        $scope.getPageSize(),
+        [],
+        $scope.indices_filter)
     ;
 
     $scope.page = $scope.paginator.getPage();
@@ -1161,45 +1133,45 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     });
 
     $scope.$watch(
-      function() {
-        return RefreshService.lastUpdate();
-      },
-      function() {
-        $scope.refresh();
-      },
-      true
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          $scope.refresh();
+        },
+        true
     );
 
     $scope.refresh = function() {
       OverviewDataService.getOverview(
-        function(data) {
-          $scope.data = data;
-          $scope.setIndices(data.indices);
-          $scope.setNodes(data.nodes);
-          $scope.unassigned_shards = data.unassigned_shards;
-          $scope.relocating_shards = data.relocating_shards;
-          $scope.initializing_shards = data.initializing_shards;
-          $scope.closed_indices = data.closed_indices;
-          $scope.special_indices = data.special_indices;
-          $scope.shardAllocation = data.shard_allocation;
-          if (!$scope.unassigned_shards &&
+          function(data) {
+            $scope.data = data;
+            $scope.setIndices(data.indices);
+            $scope.setNodes(data.nodes);
+            $scope.unassigned_shards = data.unassigned_shards;
+            $scope.relocating_shards = data.relocating_shards;
+            $scope.initializing_shards = data.initializing_shards;
+            $scope.closed_indices = data.closed_indices;
+            $scope.special_indices = data.special_indices;
+            $scope.shardAllocation = data.shard_allocation;
+            if (!$scope.unassigned_shards &&
             !$scope.relocating_shards &&
             !$scope.initializing_shards) {
-            $scope.indices_filter.healthy = true;
+              $scope.indices_filter.healthy = true;
+            }
+          },
+          function(error) {
+            AlertService.error('Error while loading data', error);
+            $scope.data = undefined;
+            $scope.indices = undefined;
+            $scope.nodes = undefined;
+            $scope.unassigned_shards = 0;
+            $scope.relocating_shards = 0;
+            $scope.initializing_shards = 0;
+            $scope.closed_indices = 0;
+            $scope.special_indices = 0;
+            $scope.shardAllocation = true;
           }
-        },
-        function(error) {
-          AlertService.error('Error while loading data', error);
-          $scope.data = undefined;
-          $scope.indices = undefined;
-          $scope.nodes = undefined;
-          $scope.unassigned_shards = 0;
-          $scope.relocating_shards = 0;
-          $scope.initializing_shards = 0;
-          $scope.closed_indices = 0;
-          $scope.special_indices = 0;
-          $scope.shardAllocation = true;
-        }
       );
     };
 
@@ -1215,11 +1187,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.$watch('nodes_filter', function() {
-        if ($scope.data) {
-          $scope.setNodes($scope.data.nodes);
-        }
-      },
-      true);
+      if ($scope.data) {
+        $scope.setNodes($scope.data.nodes);
+      }
+    },
+    true);
 
     $scope.setNodes = function(nodes) {
       $scope.nodes = nodes.filter(function(node) {
@@ -1242,64 +1214,64 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.openIndex = function(index) {
       ModalService.promptConfirmation(
-        'Open ' + index + '?',
-        function() {
-          OverviewDataService.openIndex(index, success, error);
-        }
+          'Open ' + index + '?',
+          function() {
+            OverviewDataService.openIndex(index, success, error);
+          }
       );
     };
 
     $scope.closeIndex = function(index) {
       ModalService.promptConfirmation(
-        'Close ' + index + '?',
-        function() {
-          OverviewDataService.closeIndex(index, success, error);
-        }
+          'Close ' + index + '?',
+          function() {
+            OverviewDataService.closeIndex(index, success, error);
+          }
       );
     };
 
     $scope.deleteIndex = function(index) {
       ModalService.promptConfirmation(
-        'Delete ' + index + '?',
-        function() {
-          OverviewDataService.deleteIndex(index, success, error);
-        }
+          'Delete ' + index + '?',
+          function() {
+            OverviewDataService.deleteIndex(index, success, error);
+          }
       );
     };
 
     $scope.clearIndexCache = function(index) {
       ModalService.promptConfirmation(
-        'Clear ' + index + ' cache?',
-        function() {
-          OverviewDataService.clearIndexCache(index, success, error);
-        }
+          'Clear ' + index + ' cache?',
+          function() {
+            OverviewDataService.clearIndexCache(index, success, error);
+          }
       );
     };
 
     $scope.refreshIndex = function(index) {
       ModalService.promptConfirmation(
-        'Refresh index ' + index + '?',
-        function() {
-          OverviewDataService.refreshIndex(index, success, error);
-        }
+          'Refresh index ' + index + '?',
+          function() {
+            OverviewDataService.refreshIndex(index, success, error);
+          }
       );
     };
 
     $scope.flushIndex = function(index) {
       ModalService.promptConfirmation(
-        'Flush index ' + index + '?',
-        function() {
-          OverviewDataService.flushIndex(index, success, error);
-        }
+          'Flush index ' + index + '?',
+          function() {
+            OverviewDataService.flushIndex(index, success, error);
+          }
       );
     };
 
     $scope.forceMerge = function(index) {
       ModalService.promptConfirmation(
-        'Optimize index ' + index + '?',
-        function() {
-          OverviewDataService.forceMerge(index, success, error);
-        }
+          'Optimize index ' + index + '?',
+          function() {
+            OverviewDataService.forceMerge(index, success, error);
+          }
       );
     };
 
@@ -1310,10 +1282,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Close all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.closeIndex(indices.join(','), success, error);
-        }
+          'Close all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.closeIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1322,10 +1294,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Open all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.openIndex(indices.join(','), success, error);
-        }
+          'Open all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.openIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1334,10 +1306,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Optimize all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.forceMerge(indices.join(','), success, error);
-        }
+          'Optimize all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.forceMerge(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1346,10 +1318,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Refresh all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.refreshIndex(indices.join(','), success, error);
-        }
+          'Refresh all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.refreshIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1358,10 +1330,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Flush all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.flushIndex(indices.join(','), success, error);
-        }
+          'Flush all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.flushIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1370,12 +1342,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Clear all ' + indices.length + ' selected indices cache?',
-        function() {
-          OverviewDataService.clearIndexCache(
-            indices.join(','), success, error
-          );
-        }
+          'Clear all ' + indices.length + ' selected indices cache?',
+          function() {
+            OverviewDataService.clearIndexCache(
+                indices.join(','), success, error
+            );
+          }
       );
     };
 
@@ -1384,10 +1356,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Delete all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.deleteIndex(indices.join(','), success, error);
-        }
+          'Delete all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.deleteIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -1430,14 +1402,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.relocateShard = function(node) {
       var s = $scope.relocatingShard;
       OverviewDataService.relocateShard(s.shard, s.index, s.node, node.id,
-        function(response) {
-          $scope.relocatingShard = undefined;
-          RefreshService.refresh();
-          AlertService.info('Relocation successfully started', response);
-        },
-        function(error) {
-          AlertService.error('Error while starting relocation', error);
-        }
+          function(response) {
+            $scope.relocatingShard = undefined;
+            RefreshService.refresh();
+            AlertService.info('Relocation successfully started', response);
+          },
+          function(error) {
+            AlertService.error('Error while starting relocation', error);
+          }
       );
     };
 
@@ -1466,12 +1438,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       }
       return false;
     };
-
   }]);
 
 angular.module('cerebro').factory('OverviewDataService', ['DataService',
   function(DataService) {
-
     this.getOverview = function(success, error) {
       DataService.send('overview', {}, success, error);
     };
@@ -1549,14 +1519,12 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('RepositoriesController', ['$scope',
-'RepositoriesDataService', 'AlertService', 'ModalService',
+  'RepositoriesDataService', 'AlertService', 'ModalService',
   function($scope, RepositoriesDataService, AlertService, ModalService) {
-
     $scope.name = '';
     $scope.type = '';
     $scope.settings = {};
@@ -1564,25 +1532,25 @@ angular.module('cerebro').controller('RepositoriesController', ['$scope',
     $scope.update = false;
 
     $scope.$watch(
-      'name',
-      function(newValue, oldValue) {
-        var repositories = $scope.repositories.map(function(r) {
-          return r.name;
-        });
-        $scope.update = repositories.indexOf(newValue) !== -1;
-      },
-      true
+        'name',
+        function(newValue, oldValue) {
+          var repositories = $scope.repositories.map(function(r) {
+            return r.name;
+          });
+          $scope.update = repositories.indexOf(newValue) !== -1;
+        },
+        true
     );
 
     $scope.create = function(name, type, settings) {
       RepositoriesDataService.create(name, type, settings,
-        function(response) {
-          $scope.setup();
-          AlertService.info('Repository successfully created', response);
-        },
-        function(error) {
-          AlertService.error('Error creating repository', error);
-        }
+          function(response) {
+            $scope.setup();
+            AlertService.info('Repository successfully created', response);
+          },
+          function(error) {
+            AlertService.error('Error creating repository', error);
+          }
       );
     };
 
@@ -1594,55 +1562,53 @@ angular.module('cerebro').controller('RepositoriesController', ['$scope',
 
     $scope.remove = function(name) {
       ModalService.promptConfirmation(
-        'Delete repository ' + name + '?',
-        function() {
-          RepositoriesDataService.delete(name,
-            function(data) {
-              $scope.setup();
-              AlertService.success('Operation successfully executed', data);
-            },
-            function(data) {
-              AlertService.error('Operation failed', data);
-            }
-          );
-        }
+          'Delete repository ' + name + '?',
+          function() {
+            RepositoriesDataService.delete(name,
+                function(data) {
+                  $scope.setup();
+                  AlertService.success('Operation successfully executed', data);
+                },
+                function(data) {
+                  AlertService.error('Operation failed', data);
+                }
+            );
+          }
       );
     };
 
     $scope.save = function(name, type, settings) {
       ModalService.promptConfirmation(
-        'Save settings for repository ' + name + '?',
-        function() {
-          RepositoriesDataService.create(name, type, settings,
-            function(response) {
-              $scope.setup();
-              AlertService.info('Successfully updated', response);
-            },
-            function(error) {
-              AlertService.error('Error updating repository', error);
-            }
-          );
-        }
+          'Save settings for repository ' + name + '?',
+          function() {
+            RepositoriesDataService.create(name, type, settings,
+                function(response) {
+                  $scope.setup();
+                  AlertService.info('Successfully updated', response);
+                },
+                function(error) {
+                  AlertService.error('Error updating repository', error);
+                }
+            );
+          }
       );
     };
 
     $scope.setup = function() {
       RepositoriesDataService.load(
-        function(repositories) {
-          $scope.repositories = repositories;
-        },
-        function(error) {
-          AlertService.error('Error loading repositories', error);
-        }
+          function(repositories) {
+            $scope.repositories = repositories;
+          },
+          function(error) {
+            AlertService.error('Error loading repositories', error);
+          }
       );
     };
-
   }]
 );
 
 angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('repositories', {}, success, error);
     };
@@ -1651,7 +1617,7 @@ angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
       var data = {
         name: name,
         type: type,
-        settings: settings
+        settings: settings,
       };
       DataService.send('repositories/create', data, success, error);
     };
@@ -1661,16 +1627,14 @@ angular.module('cerebro').factory('RepositoriesDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'RestDataService', 'AlertService', 'ModalService', 'AceEditorService',
   'ClipboardService',
   function($scope, $http, $sce, RestDataService, AlertService, ModalService,
-           AceEditorService, ClipboardService) {
-
+      AceEditorService, ClipboardService) {
     $scope.editor = undefined;
     $scope.response = undefined;
 
@@ -1705,14 +1669,14 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       $scope.editor = AceEditorService.init('rest-client-editor');
       $scope.editor.setValue('{}');
       RestDataService.load(
-        function(response) {
-          $scope.host = response.host;
-          $scope.indices = response.indices;
-          $scope.updateOptions($scope.path);
-        },
-        function(error) {
-          AlertService.error('Error while loading cluster indices', error);
-        }
+          function(response) {
+            $scope.host = response.host;
+            $scope.indices = response.indices;
+            $scope.updateOptions($scope.path);
+          },
+          function(error) {
+            AlertService.error('Error while loading cluster indices', error);
+          }
       );
       $scope.loadHistory();
     };
@@ -1726,12 +1690,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     $scope.loadHistory = function() {
       RestDataService.history(
-        function(history) {
-          $scope.history = history;
-        },
-        function(error) {
-          AlertService.error('Error while loading request history', error);
-        }
+          function(history) {
+            $scope.history = history;
+          },
+          function(error) {
+            AlertService.error('Error while loading request history', error);
+          }
       );
     };
 
@@ -1777,22 +1741,20 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
         curl += ' -d \'' + body + '\'';
       }
       ClipboardService.copy(
-        curl,
-        function() {
-          AlertService.info('cURL request successfully copied to clipboard');
-        },
-        function() {
-          AlertService.error('Error while copying request to clipboard');
-        }
+          curl,
+          function() {
+            AlertService.info('cURL request successfully copied to clipboard');
+          },
+          function() {
+            AlertService.error('Error while copying request to clipboard');
+          }
       );
     };
-
   }]
 );
 
 angular.module('cerebro').factory('RestDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('rest', {}, success, error);
     };
@@ -1811,14 +1773,12 @@ angular.module('cerebro').factory('RestDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('SnapshotController', ['$scope',
-'SnapshotsDataService', 'AlertService', 'ModalService',
+  'SnapshotsDataService', 'AlertService', 'ModalService',
   function($scope, SnapshotsDataService, AlertService, ModalService) {
-
     $scope._indices = [];
     $scope.indices = [];
     $scope.repositories = [];
@@ -1831,15 +1791,15 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
       snapshot: '',
       repository: '',
       ignoreUnavailable: false,
-      includeGlobalState: true
+      includeGlobalState: true,
     };
 
     $scope.$watch(
-      'repository',
-      function(newValue, oldValue) {
-        $scope.loadSnapshots(newValue);
-      },
-      true
+        'repository',
+        function(newValue, oldValue) {
+          $scope.loadSnapshots(newValue);
+        },
+        true
     );
 
     $scope.$watch('showSpecialIndices', function(current, previous) {
@@ -1849,70 +1809,70 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
     $scope.loadSnapshots = function(repository) {
       if (repository) {
         SnapshotsDataService.loadSnapshots(
-          repository,
-          function(snapshots) {
-            $scope.snapshots = snapshots;
-          },
-          function(error) {
-            AlertService.error('Error loading snapshots', error);
-          }
+            repository,
+            function(snapshots) {
+              $scope.snapshots = snapshots;
+            },
+            function(error) {
+              AlertService.error('Error loading snapshots', error);
+            }
         );
       }
     };
 
     $scope.create = function(repository, snapshot, ignoreUnavailable,
-      includeGlobalState, indices) {
+        includeGlobalState, indices) {
       SnapshotsDataService.create(
-        repository,
-        snapshot,
-        ignoreUnavailable,
-        includeGlobalState,
-        indices,
-        function(response) {
-          $scope.loadSnapshots($scope.repository);
-          AlertService.info('Snapshot successfully created', response);
-        },
-        function(error) {
-          AlertService.error('Error creating snapshot', error);
-        }
+          repository,
+          snapshot,
+          ignoreUnavailable,
+          includeGlobalState,
+          indices,
+          function(response) {
+            $scope.loadSnapshots($scope.repository);
+            AlertService.info('Snapshot successfully created', response);
+          },
+          function(error) {
+            AlertService.error('Error creating snapshot', error);
+          }
       );
     };
 
     $scope.delete = function(repository, snapshot) {
       ModalService.promptConfirmation(
-        'Delete snapshot ' + snapshot + '?',
-        function() {
-          SnapshotsDataService.delete(
-            repository,
-            snapshot,
-            function(response) {
-              $scope.loadSnapshots($scope.repository);
-              AlertService.info('Snapshot successfully deleted');
-            },
-            function(error) {
-              AlertService.error('Error loading repositories', error);
-            }
-          );
-        }
+          'Delete snapshot ' + snapshot + '?',
+          function() {
+            SnapshotsDataService.delete(
+                repository,
+                snapshot,
+                function(response) {
+                  $scope.loadSnapshots($scope.repository);
+                  AlertService.info('Snapshot successfully deleted');
+                },
+                function(error) {
+                  AlertService.error('Error loading repositories', error);
+                }
+            );
+          }
       );
     };
 
     $scope.restore = function(repository, snapshot, form) {
       SnapshotsDataService.restore(
-        repository,
-        snapshot,
-        form.renamePattern,
-        form.renameReplacement,
-        form.ignoreUnavailable,
-        form.includeAliases,
-        form.includeGlobalState,
-        form.indices,
-        function(response) {
-          AlertService.info('Snapshot successfully restored', response);
-        },
-        function(error) {
-          AlertService.error('Error restoring snapshot', error);
-        }
+          repository,
+          snapshot,
+          form.renamePattern,
+          form.renameReplacement,
+          form.ignoreUnavailable,
+          form.includeAliases,
+          form.includeGlobalState,
+          form.indices,
+          function(response) {
+            AlertService.info('Snapshot successfully restored', response);
+          },
+          function(error) {
+            AlertService.error('Error restoring snapshot', error);
+          }
       );
     };
 
@@ -1928,14 +1888,14 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
 
     $scope.setup = function() {
       SnapshotsDataService.load(
-        function(data) {
-          $scope._indices = data.indices;
-          $scope.refreshIndices();
-          $scope.repositories = data.repositories;
-        },
-        function(error) {
-          AlertService.error('Error loading repositories', error);
-        }
+          function(data) {
+            $scope._indices = data.indices;
+            $scope.refreshIndices();
+            $scope.repositories = data.repositories;
+          },
+          function(error) {
+            AlertService.error('Error loading repositories', error);
+          }
       );
     };
   }]
@@ -1943,7 +1903,6 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
 
 angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('snapshots', {}, success, error);
     };
@@ -1959,20 +1918,20 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
     };
 
     this.create = function(repository, snapshot, ignoreUnavailable,
-      includeGlobalState, indices, success, error) {
+        includeGlobalState, indices, success, error) {
       var data = {
         repository: repository,
         snapshot: snapshot,
         ignoreUnavailable: ignoreUnavailable,
         includeGlobalState: includeGlobalState,
-        indices: indices
+        indices: indices,
       };
       DataService.send('snapshots/create', data, success, error);
     };
 
     this.restore = function(repository, snapshot, renamePattern,
-    renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
-    indices, success, error) {
+        renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
+        indices, success, error) {
       var data = {
         repository: repository,
         snapshot: snapshot,
@@ -1981,37 +1940,35 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         ignoreUnavailable: ignoreUnavailable,
         includeAliases: includeAliases,
         includeGlobalState: includeGlobalState,
-        indices: indices
+        indices: indices,
       };
       DataService.send('snapshots/restore', data, success, error);
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').controller('TemplatesController', ['$scope',
   'AlertService', 'AceEditorService', 'TemplatesDataService', 'ModalService',
   function($scope, AlertService, AceEditorService, TemplatesDataService,
-           ModalService) {
-
+      ModalService) {
     var TemplateBase = JSON.stringify(
-      {
-        template: 'template pattern(e.g.: index_name_*)',
-        settings: {},
-        mappings: {},
-        aliases: {}
-      },
-      undefined,
-      2
+        {
+          template: 'template pattern(e.g.: index_name_*)',
+          settings: {},
+          mappings: {},
+          aliases: {},
+        },
+        undefined,
+        2
     );
 
     $scope.editor = undefined;
     $scope.editMode = false;
 
     $scope.paginator = new Paginator(1, 10, [],
-      new IndexTemplateFilter('', ''));
+        new IndexTemplateFilter('', ''));
 
     $scope.$watch('paginator', function(filter, previous) {
       $scope.page = $scope.paginator.getPage();
@@ -2037,13 +1994,13 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
 
     $scope.loadTemplates = function() {
       TemplatesDataService.getTemplates(
-        function(templates) {
-          $scope.paginator.setCollection(templates);
-          $scope.page = $scope.paginator.getPage();
-        },
-        function(error) {
-          AlertService.error('Error while loading templates', error);
-        }
+          function(templates) {
+            $scope.paginator.setCollection(templates);
+            $scope.page = $scope.paginator.getPage();
+          },
+          function(error) {
+            AlertService.error('Error while loading templates', error);
+          }
       );
     };
 
@@ -2067,9 +2024,8 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
           AlertService.error('Error creating template', response);
         };
         TemplatesDataService.create(name, template, success, errorCallback);
-      }
-      catch
-        (error) {
+      } catch
+      (error) {
         AlertService.error('Malformed template', error);
       }
     };
@@ -2083,10 +2039,10 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
         AlertService.error('Error deleting template', response);
       };
       ModalService.promptConfirmation(
-        'Delete template ' + name + '?',
-        function() {
-          TemplatesDataService.delete(name, success, errorCallback);
-        }
+          'Delete template ' + name + '?',
+          function() {
+            TemplatesDataService.delete(name, success, errorCallback);
+          }
       );
     };
 
@@ -2094,12 +2050,11 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       $scope.loadTemplates();
       $scope.initEditor();
     };
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('TemplatesDataService', ['DataService',
   function(DataService) {
-
     this.getTemplates = function(success, error) {
       DataService.send('templates', {}, success, error);
     };
@@ -2114,16 +2069,15 @@ angular.module('cerebro').factory('TemplatesDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 function IndexTemplateFilter(name, pattern) {
-
   this.name = name;
   this.pattern = pattern;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new IndexTemplateFilter(name, pattern);
   };
 
@@ -2157,9 +2111,9 @@ function IndexTemplateFilter(name, pattern) {
       return matches;
     }
   };
-
 }
 
+// eslint-disable-next-line no-unused-vars
 function AceEditor(target) {
   // ace editor
   this.editor = ace.edit(target);
@@ -2169,7 +2123,7 @@ function AceEditor(target) {
   this.editor.setOptions({
     fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
     fontSize: '12px',
-    fontWeight: '400'
+    fontWeight: '400',
   });
 
   // sets value and moves cursor to beggining
@@ -2200,15 +2154,14 @@ function AceEditor(target) {
     } catch (error) { // nothing to do
     }
   };
-
 }
 
 function AliasFilter(index, alias) {
-
   this.index = index;
   this.alias = alias;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new AliasFilter(this.index, this.alias);
   };
 
@@ -2245,9 +2198,9 @@ function AliasFilter(index, alias) {
       return matches;
     }
   };
-
 }
 
+// eslint-disable-next-line no-unused-vars
 function Alias(alias, index, filter, indexRouting, searchRouting) {
   this.alias = alias ? alias.toLowerCase() : '';
   this.index = index ? index.toLowerCase() : '';
@@ -2274,13 +2227,12 @@ function Alias(alias, index, filter, indexRouting, searchRouting) {
       index: this.index,
       filter: this.filter,
       index_routing: cleanInput(this.index_routing),
-      search_routing: cleanInput(this.search_routing)
+      search_routing: cleanInput(this.search_routing),
     };
   };
 }
 
 angular.module('cerebro').filter('bytes', function() {
-
   var UNITS = ['b', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
   function stringify(bytes) {
@@ -2295,9 +2247,9 @@ angular.module('cerebro').filter('bytes', function() {
   return function(bytes) {
     return stringify(bytes);
   };
-
 });
 
+// eslint-disable-next-line no-unused-vars
 function GroupedSettings(settings) {
   var groups = {};
   settings.forEach(function(setting) {
@@ -2336,13 +2288,14 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   };
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new IndexFilter(
-      this.name,
-      this.closed,
-      this.special,
-      this.healthy,
-      this.asc,
-      this.timestamp
+        this.name,
+        this.closed,
+        this.special,
+        this.healthy,
+        this.asc,
+        this.timestamp
     );
   };
 
@@ -2391,8 +2344,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
             }
           }
         }
-      }
-      catch (err) { // if not valid regexp, still try normal matching
+      } catch (err) { // if not valid regexp, still try normal matching
         matches = index.name.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
           for (var _idx = 0; _idx < index.aliases.length; _idx++) {
@@ -2407,9 +2359,9 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     }
     return matches;
   };
-
 }
 
+// eslint-disable-next-line no-unused-vars
 function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.name = name;
   this.data = data;
@@ -2419,8 +2371,9 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.timestamp = timestamp;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new NodeFilter(
-      this.name, this.data, this.master, this.ingest, this.coordinating
+        this.name, this.data, this.master, this.ingest, this.coordinating
     );
   };
 
@@ -2469,9 +2422,9 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
       return true;
     }
   };
-
 }
 
+// eslint-disable-next-line no-unused-vars
 function Page(elements, total, first, last, next, previous) {
   this.elements = elements;
   this.total = total;
@@ -2483,12 +2436,11 @@ function Page(elements, total, first, last, next, previous) {
 
 angular.module('cerebro').directive('ngPagination', ['$document',
   function($document) {
-
     return {
       scope: {
         paginator: '=paginator',
         page: '=page',
-        label: '=label'
+        label: '=label',
       },
       templateUrl: 'pagination.html',
       link: function(scope, element, attrs) {
@@ -2515,13 +2467,13 @@ angular.module('cerebro').directive('ngPagination', ['$document',
         element.on('$destroy', function() {
           $document.unbind('keydown', handler);
         });
-      }
+      },
     };
   }]
 );
 
+// eslint-disable-next-line no-unused-vars
 function Paginator(page, pageSize, collection, filter) {
-
   this.filter = filter;
 
   this.page = page;
@@ -2599,36 +2551,32 @@ function Paginator(page, pageSize, collection, filter) {
   this.getCollection = function() {
     return this.$collection;
   };
-
 }
 
 angular.module('cerebro').directive('ngProgress',
-  function() {
-
-    return {
-      scope: {
-        value: '=value',
-        max: '=max',
-        text: '=text',
-        tooltip: '=tooltip'
-      },
-      templateUrl: 'shared/progress.html'
-    };
-  }
+    function() {
+      return {
+        scope: {
+          value: '=value',
+          max: '=max',
+          text: '=text',
+          tooltip: '=tooltip',
+        },
+        templateUrl: 'shared/progress.html',
+      };
+    }
 );
 
+// eslint-disable-next-line no-unused-vars
 function Request(path, method, body) {
-
   this.path = path;
 
   this.method = method;
 
   this.body = body;
-
 }
 
 angular.module('cerebro').filter('startsWith', function() {
-
   function strStartsWith(str, prefix) {
     return (str + '').indexOf(prefix) === 0;
   }
@@ -2645,7 +2593,6 @@ angular.module('cerebro').filter('startsWith', function() {
 });
 
 angular.module('cerebro').filter('timeInterval', function() {
-
   var UNITS = ['yr', 'mo', 'd', 'h', 'min', 'sec'];
 
   var UNIT_MEASURE = {
@@ -2655,11 +2602,10 @@ angular.module('cerebro').filter('timeInterval', function() {
     d: 86400000,
     h: 3600000,
     min: 60000,
-    sec: 1000
+    sec: 1000,
   };
 
   function stringify(seconds) {
-
     var result = '0sec';
 
     for (var idx = 0; idx < UNITS.length; idx++) {
@@ -2676,11 +2622,10 @@ angular.module('cerebro').filter('timeInterval', function() {
   return function(seconds) {
     return stringify(seconds);
   };
-
 });
 
+// eslint-disable-next-line no-unused-vars
 function URLAutocomplete(indices) {
-
   var PATHS = [
     // Multi Search
     '_msearch',
@@ -2691,7 +2636,7 @@ function URLAutocomplete(indices) {
     '_search',
     '{index}/_search',
     '_search/template',
-    '{index}/_search/template'
+    '{index}/_search/template',
   ];
 
   var format = function(previousTokens, suggestedToken) {
@@ -2717,7 +2662,7 @@ function URLAutocomplete(indices) {
      *
      * @param {Array} pathTokens tokens for the path to be suggested
      * @param {Array} suggestedPathTokens tokens for the suggested path
-     * @returns {Array} a new array with the variables from suggestedPathTokens
+     * @return {Array} a new array with the variables from suggestedPathTokens
      * replaced by the actual values from pathTokens
      */
     var replaceVariables = function(pathTokens, suggestedPathTokens) {
@@ -2737,7 +2682,7 @@ function URLAutocomplete(indices) {
      *
      * @param {Array} pathTokens tokens of path to be autocompleted
      * @param {Array} suggestedPathTokens tokens of possible suggestion
-     * @returns {boolean} if suggestion is valid
+     * @return {boolean} if suggestion is valid
      */
     var isValidSuggestion = function(pathTokens, suggestedPathTokens) {
       var valid = true;
@@ -2766,8 +2711,8 @@ function URLAutocomplete(indices) {
       if (suggestedPathTokens.length > suggestedTokenIndex &&
         isValidSuggestion(pathTokens, suggestedPathTokens)) {
         suggestedPathTokens = replaceVariables(
-          pathTokens,
-          suggestedPathTokens
+            pathTokens,
+            suggestedPathTokens
         );
         var suggestedToken = suggestedPathTokens[suggestedTokenIndex];
         if (suggestedToken === '{index}') {
@@ -2786,65 +2731,62 @@ function URLAutocomplete(indices) {
   };
 
   return this;
-
 }
 
 angular.module('cerebro').directive('ngPlainInclude', function() {
   return {
     templateUrl: function(elem, attr) {
       return attr.file;
-    }
+    },
   };
 });
 
 angular.module('cerebro').directive('ngSortBy',
-  function() {
-
-    function updateSortingIcon(scope, elem, attrs) {
-      var sorts = scope.sortBy === attrs.property;
-      var sortIcon = elem.find('i');
-      sortIcon.removeClass('fa-sort-asc fa-sort-desc');
-      if (sorts) {
-        if (scope.reverse) {
-          sortIcon.addClass('fa-sort-desc');
-        } else {
-          sortIcon.addClass('fa-sort-asc');
+    function() {
+      function updateSortingIcon(scope, elem, attrs) {
+        var sorts = scope.sortBy === attrs.property;
+        var sortIcon = elem.find('i');
+        sortIcon.removeClass('fa-sort-asc fa-sort-desc');
+        if (sorts) {
+          if (scope.reverse) {
+            sortIcon.addClass('fa-sort-desc');
+          } else {
+            sortIcon.addClass('fa-sort-asc');
+          }
         }
       }
-    }
 
-    function link(scope, elem, attrs) {
-      scope.$watch(
-        function() {
-          return scope.sortBy;
-        },
-        function() {
-          updateSortingIcon(scope, elem, attrs);
-        });
+      function link(scope, elem, attrs) {
+        scope.$watch(
+            function() {
+              return scope.sortBy;
+            },
+            function() {
+              updateSortingIcon(scope, elem, attrs);
+            });
 
-      scope.$watch(
-        function() {
-          return scope.reverse;
-        },
-        function() {
-          updateSortingIcon(scope, elem, attrs);
-        }
-      );
-    }
+        scope.$watch(
+            function() {
+              return scope.reverse;
+            },
+            function() {
+              updateSortingIcon(scope, elem, attrs);
+            }
+        );
+      }
 
-    return {
-      link: link,
-      template: function(elem, attrs) {
-        return '<a href="" target="_self" ng-click=setSortBy(\'' +
+      return {
+        link: link,
+        template: function(elem, attrs) {
+          return '<a href="" target="_self" ng-click=setSortBy(\'' +
           attrs.property + '\')>' + attrs.text +
           '<i class="fa fa-fw fa-sort-asc"></i></a>';
-      }
-    };
-  }
+        },
+      };
+    }
 );
 
 angular.module('cerebro').factory('AceEditorService', function() {
-
   this.init = function(name) {
     return new AceEditor(name);
   };
@@ -2944,8 +2886,8 @@ angular.module('cerebro').factory('ClipboardService', ['AlertService',
       position: 'absolute',
       left: '-9999px',
       top: (
-          $window.pageYOffset || $document[0].documentElement.scrollTop
-      ) + 'px'
+        $window.pageYOffset || $document[0].documentElement.scrollTop
+      ) + 'px',
     });
     textarea.attr({readonly: ''});
     angular.element($document[0].body).append(textarea);
@@ -2962,17 +2904,16 @@ angular.module('cerebro').factory('ClipboardService', ['AlertService',
     };
 
     return this;
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('ClusterChangesService', [
   '$rootScope', 'AlertService', 'RefreshService', 'DataService',
   function($rootScope, AlertService, RefreshService, DataService) {
-
     var current = {
       indices: undefined,
       noeds: undefined,
-      clusterName: undefined
+      clusterName: undefined,
     };
 
     var processNodeChanges = function(nodes) {
@@ -3028,9 +2969,13 @@ angular.module('cerebro').factory('ClusterChangesService', [
     };
 
     $rootScope.$watch(
-      function() { return RefreshService.lastUpdate(); },
-      function() { process(); },
-      true
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          process();
+        },
+        true
     );
 
     return this;
@@ -3042,8 +2987,7 @@ angular.module('cerebro').run(['ClusterChangesService', angular.noop]);
 angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
   '$http', '$location', 'RefreshService', 'AlertService', '$window',
   function($rootScope, $timeout, $http, $location, RefreshService,
-           AlertService, $window) {
-
+      AlertService, $window) {
     var host;
 
     var username;
@@ -3129,12 +3073,12 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         var defaultData = {
           host: host,
           username: username,
-          password: password
+          password: password,
         };
         var config = {
           method: 'POST',
           url: path,
-          data: angular.merge(data, defaultData) // adds host to data
+          data: angular.merge(data, defaultData), // adds host to data
         };
         request(config, success, error);
       }
@@ -3172,12 +3116,10 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
-
   var confirmCallback;
 
   this.promptConfirmation = function(body, callback) {
@@ -3217,14 +3159,13 @@ angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
 
 angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
   '$document', function(DataService, $rootScope, $document) {
-
     var link = $document[0].querySelector('link[rel~=\'icon\']');
 
     var colors = {
       green: 'img/green-favicon.png',
       yellow: 'img/yellow-favicon.png',
       red: 'img/red-favicon.png',
-      black: 'img/black-favicon.png'
+      black: 'img/black-favicon.png',
     };
 
     this.setup = function(name, status) {
@@ -3248,43 +3189,43 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
     };
 
     return this;
-
-  }
+  },
 ]);
 
 angular.module('cerebro').factory('RefreshService',
-  function($rootScope, $timeout) {
+    function($rootScope, $timeout) {
+      var timestamp = new Date().getTime();
 
-    var timestamp = new Date().getTime();
+      var interval = 15000;
 
-    var interval = 15000;
+      this.getInterval = function() {
+        return interval;
+      };
 
-    this.getInterval = function() {
-      return interval;
-    };
+      this.setInterval = function(newInterval) {
+        if (interval > newInterval) {
+          this.refresh(); // makes change apparent quicker
+        }
+        interval = newInterval;
+      };
 
-    this.setInterval = function(newInterval) {
-      if (interval > newInterval) {
-        this.refresh(); // makes change apparent quicker
-      }
-      interval = newInterval;
-    };
+      this.lastUpdate = function() {
+        return timestamp;
+      };
 
-    this.lastUpdate = function() {
-      return timestamp;
-    };
+      this.refresh = function() {
+        timestamp = Math.max(timestamp, new Date().getTime()) + 1;
+      };
 
-    this.refresh = function() {
-      timestamp = Math.max(timestamp, new Date().getTime()) + 1;
-    };
+      var autoRefresh = function(instance) {
+        instance.refresh();
+        $timeout(function() {
+          autoRefresh(instance);
+        }, interval);
+      };
 
-    var autoRefresh = function(instance) {
-      instance.refresh();
-      $timeout(function() { autoRefresh(instance); }, interval);
-    };
+      autoRefresh(this);
 
-    autoRefresh(this);
-
-    return this;
-  }
+      return this;
+    }
 );

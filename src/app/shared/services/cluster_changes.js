@@ -1,11 +1,10 @@
 angular.module('cerebro').factory('ClusterChangesService', [
   '$rootScope', 'AlertService', 'RefreshService', 'DataService',
   function($rootScope, AlertService, RefreshService, DataService) {
-
     var current = {
       indices: undefined,
       noeds: undefined,
-      clusterName: undefined
+      clusterName: undefined,
     };
 
     var processNodeChanges = function(nodes) {
@@ -61,9 +60,13 @@ angular.module('cerebro').factory('ClusterChangesService', [
     };
 
     $rootScope.$watch(
-      function() { return RefreshService.lastUpdate(); },
-      function() { process(); },
-      true
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          process();
+        },
+        true
     );
 
     return this;

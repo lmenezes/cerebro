@@ -1,9 +1,9 @@
 function IndexTemplateFilter(name, pattern) {
-
   this.name = name;
   this.pattern = pattern;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new IndexTemplateFilter(name, pattern);
   };
 
@@ -37,5 +37,4 @@ function IndexTemplateFilter(name, pattern) {
       return matches;
     }
   };
-
 }
