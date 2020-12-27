@@ -7,7 +7,7 @@ cerebro is an open source(MIT License) elasticsearch web admin tool built using 
 
 ### Requirements
 
-cerebro needs Java 1.8 or newer to run.
+cerebro needs Java 11 or newer to run.
 
 ### Installation
 - Download from [https://github.com/lmenezes/cerebro/releases](https://github.com/lmenezes/cerebro/releases)
