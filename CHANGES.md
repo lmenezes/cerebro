@@ -318,3 +318,8 @@ First cerebro release.
 
 #### Bug fixes
 - Handle node info for nodes without defined attributes Closes #448
+
+### v0.9.3 - December 27th, 2020
+
+#### Improvements
+- Support elasticsearch 7.10 data tiers
