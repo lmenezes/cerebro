@@ -1,8 +1,7 @@
 'use strict';
 angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
-    .config(['$routeProvider', '$httpProvider',
-      function($routeProvider, $httpProvider) {
-        $httpProvider.useLegacyPromiseExtensions(true);
+    .config(['$routeProvider',
+      function($routeProvider) {
         $routeProvider
             .when('/overview', {
               templateUrl: 'overview.html',
@@ -597,9 +596,9 @@ angular.module('cerebro').controller('ConnectController', [
       $scope.feedback = undefined;
       $scope.host = host;
       $scope.connecting = true;
-      var success = function(data) {
+      var success = function(response) {
         $scope.connecting = false;
-        switch (data.status) {
+        switch (response.data.status) {
           case 200:
             ConnectDataService.connect(host);
             $location.path('/overview');
@@ -608,12 +607,12 @@ angular.module('cerebro').controller('ConnectController', [
             $scope.unauthorized = true;
             break;
           default:
-            feedback('Unexpected response status: [' + data.status + ']');
+            feedback('Unexpected response status: [' + response.data.status + ']');
         }
       };
-      var error = function(data) {
+      var error = function(response) {
         $scope.connecting = false;
-        AlertService.error('Error connecting to [' + host + ']', data);
+        AlertService.error('Error connecting to [' + host + ']', response.data);
       };
       ConnectDataService.testConnection(host, success, error);
     };
@@ -621,9 +620,9 @@ angular.module('cerebro').controller('ConnectController', [
     $scope.authorize = function(host, username, pwd) {
       $scope.feedback = undefined;
       $scope.connecting = true;
-      var success = function(data) {
+      var success = function(response) {
         $scope.connecting = false;
-        switch (data.status) {
+        switch (response.data.status) {
           case 401:
             feedback('Invalid username or password');
             break;
@@ -632,12 +631,12 @@ angular.module('cerebro').controller('ConnectController', [
             $location.path('/overview');
             break;
           default:
-            feedback('Unexpected response status: [' + data.status + ']');
+            feedback('Unexpected response status: [' + response.data.status + ']');
         }
       };
-      var error = function(data) {
+      var error = function(response) {
         $scope.connecting = false;
-        AlertService.error('Error connecting to [' + host + ']', data);
+        AlertService.error('Error connecting to [' + host + ']', response.data);
       };
       ConnectDataService.testCredentials(host, username, pwd, success, error);
     };
@@ -651,25 +650,28 @@ angular.module('cerebro').factory('ConnectDataService', ['$http', 'DataService',
   function($http, DataService) {
     this.getHosts = function(success, error) {
       var config = {method: 'GET', url: 'connect/hosts'};
-      var handleSuccess = function(data) {
-        if (data.status >= 200 && data.status < 300) {
-          success(data.body);
+      var handleSuccess = function(response) {
+        if (response.data.status >= 200 && response.data.status < 300) {
+          success(response.data.body);
         } else {
-          error(data.body);
+          error(response.data.body);
         }
       };
-      $http(config).success(handleSuccess).error(error);
+      var handleError = function(response) {
+        error(response.data.body);
+      };
+      $http(config).then(handleSuccess, handleError);
     };
 
     this.testConnection = function(host, success, error) {
       var config = {method: 'POST', url: 'connect', data: {host: host}};
-      $http(config).success(success).error(error);
+      $http(config).then(success, error);
     };
 
     this.testCredentials = function(host, username, password, success, error) {
       var data = {host: host, username: username, password: password};
       var config = {method: 'POST', url: 'connect', data: data};
-      $http(config).success(success).error(error);
+      $http(config).then(success, error);
     };
 
     this.connect = function(host) {
@@ -3086,9 +3088,9 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
     };
 
     var request = function(config, success, error) {
-      var handleSuccess = function(data) {
+      var handleSuccess = function(response) {
         onGoingRequests[config.url] = undefined;
-        switch (data.status) {
+        switch (response.data.status) {
           case 303: // unauthorized in cerebro
             $window.location.href = './login';
             break;
@@ -3096,22 +3098,22 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
             $location.path('/connect').search({host: host, unauthorized: true});
             break;
           default:
-            if (data.status >= 200 && data.status < 300) {
-              success(data.body);
+            if (response.data.status >= 200 && response.data.status < 300) {
+              success(response.data.body);
             } else {
-              error(data.body);
+              error(response.data.body);
             }
         }
       };
-      var handleError = function(data) {
+      var handleError = function(response) {
         onGoingRequests[config.url] = undefined;
-        AlertService.error('Error connecting to the server', data.error);
+        AlertService.error('Error connecting to the server', response.data.error);
       };
       var activeRequest = onGoingRequests[config.url] !== undefined;
       var now = new Date().getTime();
       var interval = RefreshService.getInterval();
       if (!activeRequest || now - onGoingRequests[config.url] < interval) {
-        $http(config).success(handleSuccess).error(handleError);
+        $http(config).then(handleSuccess, handleError);
         onGoingRequests[config.url] = new Date().getTime();
       }
     };

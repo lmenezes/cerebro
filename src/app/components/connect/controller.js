@@ -26,9 +26,9 @@ angular.module('cerebro').controller('ConnectController', [
       $scope.feedback = undefined;
       $scope.host = host;
       $scope.connecting = true;
-      var success = function(data) {
+      var success = function(response) {
         $scope.connecting = false;
-        switch (data.status) {
+        switch (response.data.status) {
           case 200:
             ConnectDataService.connect(host);
             $location.path('/overview');
@@ -37,12 +37,12 @@ angular.module('cerebro').controller('ConnectController', [
             $scope.unauthorized = true;
             break;
           default:
-            feedback('Unexpected response status: [' + data.status + ']');
+            feedback('Unexpected response status: [' + response.data.status + ']');
         }
       };
-      var error = function(data) {
+      var error = function(response) {
         $scope.connecting = false;
-        AlertService.error('Error connecting to [' + host + ']', data);
+        AlertService.error('Error connecting to [' + host + ']', response.data);
       };
       ConnectDataService.testConnection(host, success, error);
     };
@@ -50,9 +50,9 @@ angular.module('cerebro').controller('ConnectController', [
     $scope.authorize = function(host, username, pwd) {
       $scope.feedback = undefined;
       $scope.connecting = true;
-      var success = function(data) {
+      var success = function(response) {
         $scope.connecting = false;
-        switch (data.status) {
+        switch (response.data.status) {
           case 401:
             feedback('Invalid username or password');
             break;
@@ -61,12 +61,12 @@ angular.module('cerebro').controller('ConnectController', [
             $location.path('/overview');
             break;
           default:
-            feedback('Unexpected response status: [' + data.status + ']');
+            feedback('Unexpected response status: [' + response.data.status + ']');
         }
       };
-      var error = function(data) {
+      var error = function(response) {
         $scope.connecting = false;
-        AlertService.error('Error connecting to [' + host + ']', data);
+        AlertService.error('Error connecting to [' + host + ']', response.data);
       };
       ConnectDataService.testCredentials(host, username, pwd, success, error);
     };

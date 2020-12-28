@@ -1,8 +1,7 @@
 'use strict';
 angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
-    .config(['$routeProvider', '$httpProvider',
-      function($routeProvider, $httpProvider) {
-        $httpProvider.useLegacyPromiseExtensions(true);
+    .config(['$routeProvider',
+      function($routeProvider) {
         $routeProvider
             .when('/overview', {
               templateUrl: 'overview.html',
