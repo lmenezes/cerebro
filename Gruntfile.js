@@ -20,27 +20,34 @@ module.exports = function(grunt) {
     },
     copy: {
       main: {
-        files: []
+        files: [
+          {
+            expand: true,
+            cwd: 'node_modules/font-awesome/fonts',
+            src: ['*'],
+            dest: 'public/fonts/'
+          }
+        ]
       }
     },
     concat: {
       vendorjs: {
         src: [
-          'src/assets/libs/jquery/*.js',
-          'src/assets/libs/angularjs/angular.min.js',
-          'src/assets/libs/angularjs/angular-animate.min.js',
-          'src/assets/libs/angularjs/angular-route.min.js',
-          'src/assets/libs/bootstrap/bootstrap.min.js',
+          'node_modules/jquery/dist/jquery.js',
+          'node_modules/angular/angular.min.js',
+          'node_modules/angular-animate/angular-animate.min.js',
+          'node_modules/angular-route/angular-route.min.js',
+          'node_modules/bootstrap/dist/js/bootstrap.min.js',
           'src/assets/libs/jsontree/jsontree.min.js',
-          'src/assets/libs/typeahead/typeahead.min.js',
-          'src/assets/libs/ace/ace.min.js'
+          'node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
+          'node_modules/ace-builds/src/ace.js'
         ],
         dest: 'public/js/lib.js'
       },
       vendorcss: {
         src: [
           'src/assets/css/bootstrap.min.css',
-          'src/assets/css/font-awesome.min.css'
+          'node_modules/font-awesome/css/font-awesome.css'
         ],
         dest: 'public/css/lib.css'
       },
