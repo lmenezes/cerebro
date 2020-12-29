@@ -16,7 +16,8 @@
         <td>
           <div>
             <i class="fa fa-database"></i> {{snapshot.snapshot}} <span class="info-text"> created at </span>
-            {{snapshot.start_time | date:'yyyy-MM-dd HH:mm:ss Z' }}
+            {{ snapshot.start_time | date:'yyyy-MM-dd HH:mm:ss Z' }} <span class="info-text"> state </span>
+            {{ snapshot.state }}
             <i class="fa fa-trash normal-action alert-danger pull-right"
                ng-click="delete(repository, snapshot.snapshot)"
                data-toggle="modal"
