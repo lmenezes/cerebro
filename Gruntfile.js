@@ -38,7 +38,7 @@ module.exports = function(grunt) {
           'node_modules/angular-animate/angular-animate.min.js',
           'node_modules/angular-route/angular-route.min.js',
           'node_modules/bootstrap/dist/js/bootstrap.min.js',
-          'node_modules/@lmenezes/json-tree/dist/js/jsontree.min.js',
+          'node_modules/@lmenezes/json-tree/jsontree.js',
           'node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
           'node_modules/ace-builds/src/ace.js'
         ],
