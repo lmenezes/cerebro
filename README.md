@@ -1,7 +1,7 @@
 Cerebro
 ------------
 [![Docker Pulls](https://img.shields.io/docker/pulls/lmenezes/cerebro.svg)](https://hub.docker.com/r/lmenezes/cerebro)
-[![Build Status](https://travis-ci.com/lmenezes/cerebro.svg?branch=master)](https://travis-ci.com/lmenezes/cerebro)
+![build](https://github.com/lmenezes/cerebro/workflows/build/badge.svg?branch=master)
 
 cerebro is an open source(MIT License) elasticsearch web admin tool built using Scala, Play Framework, AngularJS and Bootstrap.
 
