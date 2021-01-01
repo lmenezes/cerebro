@@ -76,11 +76,8 @@ module.exports = function(grunt) {
         ]
       }
     },
-    qunit: {
-      all: ['./tests/all.html']
-    },
     karma: {
-      unit: {configFile: 'tests/karma.config.js', keepalive: true}
+      unit: {configFile: 'tests/karma.config.js'}
     },
     eslint: {
       options: {
@@ -101,11 +98,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.registerTask('dev', ['watch']);
   grunt.registerTask('build',
-    ['clean', 'jshint', 'eslint', 'concat', 'copy', 'qunit']);
+    ['clean', 'jshint', 'eslint', 'concat', 'copy', 'karma']);
   grunt.registerTask('test', ['karma'])
 };

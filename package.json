@@ -4,7 +4,7 @@
   "description": "cerebro - elasticsearch admin",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,6 @@
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-qunit": "^3.1.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^23.0.0",
     "grunt-karma": "^4.0.0",
