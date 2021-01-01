@@ -1,14 +1,8 @@
 angular.module('cerebro').factory('ClipboardService', ['AlertService',
-  '$document', '$window',
-  function(AlertService, $document, $window) {
-    var textarea = angular.element($document[0].createElement('textarea'));
-    textarea.css({
-      position: 'absolute',
-      left: '-9999px',
-      top: (
-        $window.pageYOffset || $document[0].documentElement.scrollTop
-      ) + 'px',
-    });
+  '$document',
+  function(AlertService, $document) {
+    var textarea = angular.element('<textarea id="clipboard"></textarea>');
+    textarea.css({width: '0px', height: '0px', position: 'absolute', left: '-10px', top: '-10px'});
     textarea.attr({readonly: ''});
     angular.element($document[0].body).append(textarea);
 
