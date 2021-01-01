@@ -16,6 +16,7 @@
     "url": "https://github.com/lmenezes/cerebro/issues"
   },
   "devDependencies": {
+    "angular-mocks": "^1.8.2",
     "eslint": "^7.16.0",
     "eslint-config-google": "^0.14.0",
     "grunt": "^1.1.0",
