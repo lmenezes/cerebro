@@ -3,14 +3,16 @@
 describe("ClusterChangesService", function() {
 
   var service;
+  var $document;
 
   beforeEach(module("cerebro"));
 
-  beforeEach(angular.mock.inject(function($rootScope, $injector) {
+  beforeEach(angular.mock.inject(function($rootScope, $injector, $httpBackend) {
     this.$rootScope = $rootScope;
     this.DataService = $injector.get('DataService');
     this.RefreshService = $injector.get('RefreshService');
     this.AlertService = $injector.get('AlertService');
+    $httpBackend.whenGET('connect.html').respond(200, {}); // Should not really be needed...
   }));
 
   beforeEach(inject(function(_ClusterChangesService_) {
