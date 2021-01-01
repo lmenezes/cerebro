@@ -5,18 +5,18 @@ module.exports = function(config) {
     basePath: '', // base path, that will be used to resolve files and exclude
     frameworks: ['jasmine'], // frameworks to use
     files: [ // list of files / patterns to load in the browser
-      absolute_root + '/src/assets/libs/jquery/jquery-2.2.3.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular-route.min.js',
-      absolute_root + '/src/assets/libs/angularjs/angular-animate.min.js',
-      absolute_root + '/src/assets/libs/typeahead/typeahead.min.js',
-      absolute_root + '/src/assets/libs/ace/*.js',
-      absolute_root + '/src/assets/libs/jsontree/*.js',
+      absolute_root + '/node_modules/jquery/dist/jquery.js',
+      absolute_root + '/node_modules/angular/angular.js',
+      absolute_root + '/node_modules/angular-route/angular-route.js',
+      absolute_root + '/node_modules/angular-animate/angular-animate.js',
+      absolute_root + '/node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
+      absolute_root + '/node_modules/ace-builds/src/ace/ace.js',
+      absolute_root + '/node_modules/@lmenezes/json-tree/jsontree.js',
       absolute_root + '/src/app/*.js',
       absolute_root + '/src/app/*/*.js',
       absolute_root + '/src/app/*/*/*.js',
       absolute_root + '/src/**/*.js',
-      absolute_root + '/tests/angular-mocks.js',
+      absolute_root + '/node_modules/angular-mocks/angular-mocks.js',
       absolute_root + '/**/*.tests.js'
     ],
     exclude: [],  // list of files to exclude
