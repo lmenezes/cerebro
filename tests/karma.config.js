@@ -29,7 +29,6 @@ module.exports = function(config) {
     transports: ['websocket', 'polling'],
     browsers: ['ChromeHeadless'],
     // If browser does not capture in given timeout [ms], kill it
-    captureTimeout: 60000,
-    singleRun: true // Continuous Integration mode: if true, it capture browsers, run tests and exit
+    captureTimeout: 60000
   });
 };

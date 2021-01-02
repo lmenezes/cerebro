@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 
+  var singleRunTests = grunt.option('singleRunTests') !== false;
   grunt.initConfig({
     clean: {
       dist: {
@@ -77,7 +78,7 @@ module.exports = function(grunt) {
       }
     },
     karma: {
-      unit: {configFile: 'tests/karma.config.js'}
+      unit: {configFile: 'tests/karma.config.js', singleRun: singleRunTests }
     },
     eslint: {
       options: {
