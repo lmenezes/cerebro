@@ -342,6 +342,11 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     val path = "/_cat/master"
     execute(s"$path?format=json", "GET", None, target)
   }
+
+  override def getIndicesStats(target: ElasticServer): Future[ElasticResponse] = {
+    val path = "/_stats/search,get,docs,store,indexing,query_cache"
+    execute(s"$path", "GET", None, target)
+  }
 }
 
 object HTTPElasticClient {

@@ -55,6 +55,10 @@ angular.module('cerebro', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
               templateUrl: 'cat/index.html',
               controller: 'CatController',
             })
+            .when('/indices', {
+              templateUrl: 'indices_view/index.html',
+              controller: 'IndicesController',
+            })
             .otherwise({
               redirectTo: '/connect',
             }
