@@ -29,12 +29,13 @@
       <div class="form-group col-md-6">
         <label class="form-label">type</label>
         <select class="form-control" ng-model="type"
-                ng-options="t for t in ['fs', 'url', 's3', 'hdfs', 'azure']"></select>
+                ng-options="t for t in ['fs', 'url', 's3', 'gcs', 'hdfs', 'azure']"></select>
       </div>
     </div>
     <div class="row" ng-plain-include file="repositories/fs.html" ng-show="type == 'fs'"></div>
     <div class="row" ng-plain-include file="repositories/url.html" ng-show="type == 'url'"></div>
     <div class="row" ng-plain-include file="repositories/s3.html" ng-show="type == 's3'"></div>
+    <div class="row" ng-plain-include file="repositories/gcs.html" ng-show="type == 'gcs'"></div>
     <div class="row" ng-plain-include file="repositories/azure.html" ng-show="type == 'azure'"></div>
     <div class="row" ng-plain-include file="repositories/hdfs.html" ng-show="type == 'hdfs'"></div>
     <div class="row">
