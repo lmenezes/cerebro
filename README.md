@@ -109,6 +109,6 @@ bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf
 
 When building a new helm chart, run these commands from top of this repo:
 ```
-(cd helm; helm package opendistro-es)
-helm repo index helm/ --url https://raw.githubusercontent.com/opendistro-for-elasticsearch/opendistro-build/main/helm/
+(cd helm; helm package cerebro)
+helm repo index helm/ --url https://raw.githubusercontent.com/lmenezes/cerebro/master/helm/
 ```

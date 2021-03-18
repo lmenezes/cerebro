@@ -3,7 +3,7 @@ entries:
   cerebro:
   - apiVersion: v1
     appVersion: 0.9.3
-    created: "2021-03-16T10:37:43.139218001+01:00"
+    created: "2021-03-18T11:37:49.222315077+01:00"
     description: A Helm chart for Cerebro - a web admin tool that replaces Kopf.
     digest: fa490612882955fd4544e672569b195e50fe96d6e6ee6c788af3ae563cc008d0
     home: https://github.com/lmenezes/cerebro
@@ -13,6 +13,6 @@ entries:
     - https://github.com/lmenezes/cerebro-docker
     - https://github.com/lmenezes/cerebro
     urls:
-    - https://raw.githubusercontent.com/obmondo/cerebro/master/helm/cerebro-0.9.3-release1.tgz
+    - https://raw.githubusercontent.com/lmenezes/cerebro/master/helm/cerebro-0.9.3-release1.tgz
     version: 0.9.3-release1
-generated: "2021-03-16T10:37:43.138186699+01:00"
+generated: "2021-03-18T11:37:49.22135522+01:00"
