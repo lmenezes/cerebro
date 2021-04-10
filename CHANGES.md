@@ -323,3 +323,8 @@ First cerebro release.
 
 #### Improvements
 - Support elasticsearch 7.10 data tiers
+
+### v0.9.4 - April 10th, 2021
+
+#### Security updates
+- Bump socket.io to 2.4.1
