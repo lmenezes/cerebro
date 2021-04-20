@@ -15,7 +15,7 @@ class OverviewDataService @Inject()(client: ElasticClient) {
   def overview(target: ElasticServer): Future[JsValue] = {
     val apis = Seq(
       "_cluster/state/master_node,routing_table,blocks",
-      "_nodes/stats/jvm,fs,os,process?human=true",
+      "_nodes/stats/jvm,fs,process?human=true",
       "_stats/docs,store?ignore_unavailable=true",
       "_cluster/settings",
       "_aliases",

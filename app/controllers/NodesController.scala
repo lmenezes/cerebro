@@ -17,8 +17,8 @@ class NodesController @Inject()(val authentication: AuthenticationModule,
   def index = process { request =>
     Future.sequence(
       Seq(
-        client.nodes(Seq("jvm", "os"), request.target),
-        client.nodesStats(Seq("jvm", "fs", "os", "process"), request.target),
+        client.nodes(Seq("jvm"), request.target),
+        client.nodesStats(Seq("jvm", "fs", "process"), request.target),
         client.catMaster(request.target)
       )
     ).map { responses =>
