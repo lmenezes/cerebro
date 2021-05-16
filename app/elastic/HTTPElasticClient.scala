@@ -152,6 +152,25 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
     execute(path, "POST", Some(commands), target, Seq(JsonContentType))
   }
 
+  def cancelShardRelocation(shard: Int, index: String, node: String, target: ElasticServer) = {
+    val path = "/_cluster/reroute"
+    val commands =
+      s"""
+         |{
+         |  "commands": [
+         |    {
+         |      "cancel": {
+         |        "shard": $shard,
+         |        "index": \"$index\",
+         |        "node": \"$node\"
+         |      }
+         |    }
+         |  ]
+         |}
+       """.stripMargin
+    execute(path, "POST", Some(commands), target, Seq(JsonContentType))
+  }
+
   def getIndexRecovery(index: String, target: ElasticServer) = {
     val path = s"/${encoded(index)}/_recovery?active_only=true&human=true"
     execute(path, "GET", None, target)

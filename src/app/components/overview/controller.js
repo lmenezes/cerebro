@@ -342,4 +342,16 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       }
       return false;
     };
+
+    $scope.cancelShardRelocation = function(index, node, shard) {
+      OverviewDataService.cancelShardRelocation(index, node, shard,
+          function(response) {
+            RefreshService.refresh();
+            AlertService.info('Relocation successfully canceled', response);
+          },
+          function(error) {
+            AlertService.error('Error while canceling relocation', error);
+          }
+      );
+    };
   }]);

@@ -57,6 +57,11 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
       DataService.send('overview/relocate_shard', data, success, error);
     };
 
+    this.cancelShardRelocation = function(shard, index, from, to, success, error) {
+      var data = {shard: shard, index: index, from: from, to: to};
+      DataService.send('overview/cancel_shard_relocation', data, success, error);
+    };
+
     this.nodeStats = function(node, success, error) {
       DataService.send('commons/get_node_stats', {node: node}, success, error);
     };

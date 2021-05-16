@@ -1441,6 +1441,22 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       }
       return false;
     };
+
+    $scope.cancelShardRelocation = function(index, node, shard) {
+      OverviewDataService.cancelShardRelocation(index, node, shard,
+          function(response) {
+            RefreshService.refresh();
+            AlertService.info('Relocation successfully canceled', response);
+          },
+          function(error) {
+            AlertService.error('Error while canceling relocation', error);
+          }
+      );
+    };
+
+    $scope.canCancelShardRelocation = function(shard) {
+	    return shard.state == "INITIALIZING";
+    };
   }]);
 
 angular.module('cerebro').factory('OverviewDataService', ['DataService',
@@ -1500,6 +1516,11 @@ angular.module('cerebro').factory('OverviewDataService', ['DataService',
     this.relocateShard = function(shard, index, from, to, success, error) {
       var data = {shard: shard, index: index, from: from, to: to};
       DataService.send('overview/relocate_shard', data, success, error);
+    };
+
+    this.cancelShardRelocation = function(index, node, shard, success, error) {
+      var data = {index: index, node: node, shard: shard};
+      DataService.send('overview/cancel_shard_relocation', data, success, error);
     };
 
     this.nodeStats = function(node, success, error) {

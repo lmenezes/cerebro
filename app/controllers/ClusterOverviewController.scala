@@ -108,4 +108,13 @@ class ClusterOverviewController @Inject()(val authentication: AuthenticationModu
     }
   }
 
+  def cancelShardRelocation = process { request =>
+    val index = request.get("index")
+    val shard = request.getInt("shard")
+    val node = request.get("node")
+    val server = request.target
+    client.cancelShardRelocation(shard, index, node, server).map { response =>
+      CerebroResponse(response.status, response.body)
+    }
+  }
 }

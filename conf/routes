@@ -23,6 +23,7 @@ POST        /overview/flush_indices                   controllers.ClusterOvervie
 POST        /overview/delete_indices                  controllers.ClusterOverviewController.deleteIndex
 POST        /overview/get_shard_stats                 controllers.ClusterOverviewController.getShardStats
 POST        /overview/relocate_shard                  controllers.ClusterOverviewController.relocateShard
+POST        /overview/cancel_shard_relocation         controllers.ClusterOverviewController.cancelShardRelocation
 
 # Nodes module
 POST        /nodes                                    controllers.NodesController.index
