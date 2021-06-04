@@ -51,7 +51,7 @@ object CerebroRequest {
     // Add default headers if host is set with wildcard. Add default authorization(same with kibana)
     val defaultHeadersWhitelist: Seq[String] = hosts.getHost("*") match {
       case Some(Host(_, _, headers)) => headers
-      case None => Seq("Authorization")
+      case _ => Seq("Authorization")
     }
 
     val server = hosts.getHost(hostName) match {
