@@ -104,3 +104,11 @@ It is also possible to use an alternate configuration file defined on a differen
 ```
 bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf
 ```
+
+## Helm releases
+
+When building a new helm chart, run these commands from top of this repo:
+```
+(cd helm; helm package cerebro)
+helm repo index helm/ --url https://raw.githubusercontent.com/lmenezes/cerebro/master/helm/
+```
