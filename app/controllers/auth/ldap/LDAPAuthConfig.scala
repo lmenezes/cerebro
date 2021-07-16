@@ -21,9 +21,9 @@ class LDAPAuthConfig(config: Configuration) extends AuthConfig {
       LDAPGroupSearchConfig(
         bindDN,
         bindPwd,
-        groupAuthConfig.getOptional[String]("base-dn").getOrElse(baseDN),
+        groupAuthConfig.getOptional[String]("base-dn"),
         getSetting("user-attr")(groupAuthConfig),
-        groupAuthConfig.getOptional[String]("user-attr-template").getOrElse(userTemplate),
+        groupAuthConfig.getOptional[String]("user-attr-template"),
         group
       )
     }
