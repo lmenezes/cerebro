@@ -62,6 +62,8 @@ trait ElasticClient {
 
   def relocateShard(shard: Int, index: String, from: String, to: String, target: ElasticServer): Future[ElasticResponse]
 
+  def cancelShardRelocation(shard: Int, index: String, node: String, target: ElasticServer): Future[ElasticResponse]
+
   def getIndexRecovery(index: String, target: ElasticServer): Future[ElasticResponse]
 
   def getClusterMapping(target: ElasticServer): Future[ElasticResponse]

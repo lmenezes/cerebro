@@ -300,6 +300,9 @@
             <li ng-click="select()" ng-show="isSelected(shard)">
               <a target="_self"><i class="fa fa-fw fa-arrows"> </i> unselect for relocation</a>
             </li>
+            <li ng-click="cancelShardRelocation(shard.index, shard.node, shard.shard)" ng-show="canCancelShardRelocation(shard)">
+              <a target="_self"><i class="fa fa-fw fa-ban"> </i> cancel shard relocation</a>
+            </li>
           </ul>
           </span>
         </span>
