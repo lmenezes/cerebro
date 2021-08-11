@@ -1709,6 +1709,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       }
     };
 
+    $scope.sendQuery = function(event) {
+      if (event.ctrlKey && (event.keyCode === 10 || event.keyCode === 13)) {
+            $scope.execute();
+      }
+    };
+
     $scope.copyAsCURLCommand = function() {
       var method = $scope.method;
       var path = encodeURI($scope.path);
