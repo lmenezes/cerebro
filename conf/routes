@@ -26,7 +26,8 @@ POST        /overview/relocate_shard                  controllers.ClusterOvervie
 
 # Nodes module
 POST        /nodes                                    controllers.NodesController.index
-
+# Indices module
+POST         /indices                                 controllers.IndicesController.index
 # Navbar module
 POST        /navbar                                   controllers.NavbarController.index
 

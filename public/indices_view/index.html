@@ -1,0 +1,96 @@
+<div class="row">
+    <div ng-include src="'stats.html'"></div>
+    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 form-group">
+        <input type="text" ng-model="paginator.filter.index"
+               class="form-control form-control-sm"
+               placeholder="filter index">
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 noselect">
+        <div class="checkbox">
+            <label class="checkbox-inline">
+                <input type="checkbox" ng-model="merge">merge
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" ng-model="special">special
+            </label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <ng-pagination page="page" paginator="paginator"></ng-pagination>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>
+            <ng-sort-by property="index" text="Index"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="totalSize" text="TotalSize"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="totalDocs" text="TotalDocs"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="primariesSize" text="PrimariesSize"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="primariesDocs" text="PrimariesDocs"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="searchCount" text="SearchCount"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="getCount" text="GetCount"></ng-sort-by>
+        </th>
+        <th>
+            <ng-sort-by property="queryCount" text="QueryCount"></ng-sort-by>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="index in page.elements  track by $index" ng-show="index">
+        <td>
+            <div>
+                <span >{{index.index}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span >{{formatBytes(index.totalSize)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span >{{renderNum(index.totalDocs)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span >{{formatBytes(index.primariesSize)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span >{{renderNum(index.primariesDocs)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span>{{renderNum(index.searchCount)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span>{{renderNum(index.getCount)}}</span>
+            </div>
+        </td>
+        <td>
+            <div>
+                <span>{{renderNum(index.queryCount)}}</span>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
