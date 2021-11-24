@@ -31,6 +31,8 @@ libraryDependencies ++= Seq(
 libraryDependencies += filters
 libraryDependencies += ws
 libraryDependencies += guice
+libraryDependencies += "com.google.inject" % "guice" % "5.0.1"
+libraryDependencies += "com.google.inject.extensions" % "guice-assistedinject" % "5.0.1"
 
 lazy val root = (project in file(".")).
   enablePlugins(PlayScala, BuildInfoPlugin, LauncherJarPlugin, JDebPackaging, RpmPlugin).
