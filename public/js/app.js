@@ -1746,9 +1746,18 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       var curl = 'curl';
       curl += ' -H \'Content-type: ' + contentType + '\'';
       curl += ' -X' + method + ' \'' + host + path + '\'';
+
+	  // add body for POST and PUT
       if (['POST', 'PUT'].indexOf(method) >= 0) {
         curl += ' -d \'' + body + '\'';
       }
+
+	  // GET can have body as well, e.g. the Elasticsearch Query
+      if (['GET'].indexOf(method) >= 0 &&
+		  typeof body !== 'undefined' && body !== '' && body.trim() !== '{}') {
+        curl += ' -d \'' + body + '\'';
+      }
+
       ClipboardService.copy(
           curl,
           function() {
