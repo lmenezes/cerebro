@@ -1715,6 +1715,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       if (path.substring(0, 1) !== '/') {
         path = '/' + path;
       }
+	  var host = $scope.host;
+
+	  // cut off trailing slash in hostname to not produce double-slashes
+	  if (host.endsWith('/')) {
+		  host = host.substring(0, host.length - 1);
+	  }
 
       var matchesAPI = function(path, api) {
         return path.indexOf(api) === (path.length - api.length);
@@ -1739,7 +1745,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
       var curl = 'curl';
       curl += ' -H \'Content-type: ' + contentType + '\'';
-      curl += ' -X' + method + ' \'' + $scope.host + path + '\'';
+      curl += ' -X' + method + ' \'' + host + path + '\'';
       if (['POST', 'PUT'].indexOf(method) >= 0) {
         curl += ' -d \'' + body + '\'';
       }
