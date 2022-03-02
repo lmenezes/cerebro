@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 var DynamicIndexSettings = (function() {
   var settings = {
     'index.mapper.dynamic': true,
@@ -61,13 +62,13 @@ var DynamicIndexSettings = (function() {
     'index.ttl.disable_purge': true,
     'index.unassigned.node_left.delayed_timeout': true,
     'index.warmer.enabled': true,
-    'index.write.wait_for_active_shards': true
+    'index.write.wait_for_active_shards': true,
   };
 
   return {
     valid: function(setting) {
       return settings[setting] || false;
-    }
+    },
   };
 })();
 

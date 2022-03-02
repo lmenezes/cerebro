@@ -1,7 +1,6 @@
 angular.module('cerebro').controller('IndexSettingsController', ['$scope',
   '$location', 'IndexSettingsDataService', 'AlertService',
   function($scope, $location, IndexSettingsDataService, AlertService) {
-
     $scope.form = undefined;
     $scope.settings = undefined;
     $scope.groupedSettings = undefined;
@@ -52,48 +51,48 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
 
     $scope.save = function() {
       IndexSettingsDataService.update(
-        $scope.index,
-        $scope.changes,
-        function(response) {
-          AlertService.info('Settings successfully saved', response);
-          $scope.setup();
-        },
-        function(error) {
-          AlertService.error('Error while saving settings', error);
-        }
+          $scope.index,
+          $scope.changes,
+          function(response) {
+            AlertService.info('Settings successfully saved', response);
+            $scope.setup();
+          },
+          function(error) {
+            AlertService.error('Error while saving settings', error);
+          }
       );
     };
 
     $scope.setup = function() {
       IndexSettingsDataService.get(
-        $scope.index,
-        function(response) {
-          $scope.settings = {};
-          $scope.form = {};
-          $scope.changes = {};
-          $scope.pendingChanges = 0;
-          var settings = response[$scope.index];
-          ['defaults', 'settings'].forEach(function(group) {
-            angular.forEach(settings[group], function(value, setting) {
-              if (ValidIndexSettings.valid(setting)) {
-                $scope.settings[setting] = value;
-                $scope.form[setting] = value;
-              }
+          $scope.index,
+          function(response) {
+            $scope.settings = {};
+            $scope.form = {};
+            $scope.changes = {};
+            $scope.pendingChanges = 0;
+            var settings = response[$scope.index];
+            ['defaults', 'settings'].forEach(function(group) {
+              angular.forEach(settings[group], function(value, setting) {
+                if (ValidIndexSettings.valid(setting)) {
+                  $scope.settings[setting] = value;
+                  $scope.form[setting] = value;
+                }
+              });
             });
-          });
-          if (!$scope.groupedSettings) {
-            $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form).map(function(setting) {
-                var dynamic = DynamicIndexSettings.valid(setting);
-                return {name: setting, static: !dynamic};
-              })
-            );
+            if (!$scope.groupedSettings) {
+              $scope.groupedSettings = new GroupedSettings(
+                  Object.keys($scope.form).map(function(setting) {
+                    var dynamic = DynamicIndexSettings.valid(setting);
+                    return {name: setting, static: !dynamic};
+                  })
+              );
+            }
+          },
+          function(error) {
+            AlertService.error('Error loading index settings', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error loading index settings', error);
-        }
       );
     };
-  }
+  },
 ]);

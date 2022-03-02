@@ -1,5 +1,4 @@
 angular.module('cerebro').factory('ModalService', ['$sce', function($sce) {
-
   var confirmCallback;
 
   this.promptConfirmation = function(body, callback) {

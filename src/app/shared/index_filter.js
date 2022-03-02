@@ -24,13 +24,14 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   };
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new IndexFilter(
-      this.name,
-      this.closed,
-      this.special,
-      this.healthy,
-      this.asc,
-      this.timestamp
+        this.name,
+        this.closed,
+        this.special,
+        this.healthy,
+        this.asc,
+        this.timestamp
     );
   };
 
@@ -79,8 +80,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
             }
           }
         }
-      }
-      catch (err) { // if not valid regexp, still try normal matching
+      } catch (err) { // if not valid regexp, still try normal matching
         matches = index.name.indexOf(this.name.toLowerCase()) != -1;
         if (!matches) {
           for (var _idx = 0; _idx < index.aliases.length; _idx++) {
@@ -95,5 +95,4 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     }
     return matches;
   };
-
 }

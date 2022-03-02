@@ -2,8 +2,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
   '$window', '$location', 'OverviewDataService', 'AlertService', 'ModalService',
   'RefreshService',
   function($scope, $http, $window, $location, OverviewDataService, AlertService,
-           ModalService, RefreshService) {
-
+      ModalService, RefreshService) {
     $scope.data = undefined;
 
     $scope.indices = undefined;
@@ -23,10 +22,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.paginator = new Paginator(
-      1,
-      $scope.getPageSize(),
-      [],
-      $scope.indices_filter)
+        1,
+        $scope.getPageSize(),
+        [],
+        $scope.indices_filter)
     ;
 
     $scope.page = $scope.paginator.getPage();
@@ -38,45 +37,45 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     });
 
     $scope.$watch(
-      function() {
-        return RefreshService.lastUpdate();
-      },
-      function() {
-        $scope.refresh();
-      },
-      true
+        function() {
+          return RefreshService.lastUpdate();
+        },
+        function() {
+          $scope.refresh();
+        },
+        true
     );
 
     $scope.refresh = function() {
       OverviewDataService.getOverview(
-        function(data) {
-          $scope.data = data;
-          $scope.setIndices(data.indices);
-          $scope.setNodes(data.nodes);
-          $scope.unassigned_shards = data.unassigned_shards;
-          $scope.relocating_shards = data.relocating_shards;
-          $scope.initializing_shards = data.initializing_shards;
-          $scope.closed_indices = data.closed_indices;
-          $scope.special_indices = data.special_indices;
-          $scope.shardAllocation = data.shard_allocation;
-          if (!$scope.unassigned_shards &&
+          function(data) {
+            $scope.data = data;
+            $scope.setIndices(data.indices);
+            $scope.setNodes(data.nodes);
+            $scope.unassigned_shards = data.unassigned_shards;
+            $scope.relocating_shards = data.relocating_shards;
+            $scope.initializing_shards = data.initializing_shards;
+            $scope.closed_indices = data.closed_indices;
+            $scope.special_indices = data.special_indices;
+            $scope.shardAllocation = data.shard_allocation;
+            if (!$scope.unassigned_shards &&
             !$scope.relocating_shards &&
             !$scope.initializing_shards) {
-            $scope.indices_filter.healthy = true;
+              $scope.indices_filter.healthy = true;
+            }
+          },
+          function(error) {
+            AlertService.error('Error while loading data', error);
+            $scope.data = undefined;
+            $scope.indices = undefined;
+            $scope.nodes = undefined;
+            $scope.unassigned_shards = 0;
+            $scope.relocating_shards = 0;
+            $scope.initializing_shards = 0;
+            $scope.closed_indices = 0;
+            $scope.special_indices = 0;
+            $scope.shardAllocation = true;
           }
-        },
-        function(error) {
-          AlertService.error('Error while loading data', error);
-          $scope.data = undefined;
-          $scope.indices = undefined;
-          $scope.nodes = undefined;
-          $scope.unassigned_shards = 0;
-          $scope.relocating_shards = 0;
-          $scope.initializing_shards = 0;
-          $scope.closed_indices = 0;
-          $scope.special_indices = 0;
-          $scope.shardAllocation = true;
-        }
       );
     };
 
@@ -92,11 +91,11 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     };
 
     $scope.$watch('nodes_filter', function() {
-        if ($scope.data) {
-          $scope.setNodes($scope.data.nodes);
-        }
-      },
-      true);
+      if ($scope.data) {
+        $scope.setNodes($scope.data.nodes);
+      }
+    },
+    true);
 
     $scope.setNodes = function(nodes) {
       $scope.nodes = nodes.filter(function(node) {
@@ -119,64 +118,64 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
 
     $scope.openIndex = function(index) {
       ModalService.promptConfirmation(
-        'Open ' + index + '?',
-        function() {
-          OverviewDataService.openIndex(index, success, error);
-        }
+          'Open ' + index + '?',
+          function() {
+            OverviewDataService.openIndex(index, success, error);
+          }
       );
     };
 
     $scope.closeIndex = function(index) {
       ModalService.promptConfirmation(
-        'Close ' + index + '?',
-        function() {
-          OverviewDataService.closeIndex(index, success, error);
-        }
+          'Close ' + index + '?',
+          function() {
+            OverviewDataService.closeIndex(index, success, error);
+          }
       );
     };
 
     $scope.deleteIndex = function(index) {
       ModalService.promptConfirmation(
-        'Delete ' + index + '?',
-        function() {
-          OverviewDataService.deleteIndex(index, success, error);
-        }
+          'Delete ' + index + '?',
+          function() {
+            OverviewDataService.deleteIndex(index, success, error);
+          }
       );
     };
 
     $scope.clearIndexCache = function(index) {
       ModalService.promptConfirmation(
-        'Clear ' + index + ' cache?',
-        function() {
-          OverviewDataService.clearIndexCache(index, success, error);
-        }
+          'Clear ' + index + ' cache?',
+          function() {
+            OverviewDataService.clearIndexCache(index, success, error);
+          }
       );
     };
 
     $scope.refreshIndex = function(index) {
       ModalService.promptConfirmation(
-        'Refresh index ' + index + '?',
-        function() {
-          OverviewDataService.refreshIndex(index, success, error);
-        }
+          'Refresh index ' + index + '?',
+          function() {
+            OverviewDataService.refreshIndex(index, success, error);
+          }
       );
     };
 
     $scope.flushIndex = function(index) {
       ModalService.promptConfirmation(
-        'Flush index ' + index + '?',
-        function() {
-          OverviewDataService.flushIndex(index, success, error);
-        }
+          'Flush index ' + index + '?',
+          function() {
+            OverviewDataService.flushIndex(index, success, error);
+          }
       );
     };
 
     $scope.forceMerge = function(index) {
       ModalService.promptConfirmation(
-        'Optimize index ' + index + '?',
-        function() {
-          OverviewDataService.forceMerge(index, success, error);
-        }
+          'Optimize index ' + index + '?',
+          function() {
+            OverviewDataService.forceMerge(index, success, error);
+          }
       );
     };
 
@@ -187,10 +186,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Close all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.closeIndex(indices.join(','), success, error);
-        }
+          'Close all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.closeIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -199,10 +198,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Open all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.openIndex(indices.join(','), success, error);
-        }
+          'Open all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.openIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -211,10 +210,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Optimize all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.forceMerge(indices.join(','), success, error);
-        }
+          'Optimize all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.forceMerge(indices.join(','), success, error);
+          }
       );
     };
 
@@ -223,10 +222,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Refresh all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.refreshIndex(indices.join(','), success, error);
-        }
+          'Refresh all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.refreshIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -235,10 +234,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Flush all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.flushIndex(indices.join(','), success, error);
-        }
+          'Flush all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.flushIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -247,12 +246,12 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Clear all ' + indices.length + ' selected indices cache?',
-        function() {
-          OverviewDataService.clearIndexCache(
-            indices.join(','), success, error
-          );
-        }
+          'Clear all ' + indices.length + ' selected indices cache?',
+          function() {
+            OverviewDataService.clearIndexCache(
+                indices.join(','), success, error
+            );
+          }
       );
     };
 
@@ -261,10 +260,10 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
         return index.name;
       });
       ModalService.promptConfirmation(
-        'Delete all ' + indices.length + ' selected indices?',
-        function() {
-          OverviewDataService.deleteIndex(indices.join(','), success, error);
-        }
+          'Delete all ' + indices.length + ' selected indices?',
+          function() {
+            OverviewDataService.deleteIndex(indices.join(','), success, error);
+          }
       );
     };
 
@@ -307,14 +306,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.relocateShard = function(node) {
       var s = $scope.relocatingShard;
       OverviewDataService.relocateShard(s.shard, s.index, s.node, node.id,
-        function(response) {
-          $scope.relocatingShard = undefined;
-          RefreshService.refresh();
-          AlertService.info('Relocation successfully started', response);
-        },
-        function(error) {
-          AlertService.error('Error while starting relocation', error);
-        }
+          function(response) {
+            $scope.relocatingShard = undefined;
+            RefreshService.refresh();
+            AlertService.info('Relocation successfully started', response);
+          },
+          function(error) {
+            AlertService.error('Error while starting relocation', error);
+          }
       );
     };
 
@@ -343,5 +342,4 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
       }
       return false;
     };
-
   }]);

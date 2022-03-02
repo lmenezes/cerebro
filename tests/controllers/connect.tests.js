@@ -60,7 +60,7 @@ describe('ConnectController', function() {
   describe('connect', function() {
     it('connects to valid host', function() {
       this.ConnectDataService.testConnection = function(host, success, error) {
-        success({status: 200});
+        success({data: { status: 200} });
       };
       spyOn(this.ConnectDataService, "connect").and.returnValue();
       spyOn(this.ConnectDataService, "testConnection").and.callThrough();
@@ -74,7 +74,7 @@ describe('ConnectController', function() {
     });
     it('connect to a secured host', function() {
       this.ConnectDataService.testConnection = function(host, success, error) {
-        success({status: 401});
+        success({data: {status: 401} });
       };
       spyOn(this.ConnectDataService, "connect").and.returnValue(true);
       spyOn(this.ConnectDataService, "testConnection").and.callThrough();
@@ -87,7 +87,7 @@ describe('ConnectController', function() {
     });
     it('handles unexpected response from host', function() {
       this.ConnectDataService.testConnection = function(host, success, error) {
-        success({status: 301});
+        success({data: {status: 301}});
       };
       spyOn(this.ConnectDataService, "connect").and.returnValue(true);
       spyOn(this.ConnectDataService, "testConnection").and.callThrough();
@@ -100,7 +100,7 @@ describe('ConnectController', function() {
     });
     it('handles failure connecting to host', function() {
       this.ConnectDataService.testConnection = function(host, success, error) {
-        error('boom');
+        error({data: 'boom'});
       };
       spyOn(this.ConnectDataService, "testConnection").and.callThrough();
       spyOn(this.ConnectDataService, "connect").and.callThrough();
@@ -120,7 +120,7 @@ describe('ConnectController', function() {
   describe('authorize', function() {
     it('connect with valid credentials', function() {
       this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
-        success({status: 200});
+        success({data:{status: 200}});
       };
       spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
       spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
@@ -134,7 +134,7 @@ describe('ConnectController', function() {
     });
     it('connect with invalid credentials', function() {
       this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
-        success({status: 401});
+        success({data: {status: 401}});
       };
       spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
       spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
@@ -148,7 +148,7 @@ describe('ConnectController', function() {
     });
     it('handles unexpected response', function() {
       this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
-        success({status: 302});
+        success({data: {status: 302}});
       };
       spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
       spyOn(this.ConnectDataService, "testCredentials").and.callThrough();
@@ -162,7 +162,7 @@ describe('ConnectController', function() {
     });
     it('handles failure connecting to host', function() {
       this.ConnectDataService.testCredentials = function(host, usr, pwd, success, error) {
-        error('kaput');
+        error({data: 'kaput'});
       };
       spyOn(this.ConnectDataService, "connectWithCredentials").and.returnValue();
       spyOn(this.ConnectDataService, "testCredentials").and.callThrough();

@@ -1,7 +1,6 @@
 angular.module('cerebro').controller('CatController', ['$scope',
   'CatDataService', 'AlertService',
   function($scope, CatDataService, AlertService) {
-
     $scope.api = undefined;
 
     $scope.apis = [
@@ -20,7 +19,7 @@ angular.module('cerebro').controller('CatController', ['$scope',
       'repositories',
       'thread pool',
       'shards',
-      'segments'
+      'segments',
     ];
 
     $scope.headers = undefined;
@@ -30,20 +29,20 @@ angular.module('cerebro').controller('CatController', ['$scope',
 
     $scope.get = function(api) {
       CatDataService.get(
-        api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
-        function(data) {
-          if (data.length) {
-            $scope.headers = Object.keys(data[0]);
-            $scope.sort($scope.headers[0]);
-            $scope.data = data;
-          } else {
-            $scope.headers = [];
-            $scope.data = [];
+          api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
+          function(data) {
+            if (data.length) {
+              $scope.headers = Object.keys(data[0]);
+              $scope.sort($scope.headers[0]);
+              $scope.data = data;
+            } else {
+              $scope.headers = [];
+              $scope.data = [];
+            }
+          },
+          function(error) {
+            AlertService.error('Error executing request', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error executing request', error);
-        }
       );
     };
 
@@ -55,6 +54,5 @@ angular.module('cerebro').controller('CatController', ['$scope',
       }
       $scope.sortCol = col;
     };
-
   }]
 );

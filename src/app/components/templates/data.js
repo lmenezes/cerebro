@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('TemplatesDataService', ['DataService',
   function(DataService) {
-
     this.getTemplates = function(success, error) {
       DataService.send('templates', {}, success, error);
     };
@@ -15,6 +14,5 @@ angular.module('cerebro').factory('TemplatesDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);

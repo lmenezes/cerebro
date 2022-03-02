@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function GroupedSettings(settings) {
   var groups = {};
   settings.forEach(function(setting) {

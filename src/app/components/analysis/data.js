@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('AnalysisDataService', ['DataService',
   function(DataService) {
-
     this.getOpenIndices = function(success, error) {
       DataService.send('analysis/indices', {}, success, error);
     };
@@ -24,6 +23,5 @@ angular.module('cerebro').factory('AnalysisDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);

@@ -1,5 +1,5 @@
+// eslint-disable-next-line no-unused-vars
 function Paginator(page, pageSize, collection, filter) {
-
   this.filter = filter;
 
   this.page = page;
@@ -77,5 +77,4 @@ function Paginator(page, pageSize, collection, filter) {
   this.getCollection = function() {
     return this.$collection;
   };
-
 }

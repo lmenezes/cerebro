@@ -3,6 +3,7 @@
 .*
 # except for .gitignore
 !.gitignore
+!.eslintrc.json
 
 # Ignore Play! working directory #
 db

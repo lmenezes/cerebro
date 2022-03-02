@@ -1,5 +1,4 @@
 angular.module('cerebro').filter('timeInterval', function() {
-
   var UNITS = ['yr', 'mo', 'd', 'h', 'min', 'sec'];
 
   var UNIT_MEASURE = {
@@ -9,11 +8,10 @@ angular.module('cerebro').filter('timeInterval', function() {
     d: 86400000,
     h: 3600000,
     min: 60000,
-    sec: 1000
+    sec: 1000,
   };
 
   function stringify(seconds) {
-
     var result = '0sec';
 
     for (var idx = 0; idx < UNITS.length; idx++) {
@@ -30,5 +28,4 @@ angular.module('cerebro').filter('timeInterval', function() {
   return function(seconds) {
     return stringify(seconds);
   };
-
 });

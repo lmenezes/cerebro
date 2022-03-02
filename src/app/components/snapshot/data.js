@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('snapshots', {}, success, error);
     };
@@ -16,20 +15,20 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
     };
 
     this.create = function(repository, snapshot, ignoreUnavailable,
-      includeGlobalState, indices, success, error) {
+        includeGlobalState, indices, success, error) {
       var data = {
         repository: repository,
         snapshot: snapshot,
         ignoreUnavailable: ignoreUnavailable,
         includeGlobalState: includeGlobalState,
-        indices: indices
+        indices: indices,
       };
       DataService.send('snapshots/create', data, success, error);
     };
 
     this.restore = function(repository, snapshot, renamePattern,
-    renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
-    indices, success, error) {
+        renameReplacement, ignoreUnavailable, includeAliases, includeGlobalState,
+        indices, success, error) {
       var data = {
         repository: repository,
         snapshot: snapshot,
@@ -38,12 +37,11 @@ angular.module('cerebro').factory('SnapshotsDataService', ['DataService',
         ignoreUnavailable: ignoreUnavailable,
         includeAliases: includeAliases,
         includeGlobalState: includeGlobalState,
-        indices: indices
+        indices: indices,
       };
       DataService.send('snapshots/restore', data, success, error);
     };
 
     return this;
-
-  }
+  },
 ]);

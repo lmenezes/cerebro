@@ -318,3 +318,13 @@ First cerebro release.
 
 #### Bug fixes
 - Handle node info for nodes without defined attributes Closes #448
+
+### v0.9.3 - December 27th, 2020
+
+#### Improvements
+- Support elasticsearch 7.10 data tiers
+
+### v0.9.4 - April 10th, 2021
+
+#### Security updates
+- Bump socket.io to 2.4.1

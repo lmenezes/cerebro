@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function AceEditor(target) {
   // ace editor
   this.editor = ace.edit(target);
@@ -7,7 +8,7 @@ function AceEditor(target) {
   this.editor.setOptions({
     fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
     fontSize: '12px',
-    fontWeight: '400'
+    fontWeight: '400',
   });
 
   // sets value and moves cursor to beggining
@@ -38,5 +39,4 @@ function AceEditor(target) {
     } catch (error) { // nothing to do
     }
   };
-
 }

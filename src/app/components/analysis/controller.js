@@ -1,7 +1,6 @@
 angular.module('cerebro').controller('AnalysisController', ['$scope',
   '$location', '$timeout', 'AlertService', 'AnalysisDataService',
   function($scope, $location, $timeout, AlertService, AnalysisDataService) {
-
     $scope.analyzerAnalysis = {index: undefined, analyzer: undefined};
     $scope.propertyAnalysis = {index: undefined, field: undefined};
 
@@ -11,25 +10,25 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
 
     $scope.loadAnalyzers = function(index) {
       AnalysisDataService.getIndexAnalyzers(index,
-        function(analyzers) {
-          $scope.analyzers = analyzers;
-        },
-        function(error) {
-          $scope.analyzers = [];
-          AlertService.error('Error loading index analyzers', error);
-        }
+          function(analyzers) {
+            $scope.analyzers = analyzers;
+          },
+          function(error) {
+            $scope.analyzers = [];
+            AlertService.error('Error loading index analyzers', error);
+          }
       );
     };
 
     $scope.loadFields = function(index) {
       AnalysisDataService.getIndexFields(index,
-        function(fields) {
-          $scope.fields = fields;
-        },
-        function(error) {
-          $scope.fields = [];
-          AlertService.error('Error loading index fields', error);
-        }
+          function(fields) {
+            $scope.fields = fields;
+          },
+          function(error) {
+            $scope.fields = [];
+            AlertService.error('Error loading index fields', error);
+          }
       );
     };
 
@@ -56,24 +55,23 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
           AlertService.error('Error analyzing text by analyzer', error);
         };
         AnalysisDataService.analyzeByAnalyzer(
-          index,
-          analyzer,
-          text,
-          success, error
+            index,
+            analyzer,
+            text,
+            success, error
         );
       }
     };
 
     $scope.setup = function() {
       AnalysisDataService.getOpenIndices(
-        function(indices) {
-          $scope.indices = indices;
-        },
-        function(error) {
-          AlertService.error('Error loading indices', error);
-        }
+          function(indices) {
+            $scope.indices = indices;
+          },
+          function(error) {
+            AlertService.error('Error loading indices', error);
+          }
       );
     };
-
-  }
+  },
 ]);

@@ -330,7 +330,7 @@ class HTTPElasticClient @Inject()(client: WSClient) extends ElasticClient {
         request.withAuth(auth.username, auth.password, WSAuthScheme.BASIC)
     }
 
-    body.fold(request)(request.withBody((_))).execute.map { response =>
+    body.fold(request)(request.withBody((_))).execute().map { response =>
       ElasticResponse(response)
     }
   }

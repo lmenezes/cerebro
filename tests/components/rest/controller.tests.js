@@ -29,7 +29,7 @@ describe('RestController', function() {
   it('should have intial state correctly set', function() {
     expect(this.scope.response).toEqual(undefined);
     expect(this.scope.indices).toEqual(undefined);
-    expect(this.scope.method).toEqual("POST");
+    expect(this.scope.method).toEqual("GET");
     expect(this.scope.path).toEqual("");
     expect(this.scope.options).toEqual([]);
   });
@@ -97,7 +97,7 @@ describe('RestController', function() {
       spyOn(this.RestDataService, "load").and.returnValue();
       spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
-      expect(this.RestDataService.execute).toHaveBeenCalledWith('POST', '', '', jasmine.any(Function), jasmine.any(Function));
+      expect(this.RestDataService.execute).toHaveBeenCalledWith('GET', '', '', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.response).toEqual(undefined);
     });
 
@@ -115,7 +115,7 @@ describe('RestController', function() {
       spyOn(this.RestDataService, "load").and.returnValue();
       spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
-      expect(this.RestDataService.execute).toHaveBeenCalledWith('POST', '', 'raw string', jasmine.any(Function), jasmine.any(Function));
+      expect(this.RestDataService.execute).toHaveBeenCalledWith('GET', '', 'raw string', jasmine.any(Function), jasmine.any(Function));
       expect(this.scope.response).toEqual(undefined);
     });
 
@@ -130,7 +130,7 @@ describe('RestController', function() {
       };
       spyOn(this.RestDataService, "execute").and.returnValue();
       this.scope.execute();
-      expect(this.RestDataService.execute).toHaveBeenCalledWith("POST", "", "some value", jasmine.any(Function), jasmine.any(Function));
+      expect(this.RestDataService.execute).toHaveBeenCalledWith("GET", "", "some value", jasmine.any(Function), jasmine.any(Function));
     });
   });
 

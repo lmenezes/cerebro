@@ -20,7 +20,7 @@ trait MockedServices extends Specification with BeforeEach with Mockito {
   val auth = mock[AuthenticationModule]
   auth.isEnabled returns false
 
-  override def before() = {
+  override def before = {
     org.mockito.Mockito.reset(client)
   }
 
