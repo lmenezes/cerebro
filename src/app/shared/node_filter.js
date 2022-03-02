@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.name = name;
   this.data = data;
@@ -7,8 +8,9 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   this.timestamp = timestamp;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new NodeFilter(
-      this.name, this.data, this.master, this.ingest, this.coordinating
+        this.name, this.data, this.master, this.ingest, this.coordinating
     );
   };
 
@@ -57,5 +59,4 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
       return true;
     }
   };
-
 }

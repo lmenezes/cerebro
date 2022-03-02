@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function Alias(alias, index, filter, indexRouting, searchRouting) {
   this.alias = alias ? alias.toLowerCase() : '';
   this.index = index ? index.toLowerCase() : '';
@@ -24,7 +25,7 @@ function Alias(alias, index, filter, indexRouting, searchRouting) {
       index: this.index,
       filter: this.filter,
       index_routing: cleanInput(this.index_routing),
-      search_routing: cleanInput(this.search_routing)
+      search_routing: cleanInput(this.search_routing),
     };
   };
 }

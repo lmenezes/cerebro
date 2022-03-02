@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 var DynamicSettings = (function() {
   var settings = {
     'cluster.blocks.read_only': true,
@@ -69,13 +70,13 @@ var DynamicSettings = (function() {
     'xpack.watcher.history.cleaner_service.enabled': true,
     'action.auto_create_index': true,
     'action.destructive_requires_name': true,
-    'action.search.shard_count.limit': true
+    'action.search.shard_count.limit': true,
   };
 
   return {
     valid: function(setting) {
       return settings[setting] || false;
-    }
+    },
   };
 })();
 

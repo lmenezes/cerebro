@@ -21,7 +21,7 @@ class AliasesController @Inject()(val authentication: AuthenticationModule,
   }
 
   def updateAliases = process { request =>
-    val changes = request.getOptArray("changes").getOrElse(JsArray()).value
+    val changes = request.getOptArray("changes").getOrElse(JsArray()).value.toSeq
     client.updateAliases(changes, request.target).map { aliases =>
       CerebroResponse(aliases.status, aliases.body)
     }

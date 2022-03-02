@@ -1,13 +1,12 @@
 angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
   '$document', function(DataService, $rootScope, $document) {
-
     var link = $document[0].querySelector('link[rel~=\'icon\']');
 
     var colors = {
       green: 'img/green-favicon.png',
       yellow: 'img/yellow-favicon.png',
       red: 'img/red-favicon.png',
-      black: 'img/black-favicon.png'
+      black: 'img/black-favicon.png',
     };
 
     this.setup = function(name, status) {
@@ -31,6 +30,5 @@ angular.module('cerebro').factory('PageService', ['DataService', '$rootScope',
     };
 
     return this;
-
-  }
+  },
 ]);

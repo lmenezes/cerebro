@@ -1,0 +1,63 @@
+<div class="col-xs-12">
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label class="form-label">bucket</label>
+      <input ng-model="settings.bucket" class="form-control" placeholder="The name of bucket to be used for snapshots">
+    </div>
+    <div class="form-group col-md-6">
+      <label class="form-label">client</label>
+      <input ng-model="settings.client" class="form-control" placeholder="The name of the client to use to connect to Google Cloud Storage. Defaults to: default">
+    </div>
+  </div>
+</div>
+<div class="form-group col-xs-12">
+  <label class="form-label">base path</label>
+  <input ng-model="settings.base_path" class="form-control" placeholder="Specifies the path within bucket to repository data. Defaults to the root of the bucket.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">chunk size</label>
+  <input ng-model="settings.chunk_size" class="form-control" placeholder="Chunk size (1g, 10m, 5k). Defaults to the maximum size of a blob which is 5TB">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">max_restore_bytes_per_sec</label>
+  <input ng-model="settings.max_restore_bytes_per_sec" class="form-control" placeholder="Throttles per node restore rate. Defaults to unlimited.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">max_snapshot_bytes_per_sec</label>
+  <input ng-model="settings.max_snapshot_bytes_per_sec" class="form-control" placeholder="Throttles per node snapshot rate. Defaults to 40mb per second.">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">application name</label>
+  <input ng-model="settings.application_name" class="form-control" placeholder="Name used by the client when it uses the Google Cloud Storage service">
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">compress snapshot files (defaults to false)</label>
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.compress" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>
+<div class="form-group col-md-6">
+  <label class="form-label">make repository read-only (defaults to false)</label>
+  <div class="row">
+    <div class="col-xs-12">
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.readonly" ng-true-value="true"> True
+      </label>
+      <label class="cluster-map-node-type">
+        <input type="checkbox" ng-model="settings.readonly" ng-true-value="false"> False
+      </label>
+    </div>
+  </div>
+</div>
+<div class="col-xs-12">
+  <div class="row">
+    <p>Documentation: <a class="text-primary" href="https://www.elastic.co/guide/en/elasticsearch/plugins/current/repository-gcs.html">Google Cloud Storage Repository Plugin</a></p>
+  </div>
+</div>

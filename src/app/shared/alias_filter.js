@@ -1,9 +1,9 @@
 function AliasFilter(index, alias) {
-
   this.index = index;
   this.alias = alias;
 
   this.clone = function() {
+    // eslint-disable-next-line no-unused-vars
     return new AliasFilter(this.index, this.alias);
   };
 
@@ -40,5 +40,4 @@ function AliasFilter(index, alias) {
       return matches;
     }
   };
-
 }

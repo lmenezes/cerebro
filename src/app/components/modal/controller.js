@@ -1,6 +1,5 @@
 angular.module('cerebro').controller('ModalController', ['$scope',
   'ModalService', function($scope, ModalService) {
-
     $scope.service = ModalService;
 
     $scope.close = function() {
@@ -10,6 +9,5 @@ angular.module('cerebro').controller('ModalController', ['$scope',
     $scope.confirm = function() {
       $scope.service.confirm();
     };
-
-  }
+  },
 ]);

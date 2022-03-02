@@ -1,8 +1,7 @@
 angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
   '$http', '$location', 'RefreshService', 'AlertService', '$window',
   function($rootScope, $timeout, $http, $location, RefreshService,
-           AlertService, $window) {
-
+      AlertService, $window) {
     var host;
 
     var username;
@@ -88,21 +87,21 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
         var defaultData = {
           host: host,
           username: username,
-          password: password
+          password: password,
         };
         var config = {
           method: 'POST',
           url: path,
-          data: angular.merge(data, defaultData) // adds host to data
+          data: angular.merge(data, defaultData), // adds host to data
         };
         request(config, success, error);
       }
     };
 
     var request = function(config, success, error) {
-      var handleSuccess = function(data) {
+      var handleSuccess = function(response) {
         onGoingRequests[config.url] = undefined;
-        switch (data.status) {
+        switch (response.data.status) {
           case 303: // unauthorized in cerebro
             $window.location.href = './login';
             break;
@@ -110,27 +109,26 @@ angular.module('cerebro').factory('DataService', ['$rootScope', '$timeout',
             $location.path('/connect').search({host: host, unauthorized: true});
             break;
           default:
-            if (data.status >= 200 && data.status < 300) {
-              success(data.body);
+            if (response.data.status >= 200 && response.data.status < 300) {
+              success(response.data.body);
             } else {
-              error(data.body);
+              error(response.data.body);
             }
         }
       };
-      var handleError = function(data) {
+      var handleError = function(response) {
         onGoingRequests[config.url] = undefined;
-        AlertService.error('Error connecting to the server', data.error);
+        AlertService.error('Error connecting to the server', response.data.error);
       };
       var activeRequest = onGoingRequests[config.url] !== undefined;
       var now = new Date().getTime();
       var interval = RefreshService.getInterval();
       if (!activeRequest || now - onGoingRequests[config.url] < interval) {
-        $http(config).success(handleSuccess).error(handleError);
+        $http(config).then(handleSuccess, handleError);
         onGoingRequests[config.url] = new Date().getTime();
       }
     };
 
     return this;
-
-  }
+  },
 ]);

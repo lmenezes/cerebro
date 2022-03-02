@@ -2,8 +2,7 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
   '$sce', 'RestDataService', 'AlertService', 'ModalService', 'AceEditorService',
   'ClipboardService',
   function($scope, $http, $sce, RestDataService, AlertService, ModalService,
-           AceEditorService, ClipboardService) {
-
+      AceEditorService, ClipboardService) {
     $scope.editor = undefined;
     $scope.response = undefined;
 
@@ -38,14 +37,14 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
       $scope.editor = AceEditorService.init('rest-client-editor');
       $scope.editor.setValue('{}');
       RestDataService.load(
-        function(response) {
-          $scope.host = response.host;
-          $scope.indices = response.indices;
-          $scope.updateOptions($scope.path);
-        },
-        function(error) {
-          AlertService.error('Error while loading cluster indices', error);
-        }
+          function(response) {
+            $scope.host = response.host;
+            $scope.indices = response.indices;
+            $scope.updateOptions($scope.path);
+          },
+          function(error) {
+            AlertService.error('Error while loading cluster indices', error);
+          }
       );
       $scope.loadHistory();
     };
@@ -59,12 +58,12 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
 
     $scope.loadHistory = function() {
       RestDataService.history(
-        function(history) {
-          $scope.history = history;
-        },
-        function(error) {
-          AlertService.error('Error while loading request history', error);
-        }
+          function(history) {
+            $scope.history = history;
+          },
+          function(error) {
+            AlertService.error('Error while loading request history', error);
+          }
       );
     };
 
@@ -110,15 +109,14 @@ angular.module('cerebro').controller('RestController', ['$scope', '$http',
         curl += ' -d \'' + body + '\'';
       }
       ClipboardService.copy(
-        curl,
-        function() {
-          AlertService.info('cURL request successfully copied to clipboard');
-        },
-        function() {
-          AlertService.error('Error while copying request to clipboard');
-        }
+          curl,
+          function() {
+            AlertService.info('cURL request successfully copied to clipboard');
+          },
+          function() {
+            AlertService.error('Error while copying request to clipboard');
+          }
       );
     };
-
   }]
 );

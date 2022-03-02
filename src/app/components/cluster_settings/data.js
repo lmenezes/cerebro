@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
   function(DataService) {
-
     this.getClusterSettings = function(success, error) {
       DataService.send('cluster_settings', {}, success, error);
     };
@@ -11,6 +10,5 @@ angular.module('cerebro').factory('ClusterSettingsDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);

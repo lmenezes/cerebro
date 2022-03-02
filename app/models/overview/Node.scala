@@ -41,8 +41,8 @@ object Node extends NodeInfo {
   }
 
   def disk(stats: JsValue): JsObject = {
-    val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0l)
-    val freeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0l)
+    val totalInBytes = (stats \ "fs" \ "total" \ "total_in_bytes").asOpt[Long].getOrElse(0L)
+    val freeInBytes = (stats \ "fs" \ "total" \ "free_in_bytes").asOpt[Long].getOrElse(0L)
     val usedPercent = 100 - (100 * (freeInBytes.toFloat / totalInBytes.toFloat)).toInt
     Json.obj(
       "total" -> JsNumber(totalInBytes),

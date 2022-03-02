@@ -1,11 +1,10 @@
 angular.module('cerebro').directive('ngPagination', ['$document',
   function($document) {
-
     return {
       scope: {
         paginator: '=paginator',
         page: '=page',
-        label: '=label'
+        label: '=label',
       },
       templateUrl: 'pagination.html',
       link: function(scope, element, attrs) {
@@ -32,7 +31,7 @@ angular.module('cerebro').directive('ngPagination', ['$document',
         element.on('$destroy', function() {
           $document.unbind('keydown', handler);
         });
-      }
+      },
     };
   }]
 );

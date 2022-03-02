@@ -1,7 +1,6 @@
 angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
   'ClusterSettingsDataService', 'AlertService',
   function($scope, ClusterSettingsDataService, AlertService) {
-
     $scope.form = undefined;
     $scope.settings = undefined;
     $scope.groupedSettings = undefined;
@@ -61,41 +60,41 @@ angular.module('cerebro').controller('ClusterSettingsController', ['$scope',
         settings[settingType][name] = value;
       });
       ClusterSettingsDataService.saveSettings(settings,
-        function(response) {
-          AlertService.info('Settings successfully saved', response);
-          $scope.setup();
-        },
-        function(error) {
-          AlertService.error('Error while saving settings', error);
-        }
+          function(response) {
+            AlertService.info('Settings successfully saved', response);
+            $scope.setup();
+          },
+          function(error) {
+            AlertService.error('Error while saving settings', error);
+          }
       );
     };
 
     $scope.setup = function() {
       ClusterSettingsDataService.getClusterSettings(
-        function(response) {
-          $scope.settings = {};
-          $scope.form = {};
-          $scope.changes = {};
-          $scope.pendingChanges = 0;
-          ['defaults', 'persistent', 'transient'].forEach(function(group) {
-            angular.forEach(response[group], function(value, setting) {
-              $scope.settings[setting] = value;
-              $scope.form[setting] = value;
+          function(response) {
+            $scope.settings = {};
+            $scope.form = {};
+            $scope.changes = {};
+            $scope.pendingChanges = 0;
+            ['defaults', 'persistent', 'transient'].forEach(function(group) {
+              angular.forEach(response[group], function(value, setting) {
+                $scope.settings[setting] = value;
+                $scope.form[setting] = value;
+              });
             });
-          });
-          if (!$scope.groupedSettings) {
-            $scope.groupedSettings = new GroupedSettings(
-              Object.keys($scope.form).map(function(setting) {
-                return {name: setting, static: !DynamicSettings.valid(setting)};
-              })
-            );
+            if (!$scope.groupedSettings) {
+              $scope.groupedSettings = new GroupedSettings(
+                  Object.keys($scope.form).map(function(setting) {
+                    return {name: setting, static: !DynamicSettings.valid(setting)};
+                  })
+              );
+            }
+          },
+          function(error) {
+            AlertService.error('Error loading cluster settings', error);
           }
-        },
-        function(error) {
-          AlertService.error('Error loading cluster settings', error);
-        }
       );
     };
-  }
+  },
 ]);

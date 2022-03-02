@@ -5,7 +5,7 @@ import javax.inject.Singleton
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Configuration
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
 

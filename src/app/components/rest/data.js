@@ -1,6 +1,5 @@
 angular.module('cerebro').factory('RestDataService', ['DataService',
   function(DataService) {
-
     this.load = function(success, error) {
       DataService.send('rest', {}, success, error);
     };
@@ -19,6 +18,5 @@ angular.module('cerebro').factory('RestDataService', ['DataService',
     };
 
     return this;
-
-  }
+  },
 ]);
