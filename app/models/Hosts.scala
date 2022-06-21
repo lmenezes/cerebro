@@ -36,7 +36,7 @@ class HostsImpl @Inject()(config: Configuration) extends Hosts {
     case Failure(_) => Map()
   }
 
-  def getHostNames() = hosts.keys.toSeq
+  def getHostNames() = hosts.values.map(h => h.name).toSeq
 
   def getHost(name: String) = hosts.get(name)
 
