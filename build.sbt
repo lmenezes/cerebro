@@ -9,7 +9,7 @@ packageDescription := """cerebro is an open source(MIT License) elasticsearch we
 
 version := "0.9.4"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.9"
 
 rpmVendor := "lmenezes"
 
