@@ -164,11 +164,18 @@
           </div>
           <div class="subtitle" ng-show="index.aliases.length">
             <div ng-hide="showAllAliases" class="title">
-                <i class="fa fa-tag"></i> {{index.aliases[0]}}
-                <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
+                <span ng-show="index.aliases.length == 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag alert-info"></i> {{index.aliases[0]}}</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag"></i> {{index.aliases[0]}}</span>
+                </span>
+                <span ng-show="index.aliases.length > 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags alert-info"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                </span>
             </div>
             <div ng-show="showAllAliases" class="title" ng-repeat="alias in index.aliases">
-              <i class="fa fa-tag"></i> {{alias}}
+              <span ng-show="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag alert-info"></i> {{alias}}</span>
+              <span ng-hide="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag"></i> {{alias}}</span>
             </div>
           </div>
           <div class="detail">
