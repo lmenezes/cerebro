@@ -63,19 +63,13 @@
             <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" ng-click="enableShardAllocation()"
                ng-hide="shardAllocation"></i>
           </div>
-          <div class="col-lg-2 col-md-6">
-            <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView"
-               title="expand view" ng-click="expandedView = true"></i>
-            <i class="fa fa-compress fa-2x normal-action table-control" ng-show="expandedView"
-               title="condense view" ng-click="expandedView = false"></i>
-          </div>
-          <div class="col-lg-2 col-md-6">
+          <div class="col-lg-3 col-md-6">
             <i class="fa fa-sort-alpha-asc fa-2x normal-action table-control" title="sort ascending"
                ng-show="indices_filter.asc" ng-click="indices_filter.asc = false"></i>
             <i class="fa fa-sort-alpha-desc fa-2x normal-action table-control" title="sort descending"
                ng-hide="indices_filter.asc" ng-click="indices_filter.asc = true"></i>
           </div>
-          <div class="col-lg-2 col-md-6">
+          <div class="col-lg-3 col-md-6">
             <i class="fa fa-eye fa-2x normal-action table-control" ng-hide="showAllAliases"
                title="show all aliases" ng-click="showAllAliases = true"></i>
             <i class="fa fa-eye-slash fa-2x normal-action table-control" ng-show="showAllAliases"
@@ -164,11 +158,18 @@
           </div>
           <div class="subtitle" ng-show="index.aliases.length">
             <div ng-hide="showAllAliases" class="title">
-                <i class="fa fa-tag"></i> {{index.aliases[0]}}
-                <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
+                <span ng-show="index.aliases.length == 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag alert-info"></i> {{index.aliases[0]}}</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag"></i> {{index.aliases[0]}}</span>
+                </span>
+                <span ng-show="index.aliases.length > 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags alert-info"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                </span>
             </div>
             <div ng-show="showAllAliases" class="title" ng-repeat="alias in index.aliases">
-              <i class="fa fa-tag"></i> {{alias}}
+              <span ng-show="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag alert-info"></i> {{alias}}</span>
+              <span ng-hide="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag"></i> {{alias}}</span>
             </div>
           </div>
           <div class="detail">
@@ -247,7 +248,7 @@
             </span>
           </div>
         </div>
-        <div ng-show="expandedView" class="node-labels">
+        <div class="node-labels">
           <span class="label label-primary">JVM: {{node.jvm_version}}</span>
           <span class="label label-primary">ES: {{node.es_version}}</span>
         </div>
@@ -284,10 +285,6 @@
               tooltip="'1min avg.: ' + (node.load_average | number:2)"
             />
           </div>
-        </div>
-        <div ng-show="expandedView" class="node-labels">
-          <span class="label label-details">JVM: {{node.jvm_version}}</span>
-          <span class="label label-details">ES: {{node.es_version}}</span>
         </div>
       </td>
       <td ng-repeat="index in page.elements track by $index">
