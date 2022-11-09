@@ -29,7 +29,11 @@ object Node extends NodeInfo {
       "master" -> JsBoolean(roles.master),
       "coordinating" -> JsBoolean(roles.coordinating),
       "ingest" -> JsBoolean(roles.ingest),
-      "data" -> JsBoolean(roles.data)
+      "data" -> JsBoolean(roles.data),
+      "roles" -> JsArray(info \ "roles" match {
+        case JsDefined(JsArray(roles)) => roles
+        case _ => Seq.empty
+      })
     )
   }
 

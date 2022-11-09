@@ -1113,7 +1113,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.special_indices = 0;
     $scope.shardAllocation = true;
 
-    $scope.indices_filter = new IndexFilter('', false, false, true, true, 0);
+    $scope.indices_filter = new IndexFilter('', [], false, false, true, true, 0);
     $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
 
     $scope.getPageSize = function() {
@@ -1192,6 +1192,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.$watch('nodes_filter', function() {
       if ($scope.data) {
         $scope.setNodes($scope.data.nodes);
+        if ($scope.nodes_filter.name) {
+          $scope.indices_filter.nodes = $scope.nodes.map(function (node) {
+            return node.id;
+          });
+        } else {
+          $scope.indices_filter.nodes = [];
+        }
+        $scope.setIndices($scope.data.indices);
       }
     },
     true);
@@ -2265,8 +2273,9 @@ function GroupedSettings(settings) {
   this.groups = Object.values(groups);
 }
 
-function IndexFilter(name, closed, special, healthy, asc, timestamp) {
+function IndexFilter(name, nodes, closed, special, healthy, asc, timestamp) {
   this.name = name;
+  this.nodes = nodes;
   this.closed = closed;
   this.special = special;
   this.healthy = healthy;
@@ -2294,6 +2303,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     // eslint-disable-next-line no-unused-vars
     return new IndexFilter(
         this.name,
+        this.nodes,
         this.closed,
         this.special,
         this.healthy,
@@ -2306,6 +2316,7 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
     return (
       other !== null &&
       this.name === other.name &&
+      this.nodes === other.nodes &&
       this.closed === other.closed &&
       this.special === other.special &&
       this.healthy === other.healthy &&
@@ -2360,6 +2371,12 @@ function IndexFilter(name, closed, special, healthy, asc, timestamp) {
         }
       }
     }
+    if (matches && this.nodes.length > 0) {
+      var shardNodes = Object.keys(index.shards);
+      matches = this.nodes.filter(function(node) {
+        return shardNodes.indexOf(node) != -1;
+      }).length > 0;
+    }
     return matches;
   };
 }
@@ -2402,11 +2419,53 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
   };
 
   this.matches = function(node) {
-    if (this.isBlank()) {
-      return true;
-    } else {
-      return this.matchesName(node.name) && this.matchesType(node);
+    var matches = true;
+    if (!this.matchesType(node)) {
+      matches = false;
     }
+    if (matches && this.name) {
+      try {
+        var regExp = new RegExp(this.name.trim(), 'i');
+        matches = regExp.test(node.name);
+        if (!matches) {
+          var attrs = Object.values(node.attributes);
+          for (var idx = 0; idx < attrs.length; idx++) {
+            if ((matches = regExp.test(attrs[idx]))) {
+              break;
+            }
+          }
+        }
+        if (!matches) {
+          for (idx = 0; idx < node.roles.length; idx++) {
+            if ((matches = regExp.test(node.roles[idx]))) {
+              break;
+            }
+          }
+        }
+      } catch (err) { // if not valid regexp, still try normal matching
+        matches = node.name.indexOf(this.name.toLowerCase()) != -1;
+        if (!matches) {
+          var _attrs = Object.values(node.attributes);
+          for (var _idx = 0; _idx < _attrs.length; _idx++) {
+            var attr = _attrs[_idx].toLowerCase();
+            matches = true;
+            if ((matches = (attr.indexOf(this.name.toLowerCase()) != -1))) {
+              break;
+            }
+          }
+        }
+        if (!matches) {
+          for (_idx = 0; _idx < node.roles.length; _idx++) {
+            var role = node.roles[_idx].toLowerCase();
+            matches = true;
+            if ((matches = (role.indexOf(this.name.toLowerCase()) != -1))) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return matches;
   };
 
   this.matchesType = function(node) {
@@ -2416,14 +2475,6 @@ function NodeFilter(name, data, master, ingest, coordinating, timestamp) {
       node.ingest && this.ingest ||
       node.coordinating && this.coordinating
     );
-  };
-
-  this.matchesName = function(name) {
-    if (this.name) {
-      return name.toLowerCase().indexOf(this.name.toLowerCase()) != -1;
-    } else {
-      return true;
-    }
   };
 }
 

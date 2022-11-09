@@ -14,7 +14,7 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.special_indices = 0;
     $scope.shardAllocation = true;
 
-    $scope.indices_filter = new IndexFilter('', false, false, true, true, 0);
+    $scope.indices_filter = new IndexFilter('', [], false, false, true, true, 0);
     $scope.nodes_filter = new NodeFilter('', true, false, false, false, 0);
 
     $scope.getPageSize = function() {
@@ -93,6 +93,14 @@ angular.module('cerebro').controller('OverviewController', ['$scope', '$http',
     $scope.$watch('nodes_filter', function() {
       if ($scope.data) {
         $scope.setNodes($scope.data.nodes);
+        if ($scope.nodes_filter.name) {
+          $scope.indices_filter.nodes = $scope.nodes.map(function (node) {
+            return node.id;
+          });
+        } else {
+          $scope.indices_filter.nodes = [];
+        }
+        $scope.setIndices($scope.data.indices);
       }
     },
     true);
