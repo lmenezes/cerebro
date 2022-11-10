@@ -246,6 +246,9 @@
             <span ng-repeat="(attr, value) in node.attributes">
               <span class="label label-success" title="{{attr}}">{{value}}</span>
             </span>
+            <span ng-repeat="value in node.roles">
+              <span class="label label-success" ng-show="['data_content','data_hot','data_warm','data_cold','data_frozen'].includes(value)">{{value}}</span>
+            </span>
           </div>
         </div>
         <div class="node-labels">
