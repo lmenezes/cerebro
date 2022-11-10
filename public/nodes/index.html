@@ -2,7 +2,7 @@
   <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 form-group">
     <input type="text" ng-model="filter.name"
            class="form-control form-control-sm"
-           placeholder="filter nodes by name">
+           placeholder="filter nodes and indices by nodes">
   </div>
   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 noselect">
     <div class="checkbox">
@@ -85,6 +85,9 @@
         <div class="col-xs-12 node-attrs">
             <span ng-repeat="(attr, value) in node.attributes">
               <span class="label label-success" title="{{attr}}">{{value}}</span>
+            </span>
+            <span ng-repeat="value in node.roles">
+              <span class="label label-success" ng-show="['data_content','data_hot','data_warm','data_cold','data_frozen'].includes(value)">{{value}}</span>
             </span>
         </div>
       </div>

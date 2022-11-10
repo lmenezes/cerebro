@@ -8,7 +8,8 @@ trait NodeInfo {
     "ml.machine_memory",
     "xpack.installed",
     "transform.node",
-    "ml.max_open_jobs"
+    "ml.max_open_jobs",
+    "ml.max_jvm_size"
   )
 
   def attrs(info: JsValue) = {

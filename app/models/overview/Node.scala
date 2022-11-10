@@ -29,6 +29,10 @@ object Node extends NodeInfo {
       "data" -> JsBoolean(nodeRoles.data),
       "coordinating" -> JsBoolean(nodeRoles.coordinating),
       "ingest" -> JsBoolean(nodeRoles.ingest),
+      "roles" -> JsArray(info \ "roles" match {
+        case JsDefined(JsArray(roles)) => roles
+        case _ => Seq.empty
+      }),
       "heap" -> Json.obj(
         "used" -> (stats \ "jvm" \ "mem" \ "heap_used_in_bytes").as[JsNumber],
         "committed" -> (stats \ "jvm" \ "mem" \ "heap_committed_in_bytes").as[JsNumber],
@@ -59,8 +63,10 @@ object Node extends NodeInfo {
   }
 
   def cpuPercent(nodeStats: JsValue): JsNumber = {
-    val cpu = (nodeStats \ "os" \ "cpu" \ "percent").asOpt[Int].getOrElse(// 5.X
-      (nodeStats \ "os" \ "cpu_percent").asOpt[Int].getOrElse(0) // FIXME 2.X
+    val cpu = (nodeStats \ "os" \ "cpu" \ "percent").asOpt[Int].filter(i => i > 0).getOrElse(// 5.X
+      (nodeStats \ "process" \ "cpu" \ "percent").asOpt[Int].filter(i => i > 0).getOrElse( // 7.X
+        (nodeStats \ "os" \ "cpu_percent").asOpt[Int].getOrElse(0) // FIXME 2.X
+      )
     )
     JsNumber(BigDecimal(cpu))
   }

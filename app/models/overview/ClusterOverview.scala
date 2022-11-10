@@ -59,9 +59,13 @@ object ClusterOverview {
       Index(index, indexStats, shards, indexAliases, indexBlock)
     }.toSeq
 
+    val metadata = (clusterState \ "metadata" \ "indices").as[JsObject]
     val closedIndices = blocks.value.collect { // ES < 7.X does not return routing_table for closed indices
       case (name, block) if !routingTable.contains(name) && (block \ "4").isDefined =>
-        ClosedIndex(name)
+        val indexAliases = (metadata \ name \ "aliases").as[JsArray]
+        val numShards = JsNumber((metadata \ name \ "settings" \ "index" \ "number_of_shards").as[JsString].value.toInt)
+        val numReplicas = JsNumber((metadata \ name \ "settings" \ "index" \ "number_of_replicas").as[JsString].value.toInt)
+        ClosedIndex(name, indexAliases, numShards, numReplicas)
     }
 
     indices ++ closedIndices

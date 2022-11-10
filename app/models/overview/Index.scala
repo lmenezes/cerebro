@@ -17,6 +17,8 @@ object Index {
       "size_in_bytes" -> (stats \ "primaries" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "total_size_in_bytes" -> (stats \ "total" \ "store" \ "size_in_bytes").asOpt[JsNumber].getOrElse(JsNumber(0)),
       "aliases" -> JsArray(aliases.as[JsObject].keys.map(JsString(_)).toSeq), // 1.4 < does not return aliases obj
+      "is_write_true_aliases" -> JsArray(aliases.as[JsObject].fieldSet.filter(
+        _._2.as[JsObject].fieldSet.contains("is_write_index", JsBoolean(true))).map(_._1).map(JsString(_)).toSeq),
       "num_shards" -> JsNumber((routingTable \ "shards").as[JsObject].keys.map(_.toInt).max + 1),
       "num_replicas" -> JsNumber((routingTable \ "shards" \ "0").as[JsArray].value.size - 1),
       "shards" -> JsObject(shardMap)

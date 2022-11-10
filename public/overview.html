@@ -28,7 +28,7 @@
       <div class="row">
         <div class="col-lg-6 col-sm-6 form-group">
           <input type="text" ng-model="nodes_filter.name" class="form-control form-control-sm"
-                 placeholder="filter nodes by name">
+                 placeholder="filter nodes and indices by nodes">
         </div>
       </div>
     </div>
@@ -64,16 +64,16 @@
                ng-hide="shardAllocation"></i>
           </div>
           <div class="col-lg-3 col-md-6">
-            <i class="fa fa-expand fa-2x normal-action table-control" ng-hide="expandedView"
-               title="expand view" ng-click="expandedView = true"></i>
-            <i class="fa fa-compress fa-2x normal-action table-control" ng-show="expandedView"
-               title="condense view" ng-click="expandedView = false"></i>
-          </div>
-          <div class="col-lg-3 col-md-6">
             <i class="fa fa-sort-alpha-asc fa-2x normal-action table-control" title="sort ascending"
                ng-show="indices_filter.asc" ng-click="indices_filter.asc = false"></i>
             <i class="fa fa-sort-alpha-desc fa-2x normal-action table-control" title="sort descending"
                ng-hide="indices_filter.asc" ng-click="indices_filter.asc = true"></i>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <i class="fa fa-eye fa-2x normal-action table-control" ng-hide="showAllAliases"
+               title="show all aliases" ng-click="showAllAliases = true"></i>
+            <i class="fa fa-eye-slash fa-2x normal-action table-control" ng-show="showAllAliases"
+               title="show single alias" ng-click="showAllAliases = false"></i>
           </div>
           <div class="col-lg-3 col-md-6">
             <div class="dropdown">
@@ -157,9 +157,19 @@
             </ul>
           </div>
           <div class="subtitle" ng-show="index.aliases.length">
-            <div class="title">
-              <i class="fa fa-tag"></i> {{index.aliases[0]}}
-              <span ng-show="index.aliases.length > 1">(+{{index.aliases.length - 1}})</span>
+            <div ng-hide="showAllAliases" class="title">
+                <span ng-show="index.aliases.length == 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag alert-info"></i> {{index.aliases[0]}}</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tag"></i> {{index.aliases[0]}}</span>
+                </span>
+                <span ng-show="index.aliases.length > 1">
+                  <span ng-show="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags alert-info"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                  <span ng-hide="index.is_write_true_aliases.includes(index.aliases[0])"><i class="fa fa-tags"></i> {{index.aliases[0]}}(+{{index.aliases.length - 1}})</span>
+                </span>
+            </div>
+            <div ng-show="showAllAliases" class="title" ng-repeat="alias in index.aliases">
+              <span ng-show="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag alert-info"></i> {{alias}}</span>
+              <span ng-hide="index.is_write_true_aliases.includes(alias)"><i class="fa fa-tag"></i> {{alias}}</span>
             </div>
           </div>
           <div class="detail">
@@ -169,6 +179,7 @@
               <span><small>size: {{index.size_in_bytes | bytes}}</small></span>
             </span>
             <span ng-show="index.closed">
+              <span><small>shards: {{index.num_shards}} * {{index.num_replicas + 1}}</small></span><br>
               <span><small><i>index closed</i></small></span>
             </span>
           </div>
@@ -235,9 +246,12 @@
             <span ng-repeat="(attr, value) in node.attributes">
               <span class="label label-success" title="{{attr}}">{{value}}</span>
             </span>
+            <span ng-repeat="value in node.roles">
+              <span class="label label-success" ng-show="['data_content','data_hot','data_warm','data_cold','data_frozen'].includes(value)">{{value}}</span>
+            </span>
           </div>
         </div>
-        <div ng-show="expandedView" class="node-labels">
+        <div class="node-labels">
           <span class="label label-primary">JVM: {{node.jvm_version}}</span>
           <span class="label label-primary">ES: {{node.es_version}}</span>
         </div>

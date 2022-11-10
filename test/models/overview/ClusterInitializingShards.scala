@@ -12,6 +12,19 @@ object ClusterInitializingShards {
       |  "cluster_name" : "elasticsearch",
       |  "master_node" : "cPsT9o5FQ3WRnvqSTXHiVQ",
       |  "blocks" : { },
+      |  "metadata" : {
+      |    "indices" : {
+      |      "hello" : {
+      |        "settings" : {
+      |          "index" : {
+      |            "number_of_shards" : "1",
+      |            "number_of_replicas" : "1"
+      |          }
+      |        },
+      |        "aliases" : [ ]
+      |      }
+      |    }
+      |  },
       |  "routing_table" : {
       |    "indices" : {
       |      "hello" : {
