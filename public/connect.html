@@ -32,7 +32,7 @@
         <tr>
           <td>
             <select class="form-control form-control-sm" ng-model="host" ng-change="connect(host)">
-              <option ng-repeat="host in hosts">{{host}}</option>
+              <option ng-repeat="host in hosts | orderBy track by $index">{{host}}</option>
             </select>
           </td>
         </tr>
