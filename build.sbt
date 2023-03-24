@@ -17,7 +17,27 @@ rpmLicense := Some("MIT")
 
 rpmUrl := Some("http://github.com/lmenezes/cerebro")
 
-libraryDependencies ++= Seq(
+val jacksonVersion         = "2.14.2"
+val jacksonDatabindVersion = "2.14.2"
+
+val jacksonOverrides = Seq(
+  "com.fasterxml.jackson.core"     % "jackson-core",
+  "com.fasterxml.jackson.core"     % "jackson-annotations",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
+).map(_ % jacksonVersion)
+
+val jacksonDatabindOverrides = Seq(
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
+)
+
+val akkaSerializationJacksonOverrides = Seq(
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
+  "com.fasterxml.jackson.module"     % "jackson-module-parameter-names",
+  "com.fasterxml.jackson.module"     %% "jackson-module-scala",
+).map(_ % jacksonVersion)
+
+libraryDependencies ++= jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides ++ Seq(
   "com.typesafe.play" %% "play"                    % "2.8.7",
   "com.typesafe.play" %% "play-json"               % "2.9.1",
   "com.typesafe.play" %% "play-slick"              % "5.0.0",
