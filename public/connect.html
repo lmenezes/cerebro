@@ -29,9 +29,11 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="host in hosts | orderBy track by $index">
-          <td class="normal-action" ng-click="connect(host)">
-            <span>{{host}}</span>
+        <tr>
+          <td>
+            <select class="form-control form-control-sm" ng-model="host" ng-change="connect(host)">
+              <option ng-repeat="host in hosts">{{host}}</option>
+            </select>
           </td>
         </tr>
         </tbody>
