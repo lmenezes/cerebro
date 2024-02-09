@@ -17,7 +17,6 @@ rpmLicense := Some("MIT")
 
 rpmUrl := Some("http://github.com/lmenezes/cerebro")
 
-libraryDependencies ++= Seq(
 val jacksonVersion         = "2.13.4"   // or 2.12.7
 val jacksonDatabindVersion = "2.13.4.2" // or 2.12.7.1
 
