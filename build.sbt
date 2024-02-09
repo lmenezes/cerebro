@@ -45,7 +45,8 @@ libraryDependencies ++= jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSeri
   "org.xerial"        %  "sqlite-jdbc"             % "3.41.2.2",
   "org.specs2"        %% "specs2-junit"  % "4.10.0" % "test",
   "org.specs2"        %% "specs2-core"   % "4.10.0" % "test",
-  "org.specs2"        %% "specs2-mock"   % "4.10.0" % "test"
+  "org.specs2"        %% "specs2-mock"   % "4.10.0" % "test",
+  "ch.qos.logback"        %% "logback-classic"   % "1.2.13"
 )
 
 libraryDependencies += filters
