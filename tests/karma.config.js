@@ -10,7 +10,7 @@ module.exports = function(config) {
       absolute_root + '/node_modules/angular-route/angular-route.js',
       absolute_root + '/node_modules/angular-animate/angular-animate.js',
       absolute_root + '/node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
-      absolute_root + '/node_modules/ace-builds/src/ace/ace.js',
+      absolute_root + '/node_modules/ace-builds/src/ace.js',
       absolute_root + '/node_modules/@lmenezes/json-tree/jsontree.js',
       absolute_root + '/src/app/*.js',
       absolute_root + '/src/app/*/*.js',

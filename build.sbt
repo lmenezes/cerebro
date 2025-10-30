@@ -32,6 +32,14 @@ libraryDependencies += filters
 libraryDependencies += ws
 libraryDependencies += guice
 
+// Add Java 17+ compatibility for tests (opens internal packages for Guice/CGLib)
+Test / javaOptions ++= Seq(
+  "--add-opens=java.base/java.lang=ALL-UNNAMED",
+  "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+  "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+  "--add-opens=java.base/java.util=ALL-UNNAMED"
+)
+
 lazy val root = (project in file(".")).
   enablePlugins(PlayScala, BuildInfoPlugin, LauncherJarPlugin, JDebPackaging, RpmPlugin).
   settings(
