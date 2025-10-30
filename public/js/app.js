@@ -2075,6 +2075,7 @@ angular.module('cerebro').factory('TemplatesDataService', ['DataService',
   },
 ]);
 
+/* exported IndexTemplateFilter */
 function IndexTemplateFilter(name, pattern) {
   this.name = name;
   this.pattern = pattern;
@@ -2159,6 +2160,7 @@ function AceEditor(target) {
   };
 }
 
+/* exported AliasFilter */
 function AliasFilter(index, alias) {
   this.index = index;
   this.alias = alias;
@@ -2265,6 +2267,7 @@ function GroupedSettings(settings) {
   this.groups = Object.values(groups);
 }
 
+/* exported IndexFilter */
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   this.name = name;
   this.closed = closed;

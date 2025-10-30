@@ -1,3 +1,4 @@
+/* exported IndexTemplateFilter */
 function IndexTemplateFilter(name, pattern) {
   this.name = name;
   this.pattern = pattern;

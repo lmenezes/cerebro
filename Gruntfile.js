@@ -82,7 +82,7 @@ module.exports = function(grunt) {
     },
     eslint: {
       options: {
-        configFile: 'conf/eslint.json',
+        overrideConfigFile: 'conf/eslint.json',
         fix: true
       },
       target: [

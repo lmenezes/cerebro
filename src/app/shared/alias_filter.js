@@ -1,3 +1,4 @@
+/* exported AliasFilter */
 function AliasFilter(index, alias) {
   this.index = index;
   this.alias = alias;

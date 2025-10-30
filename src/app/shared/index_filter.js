@@ -1,3 +1,4 @@
+/* exported IndexFilter */
 function IndexFilter(name, closed, special, healthy, asc, timestamp) {
   this.name = name;
   this.closed = closed;
