@@ -56,7 +56,7 @@ object Index {
   def createShardMap(routingTable: JsValue): Map[String, JsArray] = {
     (routingTable \ "shards").as[JsObject].value.toSeq.flatMap { case (_, shards) =>
       shards.as[JsArray].value.flatMap(parseShard(_))
-    }.groupBy(_._1).view.mapValues(v => JsArray(v.map(_._2))).toMap
+    }.groupBy(_._1).view.mapValues(v => JsArray(v.map(_._2).sortBy(shard => (shard \ "shard").as[Int]))).toMap
   }
 
   /**

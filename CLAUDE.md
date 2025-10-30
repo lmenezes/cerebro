@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Cerebro is an Elasticsearch web admin tool built with:
-- **Backend**: Scala 2.13.4, Play Framework 2.8.7, SBT 1.4.5
+- **Backend**: Scala 2.13.15, Play Framework 2.9.5, SBT 1.10.6
 - **Frontend**: AngularJS 1.8.2, Bootstrap 3, jQuery
 - **Build Tools**: SBT (Scala), Grunt (JavaScript/CSS)
-- **Requirements**: Java 17 (Java 11 may work but 17 is recommended; Java 18+ requires additional configuration)
+- **Requirements**: Java 17 (recommended for optimal compatibility)
 
 ## Development Commands
 
@@ -82,6 +82,47 @@ grunt build
 ```
 
 This generates production assets in `public/js/` and `public/css/` from `src/app/` sources.
+
+## Recent Changes (October 2025)
+
+### Backend Dependencies Updated
+
+All backend dependencies have been updated to their latest stable versions compatible with Java 17:
+
+**Core Updates:**
+- SBT: 1.4.5 → 1.10.6
+- Scala: 2.13.4 → 2.13.15
+- Play Framework: 2.8.7 → 2.9.5
+- play-json: 2.9.1 → 2.10.6
+- play-slick: 5.0.0 → 5.3.1
+- play-slick-evolutions: 5.0.0 → 5.3.1
+
+**Library Updates:**
+- sqlite-jdbc: 3.34.0 → 3.47.1.0
+- specs2: 4.10.0 → 4.20.9
+
+**Plugin Updates:**
+- sbt-digest: 1.1.4 → 2.0.0
+- sbt-gzip: 1.0.2 → 2.0.0
+- sbt-native-packager: 1.8.0 → 1.11.0
+- sbt-buildinfo: 0.10.0 → 0.13.1
+- jdeb: 1.8 → 1.11
+- sbt-rjs: removed (unused, frontend build handled by Grunt)
+
+**Breaking Changes Fixed:**
+- Play 2.9 route API changes: Removed `()` from `routes.*.index()` calls (now `routes.*.index`)
+- Updated deprecated SBT syntax to modern slash notation (e.g., `Compile / doc / sources`)
+- Added shard sorting in Index model for consistent JSON array ordering
+- Updated IndexSpec test expectations to match new sorted shard order (test/models/overview/IndexSpec.scala)
+
+**CI/CD Updates:**
+- GitHub Actions workflow updated (.github/workflows/scala.yml):
+  - Backend: Java 1.8 → Java 17 (Temurin distribution)
+  - Updated actions/checkout: v2 → v4
+  - Updated actions/setup-java: v1 → v4
+  - Updated actions/setup-node: v1 → v4
+  - Frontend: Node.js versions 10.x, 12.x, 14.x → 18.x, 20.x, 22.x
+  - Fixed frontend test command to use Chrome explicitly
 
 ## Important Configuration Notes
 

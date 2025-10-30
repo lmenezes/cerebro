@@ -41,10 +41,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 4,
+        |        "shard": 0,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "oWmBTuCFSuGA4krn5diK3w"
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
         |        }
         |      },
         |      {
@@ -63,10 +63,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 0,
+        |        "shard": 4,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |          "id": "oWmBTuCFSuGA4krn5diK3w"
         |        }
         |      }
         |    ],
@@ -122,16 +122,14 @@ object IndexSpec extends Specification {
         |  "shards": {
         |    "ZqGi3UPESiSa0Z4Sf4NlPg": [
         |      {
-        |        "state": "RELOCATING",
+        |        "state": "STARTED",
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
-        |        "relocating_node": "H-4gqX87SYqmQKtsatg92w",
-        |        "shard": 4,
+        |        "relocating_node": null,
+        |        "shard": 0,
         |        "index": "some",
-        |        "expected_shard_size_in_bytes": 32860995,
         |        "allocation_id": {
-        |          "id": "oWmBTuCFSuGA4krn5diK3w",
-        |          "relocation_id": "fSkjawIwQ7e2LuVGE9X1MQ"
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
         |        }
         |      },
         |      {
@@ -146,25 +144,20 @@ object IndexSpec extends Specification {
         |        }
         |      },
         |      {
-        |        "state": "STARTED",
+        |        "state": "RELOCATING",
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
-        |        "relocating_node": null,
-        |        "shard": 0,
+        |        "relocating_node": "H-4gqX87SYqmQKtsatg92w",
+        |        "shard": 4,
         |        "index": "some",
+        |        "expected_shard_size_in_bytes": 32860995,
         |        "allocation_id": {
-        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |          "id": "oWmBTuCFSuGA4krn5diK3w",
+        |          "relocation_id": "fSkjawIwQ7e2LuVGE9X1MQ"
         |        }
         |      }
         |    ],
         |    "H-4gqX87SYqmQKtsatg92w": [
-        |      {
-        |        "node": "H-4gqX87SYqmQKtsatg92w",
-        |        "index": "some",
-        |        "state": "INITIALIZING",
-        |        "shard": 4,
-        |        "primary": false
-        |      },
         |      {
         |        "state": "STARTED",
         |        "primary": true,
@@ -186,6 +179,13 @@ object IndexSpec extends Specification {
         |        "allocation_id": {
         |          "id": "6X6SMPvvQbOdUct5k3bo6w"
         |        }
+        |      },
+        |      {
+        |        "node": "H-4gqX87SYqmQKtsatg92w",
+        |        "index": "some",
+        |        "state": "INITIALIZING",
+        |        "shard": 4,
+        |        "primary": false
         |      }
         |    ]
         |  }
@@ -220,10 +220,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 1,
+        |        "shard": 0,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "YUY5QiPmQJulsereqC1VBQ"
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
         |        }
         |      },
         |      {
@@ -231,10 +231,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 0,
+        |        "shard": 1,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |          "id": "YUY5QiPmQJulsereqC1VBQ"
         |        }
         |      }
         |    ],
@@ -313,10 +313,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 4,
+        |        "shard": 0,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "oWmBTuCFSuGA4krn5diK3w"
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
         |        }
         |      },
         |      {
@@ -335,10 +335,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 0,
+        |        "shard": 4,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |          "id": "oWmBTuCFSuGA4krn5diK3w"
         |        }
         |      }
         |    ],
@@ -398,10 +398,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 4,
+        |        "shard": 0,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "oWmBTuCFSuGA4krn5diK3w"
+        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
         |        }
         |      },
         |      {
@@ -420,10 +420,10 @@ object IndexSpec extends Specification {
         |        "primary": true,
         |        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
         |        "relocating_node": null,
-        |        "shard": 0,
+        |        "shard": 4,
         |        "index": "some",
         |        "allocation_id": {
-        |          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        |          "id": "oWmBTuCFSuGA4krn5diK3w"
         |        }
         |      }
         |    ],

@@ -19,7 +19,7 @@ final class AuthAction(auth: AuthenticationModule, redirect: Boolean, override v
       }.getOrElse {
         if (redirect) {
           Future.successful(
-            Results.Redirect(routes.AuthController.index()).
+            Results.Redirect(routes.AuthController.index).
               withSession(AuthAction.REDIRECT_URL -> request.uri))
         } else {
           Future.successful(CerebroResponse(303, JsNull))

@@ -53,7 +53,7 @@ class AuthController @Inject()(system: ActorSystem,
               }
             resp.withSession(AuthAction.SESSION_USER -> username)
           case None =>
-            Redirect(routes.AuthController.index()).flashing(LOGIN_MSG -> "Incorrect username or password")
+            Redirect(routes.AuthController.index).flashing(LOGIN_MSG -> "Incorrect username or password")
         }
       }
     )
