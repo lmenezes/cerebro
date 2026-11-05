@@ -1,6 +1,8 @@
 <!-- 对应 public/overview.html（内联 public/stats.html）和 src/app/components/overview/controller.js -->
 <!-- Vue 会删掉元素首尾的纯空白文本，模板里的 {{' '}} 是补回旧模板中会影响排版的空格 -->
 <script setup lang="ts">
+import { ClusterInfo } from '../services/clusterInfo';
+import { ShardInfo } from '../services/shardInfo';
 import { markRaw, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Pagination from '../components/Pagination.vue';
@@ -243,6 +245,12 @@ const shardStats = (index: string, node: string, shard: number) => {
   OverviewDataService.getShardStats(index, node, shard, displayInfo, error);
 };
 
+// 第三阶段：点未分配分片时显示 ES 给出的分配原因
+const explainShard = (shard: { index: string; shard: number; primary: boolean }) => {
+  ShardInfo.explain(shard.index, shard.shard, shard.primary, displayInfo, error);
+};
+ShardInfo.track();
+
 const nodeStats = (node: string) => {
   OverviewDataService.nodeStats(node, displayInfo, error);
 };
@@ -432,7 +440,7 @@ const canReceiveShard = (index: any, node: any) => {
                                   aria-haspopup="true" aria-expanded="false" title="disable shard allocation">
                 <i class="fa fa-unlock fa-2x table-control"></i>
               </span>
-              <ul class="dropdown-menu" aria-labelledby="dropallocation">
+              <ul class="dropdown-menu" aria-labelledby="dropallocation" v-show="!ClusterInfo.readOnly">
                 <li @click="disableShardAllocation('none')" data-toggle="modal" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-lock"> </i> none (default)</a>
                 </li>
@@ -444,7 +452,7 @@ const canReceiveShard = (index: any, node: any) => {
                 </li>
               </ul>
             </div>
-            <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" @click="enableShardAllocation()"
+            <i class="fa fa-lock fa-2x table-control red normal-action" title="enable shard allocation" @click="!ClusterInfo.readOnly && enableShardAllocation()"
                v-show="!shardAllocation"></i>
           </div>
           <div class="col-lg-3 col-md-6">
@@ -465,7 +473,7 @@ const canReceiveShard = (index: any, node: any) => {
                     aria-haspopup="true" aria-expanded="false" title="more options">
                 <i class="fa fa-caret-down fa-2x table-control"></i>
               </span>
-              <ul class="dropdown-menu" aria-labelledby="dropcluster">
+              <ul class="dropdown-menu" aria-labelledby="dropcluster" v-show="!ClusterInfo.readOnly">
                 <li @click="closeIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-folder"> </i> close selected</a>
                 </li>
@@ -511,31 +519,31 @@ const canReceiveShard = (index: any, node: any) => {
               <li @click="indexStats(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-info"> </i> show stats</a>
               </li>
-              <li v-show="index?.closed" @click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog"
+              <li v-show="index?.closed && !ClusterInfo.readOnly" @click="openIndex(index.name)" data-toggle="modal" href="#confirm_dialog"
                   target="_self">
                 <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open index</a>
               </li>
-              <li v-show="!index?.closed" @click="closeIndex(index.name)" data-toggle="modal" href="#confirm_dialog"
+              <li v-show="!index?.closed && !ClusterInfo.readOnly" @click="closeIndex(index.name)" data-toggle="modal" href="#confirm_dialog"
                   target="_self">
                 <a target="_self"><i class="fa fa-fw fa-folder"> </i> close index</a>
               </li>
-              <li @click="forceMerge(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+              <li @click="forceMerge(index.name)" v-show="!ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-wrench"> </i> force merge</a>
               </li>
-              <li @click="refreshIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+              <li @click="refreshIndex(index.name)" v-show="!ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-refresh"> </i> refresh index</a>
               </li>
-              <li @click="flushIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+              <li @click="flushIndex(index.name)" v-show="!ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-gavel"> </i> flush index</a>
               </li>
-              <li @click="clearIndexCache(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+              <li @click="clearIndexCache(index.name)" v-show="!ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-circle-o"> </i> clear cache</a>
               </li>
               <li @click="showIndexSettings(index.name)">
                 <a target="_self"><i class="fa fa-fw fa-cog"> </i> index settings</a>
               </li>
-              <li class="divider"></li>
-              <li @click="deleteIndex(index.name)" data-toggle="modal" href="#confirm_dialog" target="_self">
+              <li class="divider" v-show="!ClusterInfo.readOnly"></li>
+              <li @click="deleteIndex(index.name)" v-show="!ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self">
                 <a target="_self"><i class="fa fa-fw fa-trash red"> </i> delete index</a>
               </li>
             </ul>
@@ -579,7 +587,8 @@ const canReceiveShard = (index: any, node: any) => {
       </td>
       <td v-for="(index, i) in page.elements" :key="i">
         <span v-for="(shard, j) in ordered(index?.shards?.unassigned, 'shard')" :key="j">{{' '}}
-          <span class="shard shard-unassigned">{{' '}}
+          <span class="shard shard-unassigned" :title="ShardInfo.title(shard)" style="cursor: pointer"
+                @click="explainShard(shard)" data-toggle="modal" href="#confirm_dialog" target="_self">{{' '}}
             <small>{{shard.shard}}</small>
           {{' '}}</span>
         {{' '}}</span>
@@ -664,7 +673,7 @@ const canReceiveShard = (index: any, node: any) => {
         <span v-for="(shard, j) in ordered(index?.shards?.[node.id], 'shard')" :key="j">{{' '}}
           <span class="dropdown">
             <span :class="['shard shard-' + lowercase(shard.state) + ' normal-action', {'shard-replica': !shard.primary && shard.node}]"
-                  data-toggle="dropdown"
+                  data-toggle="dropdown" :title="ShardInfo.title(shard, node.name)"
                   :id="show(shard.shard) + '_' + show(shard.node) + '_' + show(shard.index)" v-show="!index.closed">
               <small>{{shard.shard}}</small>
             </span>
@@ -677,10 +686,10 @@ const canReceiveShard = (index: any, node: any) => {
             <li @click="shardStats(shard.index, shard.node, shard.shard)" data-toggle="modal" href="#confirm_dialog" target="_self">
               <a target="_self"><i class="fa fa-fw fa-info-circle"> </i> display shard stats</a>
             </li>
-            <li @click="select(shard)" v-show="!isSelected(shard)">
+            <li @click="select(shard)" v-show="!isSelected(shard) && !ClusterInfo.readOnly">
               <a target="_self"><i class="fa fa-fw fa-arrows"> </i> select for relocation</a>
             </li>
-            <li @click="select()" v-show="isSelected(shard)">
+            <li @click="select()" v-show="isSelected(shard) && !ClusterInfo.readOnly">
               <a target="_self"><i class="fa fa-fw fa-arrows"> </i> unselect for relocation</a>
             </li>
           </ul>

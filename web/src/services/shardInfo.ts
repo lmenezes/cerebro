@@ -60,15 +60,10 @@ function load() {
   );
 }
 
-let started = false;
-
 export const ShardInfo = {
-  // 由 overview 页面调用，开始随刷新拉取
-  start() {
-    if (!started) {
-      started = true;
-      watch(() => RefreshService.lastUpdate(), load, { immediate: true });
-    }
+  // 在 overview 页面的 setup 里调用：随刷新拉取，离开页面时 watch 自动停止
+  track() {
+    watch(() => RefreshService.lastUpdate(), load, { immediate: true });
   },
   // 分片的提示文字：主/副、大小、文档数、未分配原因、恢复进度
   title(shard: { index: string; shard: number; primary: boolean; node?: string | null; state: string }, nodeName?: string) {

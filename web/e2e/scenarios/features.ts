@@ -7,4 +7,14 @@ export const scenarios: Scenario[] = [
   { name: 'features-data-streams', route: 'data_streams', vueOnly: true },
   { name: 'features-ilm', route: 'ilm', vueOnly: true },
   { name: 'features-slm', route: 'slm', vueOnly: true },
+  // 点未分配分片，弹窗显示 allocation explain
+  {
+    name: 'features-unassigned-explain',
+    route: 'overview',
+    vueOnly: true,
+    act: async (p) => {
+      await p.locator('span.shard-unassigned').first().click();
+      await p.locator('#confirm_dialog .modal-body', { hasText: 'can_allocate' }).waitFor();
+    },
+  },
 ];
