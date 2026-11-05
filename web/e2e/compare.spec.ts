@@ -43,10 +43,12 @@ async function domOutline(page: Page): Promise<string> {
       [...el.children].forEach((c) => walk(c, depth + 1));
     };
     walk(document.body, 0);
-    // Vue 多一层 #app，去掉它让两边对齐
+    // Vue 多一层 #app：去掉这一行，并把它下面的内容少缩进一级，让两边对齐
+    const isApp = (l: string) => /^\s*div#app$/.test(l);
+    const hasApp = lines.some(isApp);
     return lines
-      .filter((l) => !/^\s*div#app$/.test(l))
-      .map((l) => l.replace(/^ {2}/, ''))
+      .filter((l) => !isApp(l))
+      .map((l) => (hasApp && l.startsWith('    ') ? l.slice(2) : l))
       .join('\n');
   });
 }
