@@ -1,0 +1,94 @@
+{
+ "GET /_cat/aliases?format=json": {
+  "status": 200,
+  "body": "[{\"alias\":\".security-tokens\",\"index\":\".security-tokens-7\",\"filter\":\"-\",\"routing.index\":\"-\",\"routing.search\":\"-\",\"is_write_index\":\"-\"},{\"alias\":\".security\",\"index\":\".security-7\",\"filter\":\"-\",\"routing.index\":\"-\",\"routing.search\":\"-\",\"is_write_index\":\"-\"},{\"alias\":\"logs\",\"index\":\"logs-app\",\"filter\":\"*\",\"routing.index\":\"-\",\"routing.search\":\"-\",\"is_write_index\":\"-\"},{\"alias\":\"shop\",\"index\":\"products\",\"filter\":\"-\",\"routing.index\":\"1\",\"routing.search\":\"1,2\",\"is_write_index\":\"-\"}]"
+ },
+ "GET /_cat/allocation?format=json": {
+  "status": 200,
+  "body": "[{\"shards\":\"9\",\"shards.undesired\":\"0\",\"write_load.forecast\":\"0.0\",\"disk.indices.forecast\":\"121.3kb\",\"disk.indices\":\"121.3kb\",\"disk.used\":\"35.2gb\",\"disk.avail\":\"416.8gb\",\"disk.total\":\"452.1gb\",\"disk.percent\":\"7\",\"host\":\"172.17.0.2\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\",\"node.role\":\"cdfhilmrstw\"},{\"shards\":\"3\",\"shards.undesired\":null,\"write_load.forecast\":null,\"disk.indices.forecast\":null,\"disk.indices\":null,\"disk.used\":null,\"disk.avail\":null,\"disk.total\":null,\"disk.percent\":null,\"host\":null,\"ip\":null,\"node\":\"UNASSIGNED\",\"node.role\":null}]"
+ },
+ "GET /_cat/count?format=json": {
+  "status": 200,
+  "body": "[{\"epoch\":\"1793896967\",\"timestamp\":\"16:42:47\",\"count\":\"3\"}]"
+ },
+ "GET /_cat/fielddata?format=json": {
+  "status": 200,
+  "body": "[]"
+ },
+ "GET /_cat/health?format=json": {
+  "status": 200,
+  "body": "[{\"epoch\":\"1793896970\",\"timestamp\":\"16:42:50\",\"cluster\":\"docker-cluster\",\"status\":\"yellow\",\"node.total\":\"1\",\"node.data\":\"1\",\"shards\":\"9\",\"pri\":\"9\",\"relo\":\"0\",\"init\":\"0\",\"unassign\":\"3\",\"unassign.pri\":\"0\",\"pending_tasks\":\"0\",\"max_task_wait_time\":\"-\",\"active_shards_percent\":\"75.0%\"}]"
+ },
+ "GET /_cat/nodeattrs?format=json": {
+  "status": 200,
+  "body": "[{\"node\":\"42b654f4693b\",\"host\":\"172.17.0.2\",\"ip\":\"172.17.0.2\",\"attr\":\"ml.config_version\",\"value\":\"12.0.0\"},{\"node\":\"42b654f4693b\",\"host\":\"172.17.0.2\",\"ip\":\"172.17.0.2\",\"attr\":\"xpack.installed\",\"value\":\"true\"},{\"node\":\"42b654f4693b\",\"host\":\"172.17.0.2\",\"ip\":\"172.17.0.2\",\"attr\":\"transform.config_version\",\"value\":\"10.0.0\"}]"
+ },
+ "GET /_cat/nodes?format=json": {
+  "status": 200,
+  "body": "[{\"ip\":\"172.17.0.2\",\"heap.percent\":\"15\",\"ram.percent\":\"81\",\"cpu\":\"0\",\"load_1m\":\"0.11\",\"load_5m\":\"0.03\",\"load_15m\":\"0.05\",\"node.role\":\"cdfhilmrstw\",\"master\":\"*\",\"name\":\"42b654f4693b\"}]"
+ },
+ "GET /_cat/pending_tasks?format=json": {
+  "status": 200,
+  "body": "[]"
+ },
+ "GET /_cat/plugins?format=json": {
+  "status": 200,
+  "body": "[]"
+ },
+ "GET /_cat/recovery?format=json": {
+  "status": 200,
+  "body": "[{\"index\":\"logs-app\",\"shard\":\"0\",\"time\":\"22ms\",\"type\":\"empty_store\",\"stage\":\"done\",\"source_host\":\"n/a\",\"source_node\":\"n/a\",\"target_host\":\"172.17.0.2\",\"target_node\":\"42b654f4693b\",\"repository\":\"n/a\",\"snapshot\":\"n/a\",\"files\":\"0\",\"files_recovered\":\"0\",\"files_percent\":\"0.0%\",\"files_total\":\"0\",\"bytes\":\"0b\",\"bytes_recovered\":\"0b\",\"bytes_percent\":\"0.0%\",\"bytes_total\":\"0b\",\"translog_ops\":\"0\",\"translog_ops_recovered\":\"0\",\"translog_ops_percent\":\"100.0%\"},{\"index\":\"logs-app\",\"shard\":\"1\",\"time\":\"23ms\",\"type\":\"empty_store\",\"stage\":\"done\",\"source_host\":\"n/a\",\"source_node\":\"n/a\",\"target_host\":\"172.17.0.2\",\"target_node\":\"42b654f4693b\",\"repository\":\"n/a\",\"snapshot\":\"n/a\",\"files\":\"0\",\"files_recovered\":\"0\",\"files_percent\":\"0.0%\",\"files_total\":\"0\",\"bytes\":\"0b\",\"bytes_recovered\":\"0b\",\"bytes_percent\":\"0.0%\",\"bytes_total\":\"0b\",\"translog_ops\":\"0\",\"translog_ops_recovered\":\"0\",\"translog_ops_percent\":\"100.0%\"},{\"index\":\"logs-app\",\"shard\":\"2\",\"time\":\"20ms\",\"type\":\"empty_store\",\"stage\":\"done\",\"source_host\":\"n/a\",\"source_node\":\"n/a\",\"target_host\":\"172.17.0.2\",\"target_node\":\"42b654f4693b\",\"repository\":\"n/a\",\"snapshot\":\"n/a\",\"files\":\"0\",\"files_recovered\":\"0\",\"files_percent\":\"0.0%\",\"files_total\":\"0\",\"bytes\":\"0b\",\"bytes_recovered\":\"0b\",\"bytes_percent\":\"0.0%\",\"bytes_total\":\"0b\",\"translog_ops\":\"0\",\"translog_ops_recovered\":\"0\",\"translog_ops_percent\":\"100.0%\"},{\"index\":\"old-index\",\"shard\":\"0\",\"time\":\"10ms\",\"type\":\"existing_store\",\"stage\":\"done\",\"source_host\":\"n/a\",\"source_node\":\"n/a\",\"target_host\":\"172.17.0.2\",\"target_node\":\"42b654f4693b\",\"repository\":\"n/a\",\"snapshot\":\"n/a\",\"files\":\"0\",\"files_recovered\":\"0\",\"files_percent\":\"100.0%\",\"files_total\":\"1\",\"bytes\":\"0b\",\"bytes_recovered\":\"0b\",\"bytes_percent\":\"100.0%\",\"bytes_total\":\"249b\",\"translog_ops\":\"0\",\"translog_ops_recovered\":\"0\",\"translog_ops_percent\":\"100.0%\"},{\"index\":\"products\",\"shard\":\"0\",\"time\":\"15ms\",\"type\":\"empty_store\",\"stage\":\"done\",\"source_host\":\"n/a\",\"source_node\":\"n/a\",\"target_host\":\"172.17.0.2\",\"target_node\":\"42b654f4693b\",\"repository\":\"n/a\",\"snapshot\":\"n/a\",\"files\":\"0\",\"files_recovered\":\"0\",\"files_percent\":\"0.0%\",\"files_total\":\"0\",\"bytes\":\"0b\",\"bytes_recovered\":\"0b\",\"bytes_percent\":\"0.0%\",\"bytes_total\":\"0b\",\"translog_ops\":\"0\",\"translog_ops_recovered\":\"0\",\"translog_ops_percent\":\"100.0%\"}]"
+ },
+ "GET /_cat/repositories?format=json": {
+  "status": 200,
+  "body": "[{\"id\":\"fsrepo\",\"type\":\"fs\"}]"
+ },
+ "GET /_cat/thread_pool?format=json": {
+  "status": 200,
+  "body": "[{\"node_name\":\"42b654f4693b\",\"name\":\"analyze\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"auto_complete\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"azure_event_loop\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"ccr\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"cluster_coordination\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"downsample_indexing\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"esql_worker\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"fetch_shard_started\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"fetch_shard_store\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"flush\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"force_merge\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"generic\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"get\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"inference_response\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"inference_utility\",\"active\":\"1\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"management\",\"active\":\"1\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"merge\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"model_download\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"profiling\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"refresh\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"repository_azure\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"rollup_indexing\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"search\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"search_coordination\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"searchable_snapshots_cache_fetch_async\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"searchable_snapshots_cache_prewarming\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"security-crypto\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"security-token-key\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"snapshot\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"snapshot_meta\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"system_critical_read\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"system_critical_write\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"system_read\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"system_write\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"system_write_coordination\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"warmer\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"watcher\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"write\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"},{\"node_name\":\"42b654f4693b\",\"name\":\"write_coordination\",\"active\":\"0\",\"queue\":\"0\",\"rejected\":\"0\"}]"
+ },
+ "GET /_cat/shards?format=json": {
+  "status": 200,
+  "body": "[{\"index\":\"old-index\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"0\",\"store\":\"249b\",\"dataset\":\"249b\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\"logs-app\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"1\",\"store\":\"5.9kb\",\"dataset\":\"5.9kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\"logs-app\",\"shard\":\"0\",\"prirep\":\"r\",\"state\":\"UNASSIGNED\",\"docs\":null,\"store\":null,\"dataset\":null,\"ip\":null,\"node\":null},{\"index\":\"logs-app\",\"shard\":\"1\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"0\",\"store\":\"249b\",\"dataset\":\"249b\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\"logs-app\",\"shard\":\"1\",\"prirep\":\"r\",\"state\":\"UNASSIGNED\",\"docs\":null,\"store\":null,\"dataset\":null,\"ip\":null,\"node\":null},{\"index\":\"logs-app\",\"shard\":\"2\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"0\",\"store\":\"249b\",\"dataset\":\"249b\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\"logs-app\",\"shard\":\"2\",\"prirep\":\"r\",\"state\":\"UNASSIGNED\",\"docs\":null,\"store\":null,\"dataset\":null,\"ip\":null,\"node\":null},{\"index\":\".ds-.logs-elasticsearch.deprecation-default-2026.11.05-000001\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"3\",\"store\":\"30.4kb\",\"dataset\":\"30.4kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\"products\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"2\",\"store\":\"9.6kb\",\"dataset\":\"9.6kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\".security-tokens-7\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"1\",\"store\":\"9.4kb\",\"dataset\":\"9.4kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\".ds-ilm-history-7-2026.11.05-000001\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"3\",\"store\":\"17.5kb\",\"dataset\":\"17.5kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"},{\"index\":\".security-7\",\"shard\":\"0\",\"prirep\":\"p\",\"state\":\"STARTED\",\"docs\":\"30\",\"store\":\"47.4kb\",\"dataset\":\"47.4kb\",\"ip\":\"172.17.0.2\",\"node\":\"42b654f4693b\"}]"
+ },
+ "GET /_cat/segments?format=json": {
+  "status": 200,
+  "body": "[{\"index\":\"logs-app\",\"shard\":\"0\",\"prirep\":\"p\",\"ip\":\"172.17.0.2\",\"segment\":\"_0\",\"generation\":\"0\",\"docs.count\":\"1\",\"docs.deleted\":\"0\",\"size\":\"5.6kb\",\"size.memory\":\"0\",\"committed\":\"true\",\"searchable\":\"true\",\"version\":\"10.3.2\",\"compound\":\"true\"},{\"index\":\"products\",\"shard\":\"0\",\"prirep\":\"p\",\"ip\":\"172.17.0.2\",\"segment\":\"_0\",\"generation\":\"0\",\"docs.count\":\"1\",\"docs.deleted\":\"0\",\"size\":\"4.6kb\",\"size.memory\":\"0\",\"committed\":\"true\",\"searchable\":\"true\",\"version\":\"10.3.2\",\"compound\":\"true\"},{\"index\":\"products\",\"shard\":\"0\",\"prirep\":\"p\",\"ip\":\"172.17.0.2\",\"segment\":\"_1\",\"generation\":\"1\",\"docs.count\":\"1\",\"docs.deleted\":\"0\",\"size\":\"4.6kb\",\"size.memory\":\"0\",\"committed\":\"true\",\"searchable\":\"true\",\"version\":\"10.3.2\",\"compound\":\"true\"}]"
+ },
+ "GET /logs-app/_mapping": {
+  "status": 200,
+  "body": "{\"logs-app\":{\"mappings\":{\"dynamic\":\"strict\",\"properties\":{\"msg\":{\"type\":\"match_only_text\"},\"title\":{\"type\":\"text\",\"fields\":{\"raw\":{\"type\":\"keyword\"}}},\"ts\":{\"type\":\"date\"},\"user\":{\"properties\":{\"age\":{\"type\":\"integer\"},\"name\":{\"type\":\"text\"}}}}}}}"
+ },
+ "GET /logs-app/_settings": {
+  "status": 200,
+  "body": "{\"logs-app\":{\"settings\":{\"index\":{\"routing\":{\"allocation\":{\"include\":{\"_tier_preference\":\"data_content\"}}},\"number_of_shards\":\"3\",\"provided_name\":\"logs-app\",\"creation_date\":\"1793894217317\",\"analysis\":{\"analyzer\":{\"my_analyzer\":{\"filter\":[\"lowercase\"],\"type\":\"custom\",\"tokenizer\":\"standard\"}}},\"number_of_replicas\":\"1\",\"uuid\":\"2KCGhw8aRg-kKvILfIuzgA\",\"version\":{\"created\":\"9060000\"}}}}}"
+ },
+ "GET /products/_settings": {
+  "status": 200,
+  "body": "{\"products\":{\"settings\":{\"index\":{\"routing\":{\"allocation\":{\"include\":{\"_tier_preference\":\"data_content\"}}},\"number_of_shards\":\"1\",\"provided_name\":\"products\",\"creation_date\":\"1793894217438\",\"number_of_replicas\":\"0\",\"uuid\":\"hHcZVecnR0OLx-XRYKJTTA\",\"version\":{\"created\":\"9060000\"}}}}}"
+ },
+ "GET /logs-app/_analyze #a65b489584f0": {
+  "status": 200,
+  "body": "{\"tokens\":[{\"token\":\"the\",\"start_offset\":0,\"end_offset\":3,\"type\":\"<ALPHANUM>\",\"position\":0},{\"token\":\"quick\",\"start_offset\":4,\"end_offset\":9,\"type\":\"<ALPHANUM>\",\"position\":1},{\"token\":\"brown\",\"start_offset\":10,\"end_offset\":15,\"type\":\"<ALPHANUM>\",\"position\":2},{\"token\":\"fox\",\"start_offset\":16,\"end_offset\":19,\"type\":\"<ALPHANUM>\",\"position\":3},{\"token\":\"jumps\",\"start_offset\":21,\"end_offset\":26,\"type\":\"<ALPHANUM>\",\"position\":4}]}"
+ },
+ "GET /products/_mapping": {
+  "status": 200,
+  "body": "{\"products\":{\"mappings\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}}"
+ },
+ "GET /products/_analyze #a733a6894423": {
+  "status": 200,
+  "body": "{\"tokens\":[{\"token\":\"red\",\"start_offset\":0,\"end_offset\":3,\"type\":\"<ALPHANUM>\",\"position\":0},{\"token\":\"apple\",\"start_offset\":4,\"end_offset\":9,\"type\":\"<ALPHANUM>\",\"position\":1},{\"token\":\"juice\",\"start_offset\":10,\"end_offset\":15,\"type\":\"<ALPHANUM>\",\"position\":2},{\"token\":\"1l\",\"start_offset\":16,\"end_offset\":18,\"type\":\"<ALPHANUM>\",\"position\":3}]}"
+ },
+ "GET /logs-app/_analyze #828aac760d13": {
+  "status": 200,
+  "body": "{\"tokens\":[{\"token\":\"the\",\"start_offset\":0,\"end_offset\":3,\"type\":\"<ALPHANUM>\",\"position\":0},{\"token\":\"quick\",\"start_offset\":4,\"end_offset\":9,\"type\":\"<ALPHANUM>\",\"position\":1},{\"token\":\"brown\",\"start_offset\":10,\"end_offset\":15,\"type\":\"<ALPHANUM>\",\"position\":2},{\"token\":\"fox\",\"start_offset\":16,\"end_offset\":19,\"type\":\"<ALPHANUM>\",\"position\":3},{\"token\":\"jumps\",\"start_offset\":21,\"end_offset\":26,\"type\":\"<ALPHANUM>\",\"position\":4}]}"
+ },
+ "GET /logs-app/_analyze #ef26b6d05d97": {
+  "status": 200,
+  "body": "{\"tokens\":[{\"token\":\"ann\",\"start_offset\":0,\"end_offset\":3,\"type\":\"<ALPHANUM>\",\"position\":0},{\"token\":\"smith\",\"start_offset\":4,\"end_offset\":9,\"type\":\"<ALPHANUM>\",\"position\":1}]}"
+ },
+ "GET /logs-app/_analyze #155e0267b475": {
+  "status": 200,
+  "body": "{\"tokens\":[{\"token\":\"hello\",\"start_offset\":0,\"end_offset\":5,\"type\":\"<ALPHANUM>\",\"position\":0},{\"token\":\"world\",\"start_offset\":6,\"end_offset\":11,\"type\":\"<ALPHANUM>\",\"position\":1}]}"
+ }
+}
