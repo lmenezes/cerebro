@@ -79,7 +79,7 @@ func Open(path string, max int) (*SQLite, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1) // SQLite 单写者，串行化最简单
-	if _, err := db.Exec(schema); err != nil {
+	if _, err := db.ExecContext(context.Background(), schema); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("init schema in %s: %w", path, err)
 	}

@@ -1,9 +1,13 @@
 # Extracted from https://github.com/ulrich/macaron-factory/blob/master/.gitignore
 # Ignore all dotfiles...
 .*
-# except for .gitignore
+# except for these
 !.gitignore
 !.eslintrc.json
+!.github/
+!.golangci.yml
+!.goreleaser.yaml
+!.dockerignore
 
 # Ignore Play! working directory #
 db
@@ -23,3 +27,10 @@ server.pid
 activator-*.sbt
 node_modules
 cerebro.db
+
+# Go
+/cerebro
+/dist/
+/data/
+cerebro.yaml
+session.key

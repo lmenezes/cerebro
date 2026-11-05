@@ -44,7 +44,7 @@ func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
 	}
 	sess := s.sessions.Get(r)
 	if sess.User != "" {
-		http.Redirect(w, r, s.redirectTarget(sess), http.StatusSeeOther)
+		http.Redirect(w, r, s.redirectTarget(sess), http.StatusSeeOther) //nolint:gosec // redirectTarget 只放行站内路径
 		return
 	}
 	if sess.Flash != "" { // flash 只显示一次
@@ -92,7 +92,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 	target := s.redirectTarget(sess)
 	s.sessions.Save(w, r, auth.Session{User: username})
-	http.Redirect(w, r, target, http.StatusSeeOther)
+	http.Redirect(w, r, target, http.StatusSeeOther) //nolint:gosec // redirectTarget 只放行站内路径
 }
 
 // logout 对应 AuthController.logout。

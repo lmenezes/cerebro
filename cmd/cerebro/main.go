@@ -207,9 +207,9 @@ func healthcheck(args []string, stderr io.Writer) int {
 
 func hashPassword(stdout, stderr io.Writer) int {
 	var password string
-	if term.IsTerminal(int(os.Stdin.Fd())) { //nolint:gosec // fd 不会溢出
+	if term.IsTerminal(int(os.Stdin.Fd())) {
 		_, _ = fmt.Fprint(stderr, "Password: ")
-		b, err := term.ReadPassword(int(os.Stdin.Fd())) //nolint:gosec
+		b, err := term.ReadPassword(int(os.Stdin.Fd()))
 		_, _ = fmt.Fprintln(stderr)
 		if err != nil {
 			_, _ = fmt.Fprintln(stderr, err)

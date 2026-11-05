@@ -1,0 +1,9 @@
+*
+!go.mod
+!go.sum
+!embed.go
+!cmd/
+!internal/
+!public/
+internal/**/testdata/
+**/*_test.go

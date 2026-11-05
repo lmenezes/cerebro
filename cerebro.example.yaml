@@ -1,0 +1,82 @@
+# Cerebro 配置示例。复制为 cerebro.yaml（或 /etc/cerebro/cerebro.yaml），也可以用 -config 或 CEREBRO_CONFIG 指定。
+# 值里可以写 ${ENV_NAME} 引用环境变量，适合放密码和 API Key。
+
+# 监听地址和端口
+address: ""        # 默认监听所有网卡
+port: 9000
+
+# 子路径部署，例如反向代理在 https://example.com/cerebro/ 下
+basePath: /
+
+# 数据目录：保存 REST 请求历史（cerebro.db）和会话密钥（session.key）。镜像里是 /data
+dataDir: .
+
+# 只读模式：拦截所有修改类操作（删除/关闭索引、迁移分片、改设置、REST 页非 GET 请求等）
+readOnly: false
+
+session:
+  # 留空则首次启动随机生成并保存在 dataDir/session.key。多实例部署时需要设成相同的值（至少 32 个字符）
+  secret: ""
+  maxAge: 168h
+  # secure: true   # 强制 cookie 只走 HTTPS；不设置时按请求是否 HTTPS 判断
+
+history:
+  enabled: true    # false：不保存任何东西，适合无状态部署
+  size: 50         # 每个用户保留的条数
+  # path: ./cerebro.db   # 默认 <dataDir>/cerebro.db，旧版的 cerebro.db 可以直接使用
+
+es:
+  timeout: 2m
+  # 手动输入地址时使用的 TLS 设置，也是各集群的默认值
+  tls:
+    ca: ""                    # 自定义 CA（PEM）
+    cert: ""                  # 客户端证书（mTLS）
+    key: ""
+    insecureSkipVerify: false # 跳过证书校验，只在测试时使用
+    serverName: ""
+
+# Cerebro 自身的登录：none、basic、ldap
+auth:
+  type: none
+  basic:
+    users:
+      # 密码必须是 bcrypt 哈希，用 `cerebro hash-password` 生成
+      - username: admin
+        password: "$2a$10$replace.this.with.a.real.bcrypt.hash.generated.by.cerebro"
+  ldap:
+    url: ldap://ldap.example.com:389
+    baseDN: ou=People,dc=example,dc=com
+    method: simple
+    # 用户名先填，baseDN 后填，同 Java String.format，例如 uid=%s,%s 或 %s@example.com
+    userTemplate: uid=%s,%s
+    startTLS: false
+    # 组成员校验（可选，group 为空则不校验）
+    bindDN: cn=admin,dc=example,dc=com
+    bindPassword: ${LDAP_BIND_PWD}
+    groupSearch:
+      baseDN: ""              # 默认用上面的 baseDN
+      userAttr: uid
+      userAttrTemplate: ""    # 默认用 userTemplate
+      group: memberOf=cn=cerebro,ou=Groups,dc=example,dc=com
+
+# 预设集群，页面上按名字连接
+hosts:
+  - name: Local
+    host: http://localhost:9200
+  - name: Production
+    host: https://es.example.com/es   # 可以带路径前缀
+    readOnly: true
+    # 预设凭据（三选一）。用户在页面上填的凭据只在浏览器内存里，服务端不落盘、不打日志
+    auth:
+      apiKey: ${PROD_ES_API_KEY}
+      # username: elastic
+      # password: ${PROD_ES_PASSWORD}
+      # bearer: ${PROD_ES_TOKEN}
+    tls:
+      ca: /etc/cerebro/prod-ca.pem
+    # 把浏览器请求里的这些头透传给 ES
+    headersWhitelist: [x-proxy-user]
+
+log:
+  level: info      # debug 会记录每个请求（不含 body）
+  format: text     # 或 json

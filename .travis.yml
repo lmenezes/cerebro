@@ -1,9 +1,0 @@
-language: scala
-
-scala:
-  - 2.13.4
-
-jdk:
-  - openjdk11
-
-script: sbt ++$TRAVIS_SCALA_VERSION test

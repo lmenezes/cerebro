@@ -1,0 +1,27 @@
+# 第一阶段前端沿用仓库里已打包好的 public/，第二阶段换成 Vue 后在这里加 Node 构建。
+ARG GO_VERSION=1.27
+
+# 在构建机原生架构上交叉编译，不经过 QEMU
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+COPY . .
+ARG TARGETOS TARGETARCH
+ARG VERSION=dev
+RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+    go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o /out/cerebro ./cmd/cerebro \
+ && mkdir -p /out/data
+
+# distroless：自带 CA 证书和时区数据，非 root，没有 shell
+FROM gcr.io/distroless/static:nonroot
+COPY --from=build /out/cerebro /cerebro
+COPY --from=build --chown=65532:65532 /out/data /data
+ENV CEREBRO_DATA_DIR=/data
+WORKDIR /data
+VOLUME /data
+EXPOSE 9000
+USER 65532:65532
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD ["/cerebro", "healthcheck"]
+ENTRYPOINT ["/cerebro"]

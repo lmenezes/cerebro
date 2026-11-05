@@ -104,7 +104,7 @@ func (s *Sessions) Get(r *http.Request) Session {
 
 // Save 写入会话；会话为空时清除 cookie。
 func (s *Sessions) Save(w http.ResponseWriter, r *http.Request, sess Session) {
-	cookie := &http.Cookie{
+	cookie := &http.Cookie{ //nolint:gosec // Secure 按 HTTPS 或配置决定，HttpOnly 和 SameSite 已设置
 		Name:     CookieName,
 		Path:     s.path,
 		HttpOnly: true,
