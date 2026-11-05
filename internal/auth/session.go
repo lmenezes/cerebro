@@ -28,6 +28,8 @@ type Session struct {
 	User     string `json:"u,omitempty"`
 	Redirect string `json:"r,omitempty"`
 	Flash    string `json:"f,omitempty"`
+	State    string `json:"s,omitempty"` // OIDC 登录过程中的 state
+	Nonce    string `json:"n,omitempty"` // OIDC 登录过程中的 nonce
 	Expires  int64  `json:"e"`
 }
 
@@ -111,7 +113,7 @@ func (s *Sessions) Save(w http.ResponseWriter, r *http.Request, sess Session) {
 		SameSite: http.SameSiteLaxMode,
 		Secure:   s.isSecure(r),
 	}
-	if sess.User == "" && sess.Redirect == "" && sess.Flash == "" {
+	if sess.User == "" && sess.Redirect == "" && sess.Flash == "" && sess.State == "" {
 		cookie.MaxAge = -1
 		http.SetCookie(w, cookie)
 		return

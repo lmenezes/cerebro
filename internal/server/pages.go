@@ -28,6 +28,10 @@ const (
 // index 对应 Application.index：开启登录且未登录时跳到登录页，并记住原地址。
 func (s *Server) index(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.currentUser(r); !ok {
+		if s.proxyAuth() != nil {
+			proxyUnauthorized(w)
+			return
+		}
 		redirect := s.cfg.BasePath
 		if r.URL.RawQuery != "" {
 			redirect += "?" + r.URL.RawQuery
@@ -51,8 +55,16 @@ func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, s.cfg.BasePath, http.StatusSeeOther)
 		return
 	}
+	if s.proxyAuth() != nil {
+		if _, ok := s.currentUser(r); ok {
+			http.Redirect(w, r, s.cfg.BasePath, http.StatusSeeOther)
+		} else {
+			proxyUnauthorized(w)
+		}
+		return
+	}
 	sess := s.sessions.Get(r)
-	if sess.User != "" {
+	if _, ok := s.currentUser(r); ok {
 		http.Redirect(w, r, s.redirectTarget(sess), http.StatusSeeOther) //nolint:gosec // redirectTarget 只放行站内路径
 		return
 	}
@@ -62,7 +74,7 @@ func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
 		s.sessions.Save(w, r, sess)
 		sess.Flash = flash
 	}
-	s.renderPage(w, "login.html", map[string]any{"Version": s.version, "Flash": sess.Flash, "LegacyScripts": s.spaIndex == nil})
+	s.renderPage(w, "login.html", map[string]any{"Version": s.version, "Flash": sess.Flash, "LegacyScripts": s.spaIndex == nil, "OIDC": s.oidcAuth() != nil})
 }
 
 // redirectTarget 只接受站内路径，防止开放重定向。

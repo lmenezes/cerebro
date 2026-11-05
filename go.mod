@@ -5,10 +5,13 @@ go 1.27.0
 toolchain go1.27.3
 
 require (
+	github.com/coreos/go-oidc/v3 v3.21.0
+	github.com/go-jose/go-jose/v4 v4.1.8
 	github.com/go-ldap/ldap/v3 v3.4.15
 	github.com/klauspost/compress v1.20.3
 	go.yaml.in/yaml/v3 v3.0.6
 	golang.org/x/crypto v0.58.0
+	golang.org/x/oauth2 v0.37.0
 	golang.org/x/term v0.47.0
 	modernc.org/sqlite v1.61.1
 )

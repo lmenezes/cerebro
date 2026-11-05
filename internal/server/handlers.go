@@ -21,6 +21,8 @@ func (s *Server) routes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /login", s.loginPage)
 	mux.HandleFunc("POST /auth/login", s.login)
 	mux.HandleFunc("POST /auth/logout", s.logout)
+	mux.HandleFunc("GET /auth/oidc/start", s.oidcStart)
+	mux.HandleFunc("GET /auth/oidc/callback", s.oidcCallback)
 	mux.HandleFunc("GET /healthz", s.healthz)
 	mux.Handle("GET /public/", http.StripPrefix("/public", s.assets))
 	mux.Handle("GET /", s.assets)

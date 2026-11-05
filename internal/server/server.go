@@ -217,6 +217,9 @@ func (s *Server) currentUser(r *http.Request) (string, bool) {
 	if !s.authEnabled() {
 		return "", true
 	}
+	if p, ok := s.authn.(*auth.Proxy); ok { // 代理模式：每个请求都从可信代理的请求头取用户
+		return p.UserFromRequest(r)
+	}
 	sess := s.sessions.Get(r)
 	if sess.User == "" {
 		return "", false

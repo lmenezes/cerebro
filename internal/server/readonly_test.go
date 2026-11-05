@@ -129,7 +129,7 @@ func TestReadOnlyMode_RouteTable(t *testing.T) {
 	}
 	// 不经过 process（不做只读检查）的路由只能是这些
 	allowed := []string{"GET /{$}", "GET /login", "POST /auth/login", "POST /auth/logout", "GET /healthz",
-		"GET /public/", "GET /", "GET /connect/hosts", "POST /connect"}
+		"GET /public/", "GET /", "GET /connect/hosts", "POST /connect", "GET /auth/oidc/start", "GET /auth/oidc/callback"}
 	for _, d := range direct {
 		if !slices.Contains(allowed, d) {
 			t.Errorf("route %q bypasses process(); add read-only handling or allow it here", d)

@@ -39,7 +39,7 @@ es:
     insecureSkipVerify: false # 跳过证书校验，只在测试时使用
     serverName: ""
 
-# Cerebro 自身的登录：none、basic、ldap
+# Cerebro 自身的登录：none、basic、ldap、oidc、proxy
 auth:
   type: none
   basic:
@@ -62,6 +62,31 @@ auth:
       userAttr: uid
       userAttrTemplate: ""    # 默认用 userTemplate
       group: memberOf=cn=cerebro,ou=Groups,dc=example,dc=com
+  # OpenID Connect 单点登录（Keycloak、Okta、Google、Azure AD 等）
+  oidc:
+    issuer: https://sso.example.com/realms/main
+    clientID: cerebro
+    clientSecret: ${OIDC_CLIENT_SECRET}
+    # 默认按请求推导为 <协议>://<主机><basePath>auth/oidc/callback，需要在 IdP 里登记
+    redirectURL: ""
+    scopes: [openid, email, profile]
+    usernameClaim: email
+    # 都不填表示 IdP 认证通过的用户都能登录；填了则任一项匹配即可
+    allowedUsers: []
+    allowedDomains: [example.com]
+    groupsClaim: groups
+    allowedGroups: []
+  # 信任反向代理（oauth2-proxy、Cloudflare Access 等）传来的用户
+  proxy:
+    header: X-Forwarded-User        # oauth2-proxy 可用 X-Auth-Request-Email，Cloudflare 可用 Cf-Access-Authenticated-User-Email
+    trustedProxies: [10.0.0.0/8]    # 只接受这些地址发来的请求头，必填
+    # 可选：校验代理签发的 JWT，用户名取自 claim（以 JWT 为准，忽略 header）
+    # jwt:
+    #   header: Cf-Access-Jwt-Assertion
+    #   issuer: https://<team>.cloudflareaccess.com
+    #   jwksURL: https://<team>.cloudflareaccess.com/cdn-cgi/access/certs
+    #   audience: <Application Audience (AUD) Tag>
+    #   claim: email
 
 # 预设集群，页面上按名字连接
 hosts:

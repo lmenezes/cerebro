@@ -56,6 +56,16 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 | `CEREBRO_HOSTS` | 追加预设集群：`名字=地址,地址2` |
 | `CEREBRO_LOG_LEVEL` / `CEREBRO_LOG_FORMAT` | `log.level` / `log.format` |
 
+## Cerebro 登录
+
+`auth.type` 可选：
+
+- `none`：不需要登录（默认）。
+- `basic`：用户名密码，支持多个用户，密码用 `cerebro hash-password` 生成的 bcrypt 哈希。
+- `ldap`：LDAP 绑定校验，可选组成员校验；支持 `ldaps://` 和 `startTLS`。
+- `oidc`：OpenID Connect 单点登录（授权码流程，校验 state 和 nonce）。登录页显示 “Sign in with SSO” 按钮；回调地址是 `<basePath>auth/oidc/callback`，需要在 IdP 里登记。可以用 `allowedUsers`、`allowedDomains`、`allowedGroups` 限制谁能登录。环境变量：`OIDC_ISSUER`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`OIDC_REDIRECT_URL`。
+- `proxy`：信任反向代理传来的用户头，例如 oauth2-proxy 的 `X-Auth-Request-Email`、Cloudflare Access 的 `Cf-Access-Authenticated-User-Email`。**必须**配置 `trustedProxies`，只接受这些地址发来的请求头；还可以配置 `jwt` 校验代理签发的 JWT（Cloudflare Access 推荐这样做）。环境变量：`CEREBRO_PROXY_HEADER`、`CEREBRO_PROXY_TRUSTED`（逗号分隔的 CIDR）。
+
 ## 连接 ES 的凭据
 
 - 配置里预设：`hosts[].auth` 三选一（`username`+`password`、`apiKey`、`bearer`），优先于页面上填写的凭据。`hosts[].tls` 只覆盖写了的项，其余沿用 `es.tls`。

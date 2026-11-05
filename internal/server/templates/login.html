@@ -32,6 +32,9 @@
       </div>
       <div class="row">
         <div class="col-xs-12">
+          {{- if .OIDC}}
+          <a class="btn btn-success pull-right" href="auth/oidc/start">Sign in with SSO</a>
+          {{- else}}
           <form class="form-signin" action="auth/login" method="POST">
             <div class="form-group">
               <label for="inputUser" class="sr-only">User</label>
@@ -43,6 +46,7 @@
             </div>
             <button class="btn btn-success pull-right" type="submit">Sign in</button>
           </form>
+          {{- end}}
         </div>
       </div>
     </div>

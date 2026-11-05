@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -99,9 +100,45 @@ type HostAuth struct {
 
 // AuthConfig 是 Cerebro 自身的登录设置。
 type AuthConfig struct {
-	Type  string      `yaml:"type"` // none、basic、ldap
+	Type  string      `yaml:"type"` // none、basic、ldap、oidc、proxy
 	Basic BasicConfig `yaml:"basic"`
 	LDAP  LDAPConfig  `yaml:"ldap"`
+	OIDC  OIDCConfig  `yaml:"oidc"`
+	Proxy ProxyConfig `yaml:"proxy"`
+}
+
+// OIDCConfig 是 OpenID Connect 单点登录。
+type OIDCConfig struct {
+	Issuer       string `yaml:"issuer"`
+	ClientID     string `yaml:"clientID"`
+	ClientSecret string `yaml:"clientSecret"`
+	// RedirectURL 为空时按请求推导为 <scheme>://<host><basePath>auth/oidc/callback
+	RedirectURL   string   `yaml:"redirectURL"`
+	Scopes        []string `yaml:"scopes"`
+	UsernameClaim string   `yaml:"usernameClaim"`
+	// 下面三项都为空表示 IdP 认证通过的用户都能登录；任一项匹配即放行
+	AllowedUsers   []string `yaml:"allowedUsers"`
+	AllowedDomains []string `yaml:"allowedDomains"`
+	GroupsClaim    string   `yaml:"groupsClaim"`
+	AllowedGroups  []string `yaml:"allowedGroups"`
+}
+
+// ProxyConfig 信任反向代理（oauth2-proxy、Cloudflare Access 等）传来的用户头。
+type ProxyConfig struct {
+	Header string `yaml:"header"`
+	// TrustedProxies 只接受来自这些地址（CIDR）的请求头，必填
+	TrustedProxies []string `yaml:"trustedProxies"`
+	// JWT 可选：额外校验代理签发的 JWT（如 Cloudflare Access 的 Cf-Access-Jwt-Assertion）
+	JWT *ProxyJWTConfig `yaml:"jwt"`
+}
+
+// ProxyJWTConfig 校验代理签发的 JWT，用户名取自 Claim。
+type ProxyJWTConfig struct {
+	Header   string `yaml:"header"`
+	Issuer   string `yaml:"issuer"`
+	JWKSURL  string `yaml:"jwksURL"`
+	Audience string `yaml:"audience"`
+	Claim    string `yaml:"claim"`
 }
 
 // BasicConfig 是用户名密码登录。
@@ -389,6 +426,18 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	str("LDAP_USER_ATTR", &l.GroupSearch.UserAttr)
 	str("LDAP_USER_ATTR_TEMPLATE", &l.GroupSearch.UserAttrTemplate)
 	str("LDAP_GROUP", &l.GroupSearch.Group)
+	str("OIDC_ISSUER", &c.Auth.OIDC.Issuer)
+	str("OIDC_CLIENT_ID", &c.Auth.OIDC.ClientID)
+	str("OIDC_CLIENT_SECRET", &c.Auth.OIDC.ClientSecret)
+	str("OIDC_REDIRECT_URL", &c.Auth.OIDC.RedirectURL)
+	str("CEREBRO_PROXY_HEADER", &c.Auth.Proxy.Header)
+	if v := getenv("CEREBRO_PROXY_TRUSTED"); v != "" {
+		for _, cidr := range strings.Split(v, ",") {
+			if cidr = strings.TrimSpace(cidr); cidr != "" {
+				c.Auth.Proxy.TrustedProxies = append(c.Auth.Proxy.TrustedProxies, cidr)
+			}
+		}
+	}
 	if u, p := getenv("BASIC_AUTH_USER"), getenv("BASIC_AUTH_PWD"); u != "" && p != "" {
 		c.Auth.Basic.Users = append(c.Auth.Basic.Users, BasicUser{Username: u, Password: p, plain: !IsBcrypt(p)})
 	}
@@ -456,8 +505,43 @@ func (c *Config) normalize() error {
 		if l.GroupSearch.Group != "" && (l.BindDN == "" || l.GroupSearch.UserAttr == "") {
 			errs = append(errs, errors.New("auth.ldap.groupSearch needs bindDN and groupSearch.userAttr"))
 		}
+	case "oidc":
+		o := &c.Auth.OIDC
+		if o.Issuer == "" || o.ClientID == "" {
+			errs = append(errs, errors.New("auth.oidc.issuer and auth.oidc.clientID are required"))
+		}
+		if len(o.Scopes) == 0 {
+			o.Scopes = []string{"openid", "email", "profile"}
+		}
+		if o.UsernameClaim == "" {
+			o.UsernameClaim = "email"
+		}
+		if len(o.AllowedGroups) > 0 && o.GroupsClaim == "" {
+			o.GroupsClaim = "groups"
+		}
+	case "proxy":
+		p := &c.Auth.Proxy
+		if p.Header == "" && p.JWT == nil {
+			p.Header = "X-Forwarded-User"
+		}
+		if len(p.TrustedProxies) == 0 {
+			errs = append(errs, errors.New("auth.proxy.trustedProxies is required (CIDR list of your reverse proxies)"))
+		}
+		for _, cidr := range p.TrustedProxies {
+			if _, _, err := net.ParseCIDR(cidr); err != nil {
+				errs = append(errs, fmt.Errorf("auth.proxy.trustedProxies: invalid CIDR %q", cidr))
+			}
+		}
+		if j := p.JWT; j != nil {
+			if j.Header == "" || j.Issuer == "" || j.JWKSURL == "" || j.Audience == "" {
+				errs = append(errs, errors.New("auth.proxy.jwt needs header, issuer, jwksURL and audience"))
+			}
+			if j.Claim == "" {
+				j.Claim = "email"
+			}
+		}
 	default:
-		errs = append(errs, fmt.Errorf("unknown auth.type %q (none, basic, ldap)", c.Auth.Type))
+		errs = append(errs, fmt.Errorf("unknown auth.type %q (none, basic, ldap, oidc, proxy)", c.Auth.Type))
 	}
 
 	names := map[string]bool{}

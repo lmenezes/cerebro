@@ -31,6 +31,10 @@ func New(cfg config.AuthConfig) (Authenticator, error) {
 		return NewBasic(cfg.Basic.Users)
 	case "ldap":
 		return NewLDAP(cfg.LDAP)
+	case "oidc":
+		return NewOIDC(cfg.OIDC), nil
+	case "proxy":
+		return NewProxy(cfg.Proxy)
 	default:
 		return nil, nil
 	}
