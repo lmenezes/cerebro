@@ -1,0 +1,12 @@
+{
+  "cluster_name":"elasticsearch",
+  "master_node":"cPsT9o5FQ3WRnvqSTXHiVQ",
+  "blocks":{
+
+  },
+  "routing_table":{
+    "indices":{
+
+    }
+  }
+}
