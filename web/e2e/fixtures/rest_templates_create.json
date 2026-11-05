@@ -1,0 +1,14 @@
+{
+ "GET /logs-app/_search": {
+  "status": 200,
+  "body": "{\"took\":3,\"timed_out\":false,\"_shards\":{\"total\":3,\"successful\":3,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":{\"value\":1,\"relation\":\"eq\"},\"max_score\":1.0,\"hits\":[{\"_index\":\"logs-app\",\"_id\":\"7CptrKEBlN-yQbgVd46p\",\"_score\":1.0,\"_source\":{\"title\":\"Hello World\",\"msg\":\"first\",\"user\":{\"name\":\"Ann\",\"age\":3},\"ts\":\"2026-01-01\"}}]}}"
+ },
+ "GET /missing-index/_search": {
+  "status": 404,
+  "body": "{\"error\":{\"root_cause\":[{\"type\":\"index_not_found_exception\",\"reason\":\"no such index [missing-index]\",\"resource.type\":\"index_or_alias\",\"resource.id\":\"missing-index\",\"index_uuid\":\"_na_\",\"index\":\"missing-index\"}],\"type\":\"index_not_found_exception\",\"reason\":\"no such index [missing-index]\",\"resource.type\":\"index_or_alias\",\"resource.id\":\"missing-index\",\"index_uuid\":\"_na_\",\"index\":\"missing-index\"},\"status\":404}"
+ },
+ "GET /_cluster/state/metadata/logs-app?human=true": {
+  "status": 200,
+  "body": "{\"cluster_name\":\"docker-cluster\",\"cluster_uuid\":\"Txr-Jt-hQZ-0Nda2o3MlgA\",\"metadata\":{\"cluster_uuid\":\"Txr-Jt-hQZ-0Nda2o3MlgA\",\"cluster_uuid_committed\":false,\"cluster_coordination\":{\"term\":1,\"last_committed_config\":[\"t8Dl5VKmTWubLPuRxdfMTg\"],\"last_accepted_config\":[\"t8Dl5VKmTWubLPuRxdfMTg\"],\"voting_config_exclusions\":[]},\"templates\":{},\"indices\":{\"logs-app\":{\"version\":7,\"transport_version\":\"9250008\",\"mapping_version\":1,\"settings_version\":1,\"aliases_version\":2,\"routing_num_shards\":768,\"state\":\"open\",\"settings\":{\"index\":{\"routing\":{\"allocation\":{\"include\":{\"_tier_preference\":\"data_content\"}}},\"number_of_shards\":\"3\",\"provided_name\":\"logs-app\",\"creation_date\":\"1793894217317\",\"analysis\":{\"analyzer\":{\"my_analyzer\":{\"filter\":[\"lowercase\"],\"type\":\"custom\",\"tokenizer\":\"standard\"}}},\"number_of_replicas\":\"1\",\"uuid\":\"2KCGhw8aRg-kKvILfIuzgA\",\"version\":{\"created\":\"9060000\"}}},\"mappings\":{\"_doc\":{\"dynamic\":\"strict\",\"properties\":{\"msg\":{\"type\":\"match_only_text\"},\"title\":{\"type\":\"text\",\"fields\":{\"raw\":{\"type\":\"keyword\"}}},\"user\":{\"properties\":{\"name\":{\"type\":\"text\"},\"age\":{\"type\":\"integer\"}}},\"ts\":{\"type\":\"date\"}}}},\"aliases\":[\"logs\"],\"primary_terms\":{\"0\":1,\"1\":1,\"2\":1},\"in_sync_allocations\":{\"0\":[\"6ZKwj1Z1RDWdbSgVj0Xb2g\"],\"1\":[\"jRgwyeNXQC6g50o145tfow\"],\"2\":[\"k447PojGTxe-A_X683POnQ\"]},\"rollover_info\":{},\"mappings_updated_version\":9060000,\"system\":false,\"timestamp_range\":{\"unknown\":true},\"event_ingested_range\":{\"unknown\":true}}},\"index-graveyard\":{\"tombstones\":[]},\"reserved_state\":{}}}"
+ }
+}

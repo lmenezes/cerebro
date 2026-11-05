@@ -23,6 +23,8 @@ const pages: { route: string; act?: (page: Page) => Promise<void>; hidden: { sel
   },
   { route: 'repository', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
   { route: 'snapshot', hidden: [{ selector: 'button.btn-success', text: 'create' }] },
+  { route: 'templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash.normal-action' }] },
+  { route: 'create', hidden: [{ selector: 'button.btn-primary', text: 'Create' }] },
   { route: 'index_templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
   { route: 'component_templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
   { route: 'ilm', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
