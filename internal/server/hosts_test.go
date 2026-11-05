@@ -80,3 +80,15 @@ func TestSecurityHeadersOutsideBasePath(t *testing.T) {
 		}
 	}
 }
+
+// /cerebro_info 返回当前连接是否只读，供前端隐藏修改类按钮。
+func TestCerebroInfo(t *testing.T) {
+	f := newFakeES(t)
+	h := testServer(t, func(c *config.Config) {
+		c.Hosts = []config.HostConfig{{Name: "prod", Host: f.url(), ReadOnly: true}}
+	}).Handler()
+	_, body := call(t, h, "/cerebro_info", `{"host":"prod"}`)
+	assertJSON(t, body, `{"read_only":true,"username":null,"version":"0.10.0-test"}`)
+	_, body = call(t, h, "/cerebro_info", hostBody(f.url()+"/other", ""))
+	assertJSON(t, body, `{"read_only":false,"username":null,"version":"0.10.0-test"}`)
+}

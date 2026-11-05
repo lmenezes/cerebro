@@ -98,6 +98,8 @@ func (s *Server) routes(mux *http.ServeMux) {
 	p("/snapshots/restore", writeRoute, s.restoreSnapshot)
 
 	p("/cat", readRoute, s.cat)
+
+	s.featureRoutes(p)
 }
 
 type indexFn func(ctx context.Context, t *es.Target, index string) (*es.Response, error)

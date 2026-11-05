@@ -262,3 +262,97 @@ func (a API) Execute(ctx context.Context, t *Target, method, path string, data a
 	}
 	return a.Do(ctx, t, method, uri, b, ContentTypeJSON)
 }
+
+// ---------- 第三阶段：组合模板、组件模板、data streams、ILM、SLM、分片诊断 ----------
+
+func (a API) IndexTemplates(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_index_template")
+}
+
+func (a API) PutIndexTemplate(ctx context.Context, t *Target, name string, body any) (*Response, error) {
+	return a.send(ctx, t, "PUT", "/_index_template/"+enc(name), body)
+}
+
+func (a API) DeleteIndexTemplate(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "DELETE", "/_index_template/"+enc(name), nil, "")
+}
+
+// SimulateIndexTemplate 预览模板合成后的结果，只读。
+func (a API) SimulateIndexTemplate(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "POST", "/_index_template/_simulate/"+enc(name), nil, "")
+}
+
+func (a API) ComponentTemplates(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_component_template")
+}
+
+func (a API) PutComponentTemplate(ctx context.Context, t *Target, name string, body any) (*Response, error) {
+	return a.send(ctx, t, "PUT", "/_component_template/"+enc(name), body)
+}
+
+func (a API) DeleteComponentTemplate(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "DELETE", "/_component_template/"+enc(name), nil, "")
+}
+
+func (a API) DataStreams(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_data_stream?expand_wildcards=all")
+}
+
+func (a API) DataStreamsStats(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_data_stream/_stats?expand_wildcards=all")
+}
+
+func (a API) DeleteDataStream(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "DELETE", "/_data_stream/"+enc(name), nil, "")
+}
+
+func (a API) Rollover(ctx context.Context, t *Target, alias string) (*Response, error) {
+	return a.Do(ctx, t, "POST", "/"+enc(alias)+"/_rollover", nil, "")
+}
+
+func (a API) ILMPolicies(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_ilm/policy")
+}
+
+func (a API) PutILMPolicy(ctx context.Context, t *Target, name string, policy any) (*Response, error) {
+	return a.send(ctx, t, "PUT", "/_ilm/policy/"+enc(name), jsonx.Obj("policy", policy))
+}
+
+func (a API) DeleteILMPolicy(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "DELETE", "/_ilm/policy/"+enc(name), nil, "")
+}
+
+func (a API) ILMExplain(ctx context.Context, t *Target, index string) (*Response, error) {
+	return a.get(ctx, t, "/"+enc(index)+"/_ilm/explain")
+}
+
+func (a API) SLMPolicies(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_slm/policy")
+}
+
+func (a API) PutSLMPolicy(ctx context.Context, t *Target, name string, policy any) (*Response, error) {
+	return a.send(ctx, t, "PUT", "/_slm/policy/"+enc(name), policy)
+}
+
+func (a API) DeleteSLMPolicy(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "DELETE", "/_slm/policy/"+enc(name), nil, "")
+}
+
+func (a API) ExecuteSLMPolicy(ctx context.Context, t *Target, name string) (*Response, error) {
+	return a.Do(ctx, t, "POST", "/_slm/policy/"+enc(name)+"/_execute", nil, "")
+}
+
+// AllocationExplain 解释分片为什么没分配（或为什么在当前节点），只读。
+func (a API) AllocationExplain(ctx context.Context, t *Target, index string, shard int64, primary bool) (*Response, error) {
+	return a.send(ctx, t, "POST", "/_cluster/allocation/explain", jsonx.Obj("index", index, "shard", jsonx.Num(shard), "primary", primary))
+}
+
+// CatShards 返回分片大小和未分配原因。
+func (a API) CatShards(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_cat/shards?format=json&bytes=b&h=index,shard,prirep,state,node,store,docs,unassigned.reason")
+}
+
+// CatRecovery 返回进行中的分片恢复（迁移）进度。
+func (a API) CatRecovery(ctx context.Context, t *Target) (*Response, error) {
+	return a.get(ctx, t, "/_cat/recovery?active_only=true&format=json&bytes=b&h=index,shard,type,stage,source_node,target_node,files_percent,bytes_percent,bytes_total,time")
+}

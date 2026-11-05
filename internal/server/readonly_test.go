@@ -87,7 +87,8 @@ func xFullBody(host string) string {
 	return `{"host":"` + host + `","indices":"idx","index":"idx","kind":"primaries","shard":0,"node":"n1",` +
 		`"from":"n1","to":"n2","name":"tpl","template":{"index_patterns":["x"]},"settings":{"a":"b"},"type":"fs",` +
 		`"repository":"repo","snapshot":"snap","ignoreUnavailable":true,"includeGlobalState":false,"includeAliases":true,` +
-		`"changes":[],"metadata":{},"api":"health","analyzer":"standard","field":"f","text":"t","method":"GET","path":"_cluster/health"}`
+		`"changes":[],"metadata":{},"api":"health","analyzer":"standard","field":"f","text":"t","method":"GET","path":"_cluster/health",` +
+		`"policy":{"phases":{}},"primary":true}`
 }
 
 // 写接口清单：改动这里要确认新接口确实需要只读拦截。
@@ -101,10 +102,16 @@ var xExpectedWriteRoutes = []string{
 	"/cluster_settings/save", "/index_settings/update",
 	"/repositories/create", "/repositories/delete",
 	"/snapshots/create", "/snapshots/delete", "/snapshots/restore",
+	// 第三阶段新增
+	"/index_templates/create", "/index_templates/delete",
+	"/component_templates/create", "/component_templates/delete",
+	"/data_streams/delete", "/data_streams/rollover",
+	"/ilm/policies/save", "/ilm/policies/delete",
+	"/slm/policies/save", "/slm/policies/delete", "/slm/policies/execute",
 }
 
 var xMutatingWords = []string{"update", "delete", "create", "save", "close", "open", "merge", "clear", "refresh",
-	"flush", "relocate", "restore", "enable", "disable", "put", "remove", "reroute", "rollover", "shrink", "reindex"}
+	"flush", "relocate", "restore", "enable", "disable", "put", "remove", "reroute", "rollover", "shrink", "reindex", "execute"}
 
 func TestReadOnlyMode_RouteTable(t *testing.T) {
 	routes, direct := xParseRoutes(t)
@@ -182,9 +189,9 @@ func TestReadOnlyMode_ReadRoutesStillWork(t *testing.T) {
 		if r.write {
 			continue
 		}
-		if r.path == "/rest/history" { // 不访问 ES
+		if r.path == "/rest/history" || r.path == "/cerebro_info" { // 不访问 ES
 			if status, _ := call(t, h, r.path, xFullBody(f.url())); status != 200 {
-				t.Errorf("/rest/history: %d", status)
+				t.Errorf("%s: %d", r.path, status)
 			}
 			continue
 		}
