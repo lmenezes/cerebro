@@ -48,7 +48,7 @@ func (s *Server) oidcStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.sessions.Save(w, r, sess)
-	http.Redirect(w, r, target, http.StatusSeeOther)
+	http.Redirect(w, r, target, http.StatusSeeOther) //nolint:gosec // 跳转到配置的 IdP 授权地址
 }
 
 // oidcCallback 校验 state，用授权码换取用户，写入会话。
