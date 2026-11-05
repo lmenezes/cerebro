@@ -8,7 +8,12 @@ import { scenarios as settings_repos_snapshots } from './scenarios/settings_repo
 
 export const scenarios: Scenario[] = [
   { name: 'connect', route: 'connect', noHost: true },
-  { name: 'connect-unauthorized', route: 'connect?host=fixture&unauthorized=true', noHost: true },
+  {
+    name: 'connect-unauthorized',
+    route: 'connect?host=fixture&unauthorized=true',
+    noHost: true,
+    expectChanged: '第二阶段新增 API key 输入框',
+  },
   {
     name: 'navbar-more',
     route: 'nodes',

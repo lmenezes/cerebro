@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/RitterHou/cerebro/internal/auth"
@@ -40,10 +41,10 @@ func (s *Server) index(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
 		return
 	}
-	if s.spaIndex != nil { // Vue 前端：自带 index.html，只替换版本号
+	if index := s.currentSPAIndex(); index != nil { // Vue 前端：自带 index.html，只替换版本号
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-store")
-		_, _ = w.Write(s.spaIndex)
+		_, _ = w.Write(index)
 		return
 	}
 	s.renderPage(w, "index.html", map[string]string{"Version": s.version})
@@ -151,8 +152,10 @@ func (s *Server) renderPage(w http.ResponseWriter, name string, data any) {
 
 // assets 提供嵌入的静态文件，带内容哈希 ETag，浏览器每次都会校验。
 type assets struct {
-	fsys  fs.FS
-	etags map[string]string
+	fsys   fs.FS
+	mu     sync.RWMutex
+	etags  map[string]string
+	reload bool // 前端来自目录时为 true
 }
 
 func newAssets(fsys fs.FS, version string) (*assets, error) {
@@ -175,9 +178,29 @@ func newAssets(fsys fs.FS, version string) (*assets, error) {
 	return a, err
 }
 
+// etag 返回文件的 ETag；从目录加载前端（开发时会重新构建）时，新文件按需计算。
+func (a *assets) etag(name string) (string, bool) {
+	a.mu.RLock()
+	etag, ok := a.etags[name]
+	a.mu.RUnlock()
+	if ok || !a.reload {
+		return etag, ok
+	}
+	data, err := fs.ReadFile(a.fsys, name)
+	if err != nil || name == "" || name == "." {
+		return "", false
+	}
+	sum := sha256.Sum256(data)
+	etag = `"` + hex.EncodeToString(sum[:8]) + `"`
+	a.mu.Lock()
+	a.etags[name] = etag
+	a.mu.Unlock()
+	return etag, true
+}
+
 func (a *assets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	name := strings.TrimPrefix(path.Clean("/"+r.URL.Path), "/")
-	etag, ok := a.etags[name]
+	etag, ok := a.etag(name)
 	if !ok {
 		http.NotFound(w, r)
 		return

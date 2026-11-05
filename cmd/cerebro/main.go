@@ -146,7 +146,7 @@ func serve(args []string, stderr io.Writer) int {
 	defer client.Close()
 	srv, err := server.New(server.Options{
 		Config: cfg, Client: client, History: history, SessionKey: key,
-		Authn: authn, Public: public, Version: version, Logger: log,
+		Authn: authn, Public: public, Version: version, Logger: log, ReloadUI: cfg.UIDir != "",
 	})
 	if err != nil {
 		log.Error("init server", "err", err)

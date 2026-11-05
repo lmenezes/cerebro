@@ -14,6 +14,7 @@ const hosts = ref<string[]>();
 const host = ref<string>();
 const username = ref<string>();
 const password = ref<string>();
+const apiKey = ref<string>();
 const connecting = ref(false);
 const unauthorized = ref(false);
 const feedback = ref<string>();
@@ -59,6 +60,15 @@ const connect = (h?: string) => {
       connecting.value = false;
       AlertService.error('Error connecting to [' + h + ']', data);
     });
+};
+
+// 填了 API Key 就用 API Key（后端把以 "ApiKey " 开头的密码当作 API Key）
+const authorizeWithForm = () => {
+  if (apiKey.value && apiKey.value.trim()) {
+    authorize(host.value, undefined, 'ApiKey ' + apiKey.value.trim());
+  } else {
+    authorize(host.value, username.value, password.value);
+  }
 };
 
 const authorize = (h?: string, user?: string, pwd?: string) => {
@@ -146,16 +156,23 @@ const authorize = (h?: string, user?: string, pwd?: string) => {
         <input id="username" type="text" v-model="username"
                class="form-control form-control-sm"
                placeholder="admin"
-               @keyup.enter="authorize(host, username, password)">
+               @keyup.enter="authorizeWithForm()">
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input id="password" type="password" v-model="password"
                class="form-control form-control-sm"
-               @keyup.enter="authorize(host, username, password)">
+               @keyup.enter="authorizeWithForm()">
+      </div>
+      <div class="form-group">
+        <label for="apikey">API key <small class="info-text">(instead of username and password)</small></label>
+        <input id="apikey" type="password" v-model="apiKey"
+               class="form-control form-control-sm"
+               placeholder="id:api_key or encoded key"
+               @keyup.enter="authorizeWithForm()">
       </div>
       <button type="submit" class="btn btn-success pull-right"
-              @click="authorize(host, username, password)">
+              @click="authorizeWithForm()">
         Authenticate
       </button>
     </form>

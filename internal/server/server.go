@@ -59,6 +59,7 @@ type Options struct {
 	Public     fs.FS              // 前端静态资源根目录
 	Version    string
 	Logger     *slog.Logger
+	ReloadUI   bool // 前端来自目录（开发、截图比对），文件变化时不需要重启
 }
 
 // New 创建 Server。
@@ -114,12 +115,29 @@ func New(o Options) (*Server, error) {
 		return nil, err
 	}
 	s.assets = a
-	if o.Public != nil {
-		if data, err := fs.ReadFile(o.Public, "index.html"); err == nil {
-			s.spaIndex = bytes.ReplaceAll(data, []byte("__CEREBRO_VERSION__"), []byte(template.HTMLEscapeString(o.Version)))
-		}
-	}
+	a.reload = o.ReloadUI
+	s.spaIndex = s.readSPAIndex()
 	return s, nil
+}
+
+// readSPAIndex 读取前端自带的 index.html（Vue 版），没有则返回 nil（旧版用内置模板）。
+func (s *Server) readSPAIndex() []byte {
+	if s.assets.fsys == nil {
+		return nil
+	}
+	data, err := fs.ReadFile(s.assets.fsys, "index.html")
+	if err != nil {
+		return nil
+	}
+	return bytes.ReplaceAll(data, []byte("__CEREBRO_VERSION__"), []byte(template.HTMLEscapeString(s.version)))
+}
+
+// currentSPAIndex 在前端来自目录时每次重新读取，方便重新构建后直接刷新页面。
+func (s *Server) currentSPAIndex() []byte {
+	if s.assets.reload {
+		return s.readSPAIndex()
+	}
+	return s.spaIndex
 }
 
 func toTLS(c config.TLSConfig) es.TLSConfig {
