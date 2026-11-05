@@ -39,6 +39,8 @@ export default defineConfig({
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 1,
     browserName: 'chromium',
+    // 旧前端的 ngAnimate 会分多帧改 class，Chrome 只重绘失效区域时控件圆角的抗锯齿会差一个色阶；整页栅格化避免这类假差异
+    launchOptions: { args: ['--disable-partial-raster'] },
   },
   webServer: [
     {

@@ -1,0 +1,6 @@
+{
+ "GET /_snapshot/fsrepo/_all": {
+  "status": 200,
+  "body": "{\"snapshots\":[{\"snapshot\":\"nightly-2026.11.01\",\"uuid\":\"wT4ghZOITq-nB9lkzL-Ssg\",\"repository\":\"fsrepo\",\"version_id\":9060000,\"version\":\"9.3.0-9.3.2\",\"indices\":[\"logs-app\",\"products\"],\"data_streams\":[],\"include_global_state\":false,\"state\":\"SUCCESS\",\"start_time\":\"2026-11-05T16:29:13.516Z\",\"start_time_in_millis\":1793896153516,\"end_time\":\"2026-11-05T16:29:13.516Z\",\"end_time_in_millis\":1793896153516,\"duration_in_millis\":0,\"failures\":[],\"shards\":{\"total\":4,\"failed\":0,\"successful\":4},\"feature_states\":[]}],\"total\":1,\"remaining\":0}"
+ }
+}
