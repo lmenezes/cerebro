@@ -47,6 +47,10 @@ func (s *Server) index(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(index)
 		return
 	}
+	if _, ok := s.assets.etag("js/app.js"); !ok { // 既不是 Vue 版也不是旧版：前端没构建
+		http.Error(w, "cerebro "+s.version+": the frontend is not built into this binary, run `npm --prefix web ci && npm --prefix web run build` before `go build`", http.StatusServiceUnavailable)
+		return
+	}
 	s.renderPage(w, "index.html", map[string]string{"Version": s.version})
 }
 

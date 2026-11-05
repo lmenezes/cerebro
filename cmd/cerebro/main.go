@@ -133,7 +133,7 @@ func serve(args []string, stderr io.Writer) int {
 		history = db
 	}
 
-	public, err := fs.Sub(cerebro.Public, "public")
+	public, err := fs.Sub(cerebro.UI, "web/dist")
 	if err != nil {
 		log.Error("embedded assets", "err", err)
 		return 1
@@ -141,6 +141,8 @@ func serve(args []string, stderr io.Writer) int {
 	if cfg.UIDir != "" {
 		public = os.DirFS(cfg.UIDir)
 		log.Info("serving UI from directory", "dir", cfg.UIDir)
+	} else if _, err := fs.Stat(public, "index.html"); err != nil {
+		log.Warn("frontend is not built into this binary, run `npm --prefix web ci && npm --prefix web run build` before go build")
 	}
 	client := es.NewClient(cfg.ES.Timeout.Duration, "cerebro/"+version)
 	defer client.Close()

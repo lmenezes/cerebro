@@ -1,36 +1,18 @@
-# Extracted from https://github.com/ulrich/macaron-factory/blob/master/.gitignore
-# Ignore all dotfiles...
+# 忽略所有点文件，例外如下
 .*
-# except for these
 !.gitignore
-!.eslintrc.json
 !.github/
 !.golangci.yml
 !.goreleaser.yaml
 !.dockerignore
-
-# Ignore Play! working directory #
-db
-eclipse
-log
-logs
-modules
-precompiled
-project/project
-project/target
-target
-tmp
-test-result
-server.pid
-*.iml
-*.eml
-activator-*.sbt
-node_modules
-cerebro.db
 
 # Go
 /cerebro
 /dist/
 /data/
 cerebro.yaml
+cerebro.db
 session.key
+
+# 前端（web/ 下另有 .gitignore）
+node_modules

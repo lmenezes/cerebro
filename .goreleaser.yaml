@@ -1,6 +1,12 @@
 version: 2
 project_name: cerebro
 
+# 先构建前端，go:embed 打进二进制
+before:
+  hooks:
+    - npm --prefix web ci
+    - npm --prefix web run build
+
 builds:
   - main: ./cmd/cerebro
     binary: cerebro

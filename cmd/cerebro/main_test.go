@@ -218,16 +218,18 @@ func TestServeStartsAndStops(t *testing.T) {
 		time.Sleep(50 * time.Millisecond)
 	}
 
-	for p, want := range map[string]string{"": "appVersion = 'v" + version + "'", "js/app.js": "", "img/favicon.png": ""} {
-		resp, err := client.Get(base + p)
-		if err != nil {
-			t.Fatal(err)
-		}
-		body, _ := io.ReadAll(resp.Body)
-		_ = resp.Body.Close()
-		if resp.StatusCode != 200 || len(body) == 0 || !strings.Contains(string(body), want) {
-			t.Errorf("GET %s: %d (%d bytes)", p, resp.StatusCode, len(body))
-		}
+	// 首页：前端已构建时是带版本号的 Vue 页面，没构建时（CI 里只跑 go test）是 503 提示
+	resp, err := client.Get(base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	switch {
+	case resp.StatusCode == 200 && strings.Contains(string(body), `content="`+version+`"`):
+	case resp.StatusCode == 503 && strings.Contains(string(body), "npm --prefix web"):
+	default:
+		t.Errorf("GET /: %d %s", resp.StatusCode, body)
 	}
 	if fi, err := os.Stat(filepath.Join(dataDir, "session.key")); err != nil || fi.Mode().Perm() != 0o600 {
 		t.Errorf("session.key: %v %v", fi, err)

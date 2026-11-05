@@ -18,3 +18,19 @@ updates:
     directory: /
     schedule:
       interval: weekly
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    # 界面依赖（jQuery、Bootstrap 3、ace、font-awesome）锁定版本，升级会改变界面，只升构建和测试工具
+    allow:
+      - dependency-name: vite
+      - dependency-name: "@vitejs/*"
+      - dependency-name: vue
+      - dependency-name: vue-router
+      - dependency-name: vue-tsc
+      - dependency-name: typescript
+      - dependency-name: "@playwright/test"
+      - dependency-name: pixelmatch
+      - dependency-name: pngjs
+      - dependency-name: "@types/*"

@@ -70,6 +70,9 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
       - uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"

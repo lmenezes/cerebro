@@ -4,6 +4,14 @@
 !embed.go
 !cmd/
 !internal/
-!public/
+!web/
+web/node_modules/
+web/dist/
+web/dist-*/
+web/test-results/
+web/e2e/
+web/public/js/vendor.js
+web/public/css/
+web/public/fonts/
 internal/**/testdata/
 **/*_test.go

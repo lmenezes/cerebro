@@ -1,7 +1,9 @@
 Cerebro
 ------------
 
-Cerebro 是一个开源（MIT 许可证）的 Elasticsearch Web 管理工具。本仓库是 [lmenezes/cerebro](https://github.com/lmenezes/cerebro) 的维护分支：后端用 Go 重写，界面保持原样，只支持 Elasticsearch 7.10+、8.x、9.x，整个程序是一个可执行文件。
+Cerebro 是一个开源（MIT 许可证）的 Elasticsearch Web 管理工具。本仓库是 [lmenezes/cerebro](https://github.com/lmenezes/cerebro) 的维护分支：后端用 Go 重写，前端用 Vue 3 重写且界面与原版逐像素一致，只支持 Elasticsearch 7.10+、8.x、9.x，整个程序是一个可执行文件。
+
+相比原版新增：组合模板、组件模板、data streams、ILM 和 SLM 策略页面；分片大小、未分配原因和恢复进度提示；API Key / Bearer / mTLS 连接 ES；只读模式；OIDC 单点登录和反向代理登录。
 
 原项目由 Leonardo Menezes 开发，Scala 版的最后状态保留在 tag `scala-final`。
 
@@ -37,10 +39,11 @@ docker run -p 9000:9000 \
 
 #### 从源码构建
 
-需要 Go 1.27+：
+需要 Go 1.27+ 和 Node 22+：
 
 ```bash
-go build -o cerebro ./cmd/cerebro
+npm --prefix web ci && npm --prefix web run build   # 前端，输出到 web/dist
+go build -o cerebro ./cmd/cerebro                   # 把 web/dist 打进二进制
 ```
 
 ### 配置
@@ -69,9 +72,13 @@ cerebro version                          输出版本号
 ```bash
 go test ./...
 golangci-lint run
+
+cd web
+npm run dev        # Vite 开发服务器，接口转发到 :9000 的 Go 后端
+npm run e2e        # 新旧前端逐像素截图比对（假 ES 回放 e2e/fixtures 里录好的数据）
 ```
 
-前端目前仍是原来的 AngularJS 版本，打包产物在 `public/`，通过 `go:embed` 打进二进制。
+`web/e2e/legacy/` 是原版 AngularJS 前端的打包产物，只用作截图比对的基准。
 
 ### 许可证
 

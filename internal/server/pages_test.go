@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -155,5 +156,26 @@ func TestPages_SecurityHeaders(t *testing.T) {
 				t.Errorf("%s %s: %s = %q, want %q", c.method, c.path, k, got, v)
 			}
 		}
+	}
+}
+
+// 没构建前端（嵌入的目录里只有占位文件）时，首页给出明确提示而不是空白页。
+func TestIndexWithoutFrontend(t *testing.T) {
+	h := testServer(t, nil, func(o *Options) { o.Public = fstest.MapFS{".gitkeep": {Data: nil}} }).Handler()
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
+	if rec.Code != http.StatusServiceUnavailable || !strings.Contains(rec.Body.String(), "npm --prefix web") {
+		t.Fatalf("got %d %s", rec.Code, rec.Body.String())
+	}
+}
+
+// Vue 前端自带 index.html 时原样返回，并写入版本号。
+func TestIndexSPA(t *testing.T) {
+	ui := fstest.MapFS{"index.html": {Data: []byte(`<meta name="cerebro-version" content="__CEREBRO_VERSION__">`)}}
+	h := testServer(t, nil, func(o *Options) { o.Public = ui }).Handler()
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
+	if !strings.Contains(rec.Body.String(), `content="0.10.0-test"`) {
+		t.Fatalf("got %s", rec.Body.String())
 	}
 }

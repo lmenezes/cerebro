@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import { readdirSync } from 'node:fs';
 
-// 同一个 Go 后端、同一份假 ES 数据，分别挂旧前端（../public）和新前端（dist），截图逐像素比对。
+// 同一个 Go 后端、同一份假 ES 数据，分别挂旧前端（e2e/legacy，原版 AngularJS 的打包产物）和新前端（dist），截图逐像素比对。
 // 默认加载 e2e/fixtures 下所有录制文件（es9.json 在最前，其余按名字排序）
 const FIXTURES =
   process.env.E2E_FIXTURES ||
@@ -49,7 +49,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       ignoreHTTPSErrors: true,
     },
-    cerebro(BASE + 1, '../public', `e2e/.data/legacy-${BASE}`),
+    cerebro(BASE + 1, 'e2e/legacy', `e2e/.data/legacy-${BASE}`),
     cerebro(BASE + 2, DIST, `e2e/.data/vue-${BASE}`),
   ],
 });
