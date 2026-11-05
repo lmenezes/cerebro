@@ -25,6 +25,14 @@ const pages: { route: string; act?: (page: Page) => Promise<void>; hidden: { sel
   { route: 'snapshot', hidden: [{ selector: 'button.btn-success', text: 'create' }] },
   { route: 'templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash.normal-action' }] },
   { route: 'create', hidden: [{ selector: 'button.btn-primary', text: 'Create' }] },
+  { route: 'aliases', hidden: [{ selector: 'button.btn-info' }, { selector: 'td .fa-trash.normal-action' }] },
+  {
+    route: 'overview',
+    act: async (page) => {
+      await page.locator('span.title', { hasText: 'logs-app' }).first().click();
+    },
+    hidden: [{ selector: '.dropdown-menu li', text: 'close index' }, { selector: '.dropdown-menu li', text: 'delete index' }],
+  },
   { route: 'index_templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
   { route: 'component_templates', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },
   { route: 'ilm', hidden: [{ selector: 'button.btn-success', text: 'create' }, { selector: 'td .fa-trash' }] },

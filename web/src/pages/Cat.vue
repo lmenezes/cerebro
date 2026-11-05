@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { show } from '../shared/filters';
-import { ngOrderBy } from './cat/ngOrderBy';
+import { orderBy as ngOrderBy } from '../shared/filters';
 
 const api = ref<string>();
 

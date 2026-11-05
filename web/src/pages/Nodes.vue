@@ -8,7 +8,7 @@ import { RefreshService } from '../services/refresh';
 import { NodeFilter } from '../shared/filters_model';
 import { bytes, number, timeInterval } from '../shared/filters';
 import SortBy from '../components/SortBy.vue';
-import { ngOrderBy } from './cat/ngOrderBy';
+import { orderBy as ngOrderBy } from '../shared/filters';
 
 let _nodes: any[] | undefined = undefined; // 未筛选的全部节点
 const nodes = ref<any[]>();

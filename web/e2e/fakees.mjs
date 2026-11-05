@@ -3,7 +3,8 @@
 //   录制：同上加 --record https://localhost:19200，新录到的响应写进最后一个文件
 //         （录制时用 ES_AUTH 环境变量给出 Authorization 头，NODE_TLS_REJECT_UNAUTHORIZED=0 跳过本地自签证书）
 import { createHash } from 'node:crypto';
-import { createServer } from 'node:http';
+import { createServer, request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
@@ -30,21 +31,38 @@ const readBody = (req) =>
     req.on('end', () => resolve(Buffer.concat(chunks)));
   });
 
-async function record(req, body) {
-  const resp = await fetch(args.record.replace(/\/+$/, '') + req.url, {
-    method: req.method,
-    headers: {
-      'content-type': req.headers['content-type'] || 'application/json',
-      ...(process.env.ES_AUTH ? { authorization: process.env.ES_AUTH } : {}),
-    },
-    body: body.length ? body : undefined,
+// fetch 不允许 GET 带 body（_analyze 等接口需要），所以用 node 自带的 http(s).request 转发
+function forward(req, body) {
+  const target = new URL(args.record.replace(/\/+$/, '') + req.url);
+  const client = target.protocol === 'https:' ? httpsRequest : httpRequest;
+  return new Promise((resolve, reject) => {
+    const out = client(
+      target,
+      {
+        method: req.method,
+        headers: {
+          'content-type': req.headers['content-type'] || 'application/json',
+          ...(body.length ? { 'content-length': body.length } : {}),
+          ...(process.env.ES_AUTH ? { authorization: process.env.ES_AUTH } : {}),
+        },
+      },
+      (resp) => {
+        const chunks = [];
+        resp.on('data', (c) => chunks.push(c));
+        resp.on('end', () => resolve({ status: resp.statusCode, body: Buffer.concat(chunks).toString('utf8') }));
+      },
+    );
+    out.on('error', reject);
+    out.end(body.length ? body : undefined);
   });
-  const text = await resp.text();
-  const entry = { status: resp.status, body: text };
+}
+
+async function record(req, body) {
+  const entry = await forward(req, body);
   fixtures[keyOf(req.method, req.url, body)] = entry;
   recorded[keyOf(req.method, req.url, body)] = entry;
   writeFileSync(recordFile, JSON.stringify(recorded, null, 1) + '\n');
-  return { status: resp.status, body: text };
+  return entry;
 }
 
 createServer(async (req, res) => {

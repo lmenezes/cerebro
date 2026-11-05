@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import AnalysisTokens from './analysis/AnalysisTokens.vue';
-import { ngOrderBy } from './cat/ngOrderBy';
+import { orderBy as ngOrderBy } from '../shared/filters';
 
 const indices = ref<string[]>([]);
 const fields = ref<string[]>([]);

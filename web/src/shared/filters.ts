@@ -55,9 +55,12 @@ export function show(value: unknown): string {
   return String(value);
 }
 
-// angular 的 orderBy：字符串不分大小写按码点比较，相等时保持原顺序；不同类型按类型名排，undefined 在最后
+// angular 1.8 的 orderBy：key 是属性路径（'cpu.load' 取嵌套属性，取不到为 undefined），为空时按元素本身排；
+// 字符串不分大小写按码点比较；不同类型按类型名排，undefined、null 在最后；
+// 相等时按原顺序，倒序时连同相等元素一起倒过来（angular 把 tieBreaker 也乘了 descending）。
 export function orderBy<T>(items: T[] | undefined, key?: string, reverse = false): T[] {
-  const get = (item: any) => (key ? item?.[key] : item);
+  const path = key ? key.split('.') : [];
+  const get = (item: any) => path.reduce((v: any, k) => (v === undefined || v === null ? undefined : v[k]), item);
   const typeOf = (v: unknown) => (v === null ? 'null' : typeof v);
   const indexed = (items || []).map((item, index) => ({ item, index, value: get(item) }));
   indexed.sort((a, b) => {
@@ -77,10 +80,8 @@ export function orderBy<T>(items: T[] | undefined, key?: string, reverse = false
     } else {
       result = ta === 'undefined' ? 1 : tb === 'undefined' ? -1 : ta === 'null' ? 1 : tb === 'null' ? -1 : ta < tb ? -1 : 1;
     }
-    if (reverse) {
-      result = -result;
-    }
-    return result || a.index - b.index;
+    const r = result || a.index - b.index;
+    return reverse ? -r : r;
   });
   return indexed.map((e) => e.item);
 }

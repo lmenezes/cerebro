@@ -1,5 +1,6 @@
 <!-- 对应 public/aliases.html 和 AliasesController（src/app/components/aliases/controller.js） -->
 <script setup lang="ts">
+import { ClusterInfo } from '../services/clusterInfo';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
@@ -7,7 +8,7 @@ import { AceEditorService, type AceEditor } from '../services/aceEditor';
 import { Paginator } from '../shared/paginator';
 import { Alias, AliasFilter } from '../shared/filters_model';
 import Pagination from '../components/Pagination.vue';
-import { ngOrderBy } from './cat/ngOrderBy';
+import { orderBy as ngOrderBy } from '../shared/filters';
 
 let editor: AceEditor | undefined = undefined;
 
@@ -145,7 +146,7 @@ onMounted(setup);
                   </span>
                   {{alias?.index_routing}}
                 </span>
-                <i class="fa fa-trash normal-action alert-danger pull-right" @click="removeIndexAlias(alias)" v-show="!alias?.removed"></i>
+                <i class="fa fa-trash normal-action alert-danger pull-right" @click="removeIndexAlias(alias)" v-show="!alias?.removed && !ClusterInfo.readOnly"></i>
                 <i class="fa fa-trash alert-danger pull-right disabled" v-show="alias?.removed"></i>
               </span>
               <div class="col-xs-12 collapse " :id="'aliasDetails' + index">
@@ -188,7 +189,7 @@ onMounted(setup);
                :class="{'fa-expand': !displayAliasFilter, 'fa-compress': displayAliasFilter}"></i>
             </span>
           <div class="form-group pull-right">
-            <button type="submit" class="btn btn-info" @click="addAlias()">
+            <button type="submit" class="btn btn-info" @click="addAlias()" v-show="!ClusterInfo.readOnly">
               <i class="fa fa-plus normal-action alert-info"></i>
             </button>
           </div>
@@ -238,7 +239,7 @@ onMounted(setup);
       <div class="col-lg-12 text-right">
         <div class="form-group">
           <div class="btn-group">
-            <button type="submit" class="btn btn-success" @click="saveChanges()" v-show="changes.length">
+            <button type="submit" class="btn btn-success" @click="saveChanges()" v-show="changes.length && !ClusterInfo.readOnly">
               apply
             </button>
           </div>
