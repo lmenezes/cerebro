@@ -25,7 +25,7 @@ type esReply struct {
 // recordedRequest 是假 ES 收到的请求。
 type recordedRequest struct {
 	Method, URI, Body, ContentType, Authorization string
-	Header                                      http.Header
+	Header                                        http.Header
 }
 
 // fakeES 按 "METHOD /uri?query" 匹配响应，没配置的返回 404。
