@@ -63,7 +63,7 @@ const confirm = (text: string, path: string, name: string, done: string) =>
 <template><h4>data streams</h4>
 <div class="row">
   <div class="col-md-6 form-group">
-    <input type="text" v-model="filter" class="form-control" placeholder="filter data streams by name">
+    <input type="text" v-model.trim="filter" class="form-control" placeholder="filter data streams by name">
   </div>
   <div class="col-md-6 form-group">
     <div class="checkbox">

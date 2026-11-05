@@ -17,6 +17,9 @@ export const ModalService = {
     needs.value = true;
   },
   showInfo(info: unknown) {
+    // 清掉之前没确认的回调，免得信息框里出现 Confirm 按钮（原版的 bug：按 Esc 关掉确认框后会残留）
+    confirmCallback = undefined;
+    needs.value = false;
     state.text = undefined;
     state.info = JSONTree.create(info);
   },

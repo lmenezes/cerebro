@@ -48,21 +48,24 @@ function request(path: string, data: Record<string, unknown>, success: Callback,
   const interval = RefreshService.getInterval();
   if (!activeRequest || now - (onGoingRequests[path] as number) < interval) {
     onGoingRequests[path] = new Date().getTime();
+    // 只有网络错误和响应解析失败算连接失败；页面回调里的异常照常抛到控制台，不被吞掉
     fetch(path, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       credentials: 'same-origin',
     })
-      .then(async (resp) => {
-        const body = await resp.json().catch(() => undefined);
-        if (resp.ok && body) {
-          handleSuccess(body);
+      .then(
+        async (resp) => ({ ok: resp.ok, body: await resp.json().catch(() => undefined) }),
+        () => ({ ok: false, body: undefined }),
+      )
+      .then((r) => {
+        if (r.ok && r.body) {
+          handleSuccess(r.body);
         } else {
-          handleError(body);
+          handleError(r.body);
         }
-      })
-      .catch(() => handleError(undefined));
+      });
   }
 }
 

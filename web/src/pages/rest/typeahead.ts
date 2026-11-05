@@ -11,10 +11,21 @@ export interface Match {
   model: string;
 }
 
-// uibTypeaheadHighlight：把匹配到的查询串（不分大小写、全部）包上 <strong>
+const escapeHTML = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+
+// uibTypeaheadHighlight：把匹配到的查询串（不分大小写、全部）包上 <strong>。
+// 结果用于 v-html，索引名来自 ES（可能是恶意集群），所以每一段都先转义（原版没有转义，存在 XSS）。
 export function highlight(matchItem: string, query?: string): string {
+  const text = '' + matchItem;
+  if (!query) {
+    return escapeHTML(text);
+  }
   const escapeRegexp = (q: string) => q.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
-  return query ? ('' + matchItem).replace(new RegExp(escapeRegexp(query), 'gi'), '<strong>$&</strong>') : matchItem;
+  return text
+    .split(new RegExp('(' + escapeRegexp(query) + ')', 'gi'))
+    .map((part, i) => (i % 2 ? '<strong>' + escapeHTML(part) + '</strong>' : escapeHTML(part)))
+    .join('');
 }
 
 // $uibPosition.offset / position：相对最近的定位祖先

@@ -60,7 +60,12 @@ const addAlias = (alias: string, index: string) => async (p: Page) => {
 const removeAlias = (alias: string) => (p: Page) =>
   p.locator('tr', { hasText: alias }).locator('i.fa-trash.normal-action').first().click();
 
-const expandFilterEditor = (p: Page) => p.click('span[data-target="#collapseAliasFilter"]');
+// filter 编辑器在折叠面板里：ace 每 500ms 轮询一次容器尺寸，展开后要等到下一次轮询才重绘，
+// 不等的话截图落在轮询前还是后是随机的。展开后多等两个周期，两边都画完再截图。
+const expandFilterEditor = async (p: Page) => {
+  await p.click('span[data-target="#collapseAliasFilter"]');
+  await p.waitForTimeout(1100);
+};
 
 // 在 filter 编辑器里输入。worker-json.js 与 ace 版本不匹配，worker 收到增量就报错，
 // 逐字输入时 gutter 里是否出现错误标记取决于消息批次的时机（两边都会随机出现）；一次性插入整段文字结果才稳定

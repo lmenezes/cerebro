@@ -28,7 +28,8 @@ export default defineConfig({
     proxy: Object.fromEntries(
       ['/aliases', '/rest', '/overview', '/nodes', '/navbar', '/analysis', '/cluster_changes', '/commons',
         '/create_index', '/templates', '/cluster_settings', '/index_settings', '/connect', '/repositories',
-        '/snapshots', '/cat', '/auth', '/login', '/healthz'].map((p) => [p, 'http://localhost:9000']),
+        '/snapshots', '/cat', '/auth', '/login', '/healthz', '/cerebro_info', '/index_templates',
+        '/component_templates', '/data_streams', '/ilm', '/slm'].map((p) => [p, 'http://localhost:9000']),
     ),
   },
 });

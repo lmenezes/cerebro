@@ -31,6 +31,11 @@ export class AceEditor {
     return this.editor.getValue();
   }
 
+  // 销毁编辑器：停掉 JSON worker、轮询定时器和 resize 监听（原版从不销毁，每进一次页面泄漏一个 worker）
+  destroy() {
+    this.editor.destroy();
+  }
+
   // 格式化 JSON
   format() {
     try {

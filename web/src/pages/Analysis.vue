@@ -121,7 +121,7 @@ onMounted(setup);
           <label class="form-label">&nbsp;</label>
           <input type="text" class="form-control"
                  placeholder="text to analyze"
-                 v-model="fieldText">
+                 v-model.trim="fieldText">
         </div>
       </div>
     </div>
@@ -170,7 +170,7 @@ onMounted(setup);
           <label class="form-label">&nbsp;</label>
           <input type="text" class="form-control"
                  placeholder="text to analyze"
-                 v-model="analyzerText">
+                 v-model.trim="analyzerText">
         </div>
       </div>
     </div>

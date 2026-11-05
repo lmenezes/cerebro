@@ -1,6 +1,8 @@
 // 对应旧前端 AlertService。
 import { reactive } from 'vue';
 
+let alertSeq = 0;
+
 export class Alert {
   timestamp: Date;
   id: string;
@@ -13,7 +15,8 @@ export class Alert {
     public icon: string,
   ) {
     this.timestamp = new Date();
-    this.id = 'alert_box_' + this.timestamp.getTime();
+    // 原版只用毫秒时间戳，同一时刻的多条提示 id 相同，会被一起删掉
+    this.id = 'alert_box_' + this.timestamp.getTime() + '_' + ++alertSeq;
   }
 
   hasResponse() {

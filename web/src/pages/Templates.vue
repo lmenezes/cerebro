@@ -1,7 +1,7 @@
 <!-- 对应 public/templates/index.html 和 TemplatesController、TemplatesDataService -->
 <script setup lang="ts">
 import { ClusterInfo } from '../services/clusterInfo';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { ModalService } from '../services/modal';
@@ -111,6 +111,9 @@ const setup = () => {
 };
 
 onMounted(setup);
+
+// 离开页面时销毁编辑器，避免泄漏 worker 和定时器
+onBeforeUnmount(() => editor?.destroy());
 </script>
 
 <template><div class="row">

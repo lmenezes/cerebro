@@ -1,6 +1,6 @@
 <!-- 对应 public/rest/index.html 和 RestController、RestDataService；路径输入的 uib-typeahead 见 rest/typeahead.ts -->
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { AceEditorService, type AceEditor } from '../services/aceEditor';
@@ -183,6 +183,9 @@ const copyAsCURLCommand = () => {
 };
 
 onMounted(setup);
+
+// 离开页面时销毁编辑器，避免泄漏 worker 和定时器
+onBeforeUnmount(() => editor?.destroy());
 </script>
 
 <template><div class="row">

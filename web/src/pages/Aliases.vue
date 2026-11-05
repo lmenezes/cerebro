@@ -1,7 +1,7 @@
 <!-- 对应 public/aliases.html 和 AliasesController（src/app/components/aliases/controller.js） -->
 <script setup lang="ts">
 import { ClusterInfo } from '../services/clusterInfo';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { AceEditorService, type AceEditor } from '../services/aceEditor';
@@ -110,6 +110,9 @@ const revertChange = (change: any, position: number) => {
 };
 
 onMounted(setup);
+
+// 离开页面时销毁编辑器，避免泄漏 worker 和定时器
+onBeforeUnmount(() => editor?.destroy());
 </script>
 
 <template><div class="row">
@@ -119,10 +122,10 @@ onMounted(setup);
       <div class="col-md-6">
         <div class="row" v-show="paginator.getCollection().length">
           <div class="col-md-6 form-group">
-            <input type="text" v-model="paginator.filter.alias" class="form-control" placeholder="filter by alias">
+            <input type="text" v-model.trim="paginator.filter.alias" class="form-control" placeholder="filter by alias">
           </div>
           <div class="col-md-6 form-group">
-            <input type="text" v-model="paginator.filter.index" class="form-control" placeholder="filter by index">
+            <input type="text" v-model.trim="paginator.filter.index" class="form-control" placeholder="filter by index">
           </div>
         </div>
       </div>
@@ -174,7 +177,7 @@ onMounted(setup);
       <div class="col-xs-12">
         <div class="form-inline form-group">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="alias" v-model="new_alias.alias">
+            <input type="text" class="form-control" placeholder="alias" v-model.trim="new_alias.alias">
           </div>
           <span class="info-text">assigned to index </span>
           <div class="form-group">
@@ -200,11 +203,11 @@ onMounted(setup);
               <div class="row">
                 <div class="col-xs-12 form-group">
                   <label class="form-label">index routing</label>
-                  <input type="text" class="form-control" v-model="new_alias.index_routing">
+                  <input type="text" class="form-control" v-model.trim="new_alias.index_routing">
                 </div>
                 <div class="col-xs-12 form-group">
                   <label class="form-label">search routing</label>
-                  <input type="text" class="form-control" v-model="new_alias.search_routing">
+                  <input type="text" class="form-control" v-model.trim="new_alias.search_routing">
                 </div>
               </div>
             </div>

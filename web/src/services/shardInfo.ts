@@ -34,14 +34,20 @@ const state = reactive({
 const key = (index: string, shard: string | number, primary: boolean, node?: string | null) =>
   `${index}/${shard}/${primary ? 'p' : 'r'}/${node ?? ''}`;
 
-function load() {
-  if (!DataService.getHost()) {
+// 只查当前页显示的索引，避免大集群每次刷新都拉全量分片信息
+function load(indices: string[]) {
+  if (!DataService.getHost() || indices.length === 0) {
     return;
   }
+  const host = DataService.getHost();
+  const data = { indices: indices.join(',') };
   DataService.send(
     'overview/shards',
-    {},
+    data,
     (rows: CatShard[]) => {
+      if (host !== DataService.getHost()) {
+        return;
+      }
       const m = new Map<string, CatShard>();
       rows.forEach((r) => m.set(key(r.index, r.shard, r.prirep === 'p', r.node), r));
       state.shards = m;
@@ -50,8 +56,11 @@ function load() {
   );
   DataService.send(
     'overview/recovery',
-    {},
+    data,
     (rows: CatRecovery[]) => {
+      if (host !== DataService.getHost()) {
+        return;
+      }
       const m = new Map<string, CatRecovery>();
       rows.forEach((r) => m.set(`${r.index}/${r.shard}/${r.target_node}`, r));
       state.recoveries = m;
@@ -60,10 +69,23 @@ function load() {
   );
 }
 
+// 切换集群时清掉旧集群的数据
+watch(
+  () => DataService.state.host,
+  () => {
+    state.shards = new Map();
+    state.recoveries = new Map();
+  },
+);
+
 export const ShardInfo = {
-  // 在 overview 页面的 setup 里调用：随刷新拉取，离开页面时 watch 自动停止
-  track() {
-    watch(() => RefreshService.lastUpdate(), load, { immediate: true });
+  // 在 overview 页面的 setup 里调用：随刷新和翻页拉取当前页索引的分片信息，离开页面时 watch 自动停止
+  track(indices: () => string[]) {
+    watch(
+      () => [RefreshService.lastUpdate(), indices().join(',')] as const,
+      () => load(indices()),
+      { immediate: true },
+    );
   },
   // 分片的提示文字：主/副、大小、文档数、未分配原因、恢复进度
   title(shard: { index: string; shard: number; primary: boolean; node?: string | null; state: string }, nodeName?: string) {

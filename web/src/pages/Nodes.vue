@@ -56,7 +56,7 @@ watch(filter, refreshVisibleNodes, { deep: true });
 
 <template><div class="row">
   <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12 form-group">
-    <input type="text" v-model="filter.name"
+    <input type="text" v-model.trim="filter.name"
            class="form-control form-control-sm"
            placeholder="filter nodes by name">
   </div>

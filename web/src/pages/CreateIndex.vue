@@ -1,7 +1,7 @@
 <!-- 对应 public/create_index.html 和 CreateIndexController -->
 <script setup lang="ts">
 import { ClusterInfo } from '../services/clusterInfo';
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { RefreshService } from '../services/refresh';
@@ -78,6 +78,9 @@ const createIndex = () => {
 };
 
 onMounted(setup);
+
+// 离开页面时销毁编辑器，避免泄漏 worker 和定时器
+onBeforeUnmount(() => editor?.destroy());
 </script>
 
 <template><div>

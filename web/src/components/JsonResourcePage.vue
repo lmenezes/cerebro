@@ -1,6 +1,6 @@
 <!-- 第三阶段新页面共用：左边是带筛选和分页的列表，右边是 JSON 编辑器。布局和 class 沿用旧的 index templates 页面。 -->
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
 import { ModalService } from '../services/modal';
@@ -117,6 +117,9 @@ onMounted(() => {
   editor = new AceEditor(props.editorId);
   editor.setValue(JSON.stringify(c.sample, undefined, 2));
 });
+
+// 离开页面时销毁编辑器，避免泄漏 worker 和定时器
+onBeforeUnmount(() => editor?.destroy());
 </script>
 
 <template><div class="row">
@@ -126,10 +129,10 @@ onMounted(() => {
       <div class="col-md-8">
         <div class="row" v-show="paginator.getCollection().length">
           <div class="col-md-6 form-group">
-            <input type="text" v-model="(paginator.filter as any).name" class="form-control" :placeholder="c.namePlaceholder">
+            <input type="text" v-model.trim="(paginator.filter as any).name" class="form-control" :placeholder="c.namePlaceholder">
           </div>
           <div class="col-md-6 form-group">
-            <input type="text" v-model="(paginator.filter as any).detail" class="form-control" :placeholder="c.detailPlaceholder">
+            <input type="text" v-model.trim="(paginator.filter as any).detail" class="form-control" :placeholder="c.detailPlaceholder">
           </div>
         </div>
       </div>
@@ -159,7 +162,7 @@ onMounted(() => {
       <div class="col-xs-12">
         <div class="form-group">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="name" v-model="name">
+            <input type="text" class="form-control" placeholder="name" v-model.trim="name">
           </div>
         </div>
       </div>

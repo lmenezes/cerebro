@@ -249,7 +249,7 @@ const shardStats = (index: string, node: string, shard: number) => {
 const explainShard = (shard: { index: string; shard: number; primary: boolean }) => {
   ShardInfo.explain(shard.index, shard.shard, shard.primary, displayInfo, error);
 };
-ShardInfo.track();
+ShardInfo.track(() => page.value.elements.filter((i: any) => i && !i.closed).map((i: any) => i.name));
 
 const nodeStats = (node: string) => {
   OverviewDataService.nodeStats(node, displayInfo, error);
@@ -480,7 +480,7 @@ const canReceiveShard = (index: any, node: any) => {
                 <li @click="openIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-folder-open"> </i> open selected</a>
                 </li>
-                <li @click="forceMerges()" wtarget="_self">
+                <li @click="forceMerges()" data-toggle="modal" href="#confirm_dialog" target="_self">
                   <a target="_self"><i class="fa fa-fw fa-wrench"> </i> force merge selected</a>
                 </li>
                 <li @click="refreshIndices()" data-toggle="modal" href="#confirm_dialog" target="_self">
