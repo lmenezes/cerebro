@@ -173,7 +173,11 @@ func expandEnv(s string, getenv func(string) string) string {
 	})
 }
 
-// Load 读取配置：path 为空且默认位置没有文件时只用默认值和环境变量。
+// 第二个默认位置，方便容器里挂载配置。
+const systemConfig = "/etc/cerebro/cerebro.yaml"
+
+// Load 读取配置：path 为空时依次找 $CEREBRO_CONFIG、./cerebro.yaml、/etc/cerebro/cerebro.yaml，
+// 都没有就只用默认值和环境变量。
 func Load(path string, getenv func(string) string) (*Config, error) {
 	if getenv == nil {
 		getenv = os.Getenv
@@ -186,6 +190,11 @@ func Load(path string, getenv func(string) string) (*Config, error) {
 	}
 	if path == "" {
 		path = "cerebro.yaml"
+		if _, err := os.Stat(path); err != nil {
+			if _, err := os.Stat(systemConfig); err == nil {
+				path = systemConfig
+			}
+		}
 	}
 	data, err := os.ReadFile(path) //nolint:gosec // 路径来自启动参数
 	switch {
@@ -267,6 +276,7 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	str("CEREBRO_ES_CERT", &c.ES.TLS.Cert)
 	str("CEREBRO_ES_KEY", &c.ES.TLS.Key)
 	boolean("CEREBRO_ES_INSECURE_SKIP_VERIFY", &c.ES.TLS.InsecureSkipVerify)
+	str("CEREBRO_ES_SERVER_NAME", &c.ES.TLS.ServerName)
 	str("CEREBRO_LOG_LEVEL", &c.Log.Level)
 	str("CEREBRO_LOG_FORMAT", &c.Log.Format)
 

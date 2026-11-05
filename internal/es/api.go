@@ -243,9 +243,13 @@ func (a API) UpdateIndexSettings(ctx context.Context, t *Target, index string, s
 	return a.send(ctx, t, "PUT", "/"+enc(index)+"/_settings", settings)
 }
 
-// Execute 是 REST 页面的任意请求：data 为字符串时按 NDJSON（bulk/msearch）原样发送。
+// Execute 是 REST 页面的任意请求：data 为字符串时按 NDJSON（bulk/msearch）原样发送，空对象不发 body。
 func (a API) Execute(ctx context.Context, t *Target, method, path string, data any, hasData bool) (*Response, error) {
 	uri := "/" + strings.TrimLeft(path, "/")
+	// 编辑器默认内容是 {}，7.x 起很多 GET 接口带 body 会报 400，空对象就不发
+	if o, ok := data.(*jsonx.Object); ok && o.Len() == 0 {
+		hasData = false
+	}
 	if !hasData {
 		return a.Do(ctx, t, method, uri, nil, "")
 	}
