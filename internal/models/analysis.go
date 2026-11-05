@@ -31,8 +31,8 @@ func IndexAnalyzers(index string, settings any) any {
 	return keysAsArray(objOrEmpty(settings, index, "settings", "index", "analysis", "analyzer"))
 }
 
-// 可做分析的字段类型。原实现还有 ES 2.x 的 string。
-var analyzableTypes = map[string]bool{"text": true}
+// 可做分析的字段类型。原实现只有 text（和 ES 2.x 的 string）；7.x 起的这几种同样走分析器。
+var analyzableTypes = map[string]bool{"text": true, "match_only_text": true, "search_as_you_type": true, "annotated_text": true}
 
 func analyzable(v any, keys ...string) bool {
 	t, ok := jsonx.StringAt(v, keys...)

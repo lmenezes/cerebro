@@ -280,3 +280,17 @@ func TestIndexFields(t *testing.T) {
 		})
 	}
 }
+
+// 7.x 起的 match_only_text、search_as_you_type 等字段同样可以分析。
+func TestIndexFieldsNewTextTypes(t *testing.T) {
+	data := jsonx.MustParse(`{"idx":{"mappings":{"properties":{
+	  "msg":{"type":"match_only_text"},"title":{"type":"search_as_you_type"},"k":{"type":"keyword"},
+	  "body":{"type":"keyword","fields":{"txt":{"type":"match_only_text"}}}}}}}`)
+	got, err := IndexFields("idx", data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jsonx.String(got) != `["msg","title","body.txt"]` {
+		t.Fatalf("got %s", jsonx.String(got))
+	}
+}
