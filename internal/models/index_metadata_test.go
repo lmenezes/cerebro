@@ -86,8 +86,9 @@ func TestIndexMetadataIgnoresTemplates(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// 同时去掉 _doc 类型层，7.x 起建索引不接受
 	assertSpecJSON(t, got, jsonx.MustParse(`{
-  "mappings": {"_doc": {"properties": {"title": {"type": "text"}}}},
+  "mappings": {"properties": {"title": {"type": "text"}}},
   "settings": {"index": {"number_of_shards": "1"}}
 }`))
 
@@ -103,4 +104,25 @@ func TestIndexMetadataIgnoresTemplates(t *testing.T) {
 	if _, err := IndexMetadata("index_name", empty); err == nil {
 		t.Error("indices 为空时应返回错误")
 	}
+}
+
+// 去掉 ES 生成、不能显式设置的索引设置，其余原样保留。
+func TestIndexMetadataStripsPrivateSettings(t *testing.T) {
+	data := jsonx.MustParse(`{"metadata": {"indices": {"idx": {
+  "settings": {"index": {"routing": {"allocation": {"include": {"_tier_preference": "data_content"}}},
+    "number_of_shards": "3", "provided_name": "idx", "creation_date": "1", "creation_date_string": "x",
+    "analysis": {"analyzer": {"a": {"type": "custom", "tokenizer": "standard"}}},
+    "number_of_replicas": "1", "uuid": "u", "version": {"created": "9060000", "created_string": "9.3.2"},
+    "history": {"uuid": "h"}, "resize": {"source": {"name": "s"}}}},
+  "mappings": {"_doc": {"dynamic": "strict", "properties": {"t": {"type": "text"}}}}}}}}`)
+	got, err := IndexMetadata("idx", data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertSpecJSON(t, got, jsonx.MustParse(`{
+  "mappings": {"dynamic": "strict", "properties": {"t": {"type": "text"}}},
+  "settings": {"index": {"routing": {"allocation": {"include": {"_tier_preference": "data_content"}}},
+    "number_of_shards": "3", "analysis": {"analyzer": {"a": {"type": "custom", "tokenizer": "standard"}}},
+    "number_of_replicas": "1"}}
+}`))
 }

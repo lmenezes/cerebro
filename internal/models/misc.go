@@ -125,8 +125,9 @@ func ShardStats(index, node string, shard int64, stats, recovery any) (out any, 
 	return nil, nil
 }
 
-// IndexMetadata 对应 models.IndexMetadata。
-// 原实现递归找第一个 mappings/settings，集群有旧版模板时会拿到模板的；这里直接读该索引。
+// IndexMetadata 对应 models.IndexMetadata，用于“按已有索引创建”。
+// 原实现递归找第一个 mappings/settings，集群有旧版模板时会拿到模板的；这里直接读该索引，
+// 并去掉 _doc 类型层和不能显式设置的项，否则 7.x 起 ES 会拒绝建索引。
 func IndexMetadata(index string, metadata any) (out any, err error) {
 	defer recoverFormat(&err)
 	indices := jsonx.ObjectAt(metadata, "metadata", "indices")
@@ -138,7 +139,43 @@ func IndexMetadata(index string, metadata any) (out any, err error) {
 	} else {
 		fail([]string{"metadata", "indices", index})
 	}
-	return jsonx.Obj("mappings", must(meta, "mappings"), "settings", must(meta, "settings")), nil
+	mappings := must(meta, "mappings")
+	// 集群状态里的 mapping 仍包在 _doc 类型下，7.x 起建索引不接受这一层
+	if o, ok := mappings.(*jsonx.Object); ok && o.Len() == 1 && o.Keys()[0] == "_doc" {
+		mappings, _ = o.Get("_doc")
+	}
+	return jsonx.Obj("mappings", mappings, "settings", copyableSettings(must(meta, "settings"))), nil
+}
+
+// 这些设置由 ES 生成，建新索引时显式指定会被拒绝。
+var privateIndexSettings = []string{"uuid", "version", "creation_date", "creation_date_string", "provided_name", "resize", "history"}
+
+func copyableSettings(settings any) any {
+	src, ok := settings.(*jsonx.Object)
+	if !ok {
+		return settings
+	}
+	index := jsonx.ObjectAt(src, "index")
+	if index == nil {
+		return settings
+	}
+	cleaned := jsonx.NewObject()
+	for _, k := range index.Keys() {
+		v, _ := index.Get(k)
+		cleaned.Set(k, v)
+	}
+	for _, k := range privateIndexSettings {
+		cleaned.Delete(k)
+	}
+	out := jsonx.NewObject()
+	for _, k := range src.Keys() {
+		v, _ := src.Get(k)
+		if k == "index" {
+			v = cleaned
+		}
+		out.Set(k, v)
+	}
+	return out
 }
 
 // AutocompletionIndices 对应 rest.AutocompletionIndices：索引名和别名，去重。
