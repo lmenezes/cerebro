@@ -1,5 +1,6 @@
 <!-- 对应 public/repositories/index.html（内联了 repositories/{fs,url,s3,gcs,azure,hdfs}.html）和 RepositoriesController（repositories/*.js） -->
 <script setup lang="ts">
+import { ClusterInfo } from '../services/clusterInfo';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
@@ -107,6 +108,7 @@ onMounted(setup);
         <td>
           <i class="fa fa-database"></i> {{repository.name}} <span class="info-text"> of type </span> {{repository.type}}
           <i class="fa fa-trash normal-action alert-danger pull-right"
+             v-show="!ClusterInfo.readOnly"
              @click="remove(repository.name)"
              data-toggle="modal"
              href="#confirm_dialog">
@@ -379,13 +381,13 @@ onMounted(setup);
     <div class="row">
       <div class="col-lg-12 action-buttons">
         <span class="validation-error">{{validationError}}</span>
-        <button type="submit" class="btn btn-success pull-right" @click="create(name, type, settings)" v-show="!update">
+        <button type="submit" class="btn btn-success pull-right" @click="create(name, type, settings)" v-show="!update && !ClusterInfo.readOnly">
           <i class="fa fa-file-o"> </i> create
         </button>
         <button type="submit"
                 class="btn btn-success pull-right"
                 @click="save(name, type, settings)"
-                v-show="update"
+                v-show="update && !ClusterInfo.readOnly"
                 data-toggle="modal"
                 href="#confirm_dialog">
           <i class="fa fa-floppy-o"> </i> update

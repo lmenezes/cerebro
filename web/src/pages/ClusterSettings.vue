@@ -1,5 +1,6 @@
 <!-- 对应 public/cluster_settings/index.html 和 ClusterSettingsController（cluster_settings/*.js） -->
 <script setup lang="ts">
+import { ClusterInfo } from '../services/clusterInfo';
 import { onMounted, reactive, ref } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
@@ -180,7 +181,7 @@ onMounted(setup);
     <div class="col-lg-12 text-right">
       <div class="form-group">
         <div class="btn-group">
-          <button class="btn btn-success" @click="save()">
+          <button class="btn btn-success" @click="save()" v-show="!ClusterInfo.readOnly">
             save
           </button>
         </div>

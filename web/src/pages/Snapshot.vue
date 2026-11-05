@@ -1,5 +1,6 @@
 <!-- 对应 public/snapshot/index.html（每行的恢复表单 restore_snapshot.html 在 snapshot/RestoreSnapshot.vue）和 SnapshotController（snapshot/*.js） -->
 <script setup lang="ts">
+import { ClusterInfo } from '../services/clusterInfo';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { DataService } from '../services/data';
 import { AlertService } from '../services/alerts';
@@ -149,6 +150,7 @@ onMounted(setup);
             <span class="info-text"> created at </span> {{formatDate(snapshot.start_time)}} 
             <span class="info-text"> state </span> {{snapshot.state }}
             <i class="fa fa-trash normal-action alert-danger pull-right"
+               v-show="!ClusterInfo.readOnly"
                @click="deleteSnapshot(repository, snapshot.snapshot)"
                data-toggle="modal"
                href="#confirm_dialog">
@@ -205,7 +207,7 @@ onMounted(setup);
     </div>
     <div class="row">
       <div class="col-xs-12">
-        <button type="submit" class="btn btn-success pull-right"
+        <button type="submit" class="btn btn-success pull-right" v-show="!ClusterInfo.readOnly"
                 @click="create(form.repository, form.snapshot, form.ignoreUnavailable, form.includeGlobalState, form.indices)">
           <i class="fa fa-file-o"></i> create
         </button>

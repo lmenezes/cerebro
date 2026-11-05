@@ -1,5 +1,6 @@
 <!-- 对应 public/snapshot/restore_snapshot.html：快照列表每一行里的 ng-include，form 是这一行自己的（onload 里初始化） -->
 <script setup lang="ts">
+import { ClusterInfo } from '../../services/clusterInfo';
 import { reactive, watch } from 'vue';
 import { orderBy } from '../../shared/filters';
 import { keepSelected, selectedValues } from './select';
@@ -54,7 +55,7 @@ watch(() => props.snapshot.indices, (indices) => {
 </div>
 <div class="row">
   <div class="col-lg-12 action-buttons">
-    <button type="submit" class="btn btn-success pull-right" @click="restore(form)">
+    <button type="submit" class="btn btn-success pull-right" @click="restore(form)" v-show="!ClusterInfo.readOnly">
       <i class="fa fa-download"></i> restore
     </button>
   </div>
