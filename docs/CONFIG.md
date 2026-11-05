@@ -30,6 +30,7 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 | — | `hosts[].tls`、`es.tls` | 自定义 CA、客户端证书（mTLS）、显式跳过校验 |
 | — | `readOnly`、`hosts[].readOnly` | 只读模式 |
 | — | `history.enabled` | 设为 `false` 不保存请求历史 |
+| — | `allowUnknownHosts` | 设为 `false` 时只能连接 `hosts` 里的集群（默认 `true`，同旧版） |
 
 ## 环境变量
 
@@ -44,6 +45,7 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 | `CEREBRO_BASE_PATH` | `basePath` |
 | `CEREBRO_DATA_DIR` | `dataDir`（镜像里默认 `/data`） |
 | `CEREBRO_READ_ONLY` | `readOnly` |
+| `CEREBRO_ALLOW_UNKNOWN_HOSTS` | `allowUnknownHosts` |
 | `CEREBRO_SECRET` | `session.secret` |
 | `CEREBRO_SESSION_MAX_AGE` | `session.maxAge` |
 | `CEREBRO_HISTORY_ENABLED` / `_SIZE` / `_PATH` | `history.*` |
@@ -56,7 +58,7 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 
 ## 连接 ES 的凭据
 
-- 配置里预设：`hosts[].auth` 三选一（`username`+`password`、`apiKey`、`bearer`），优先于页面上填写的凭据。
+- 配置里预设：`hosts[].auth` 三选一（`username`+`password`、`apiKey`、`bearer`），优先于页面上填写的凭据。`hosts[].tls` 只覆盖写了的项，其余沿用 `es.tls`。
 - 页面上填写：用户名和密码都填按 Basic 处理；**用户名留空、密码填 API Key** 按 API Key 处理（`id:api_key` 或编码后的值都可以）；密码以 `Bearer ` 开头按 Bearer 处理。凭据只保存在浏览器内存中，随每个请求发给 Cerebro，服务端不写磁盘、不打日志。
 
 ## 只读模式
@@ -69,7 +71,7 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 - 仓库创建/删除，快照创建/删除/恢复
 - REST 页面里 GET 以外的请求
 
-`hosts[].readOnly` 只对按名字连接的集群生效；在页面上手动输入地址不会套用这个设置，需要全局只读请用顶层的 `readOnly`。
+`hosts[].readOnly` 对按名字连接和手动输入同一地址（协议、主机名大小写和默认端口、末尾斜杠都会归一化后比较）都生效。但换一种写法（比如用 IP 代替域名）仍然能连上，所以要把只读当成安全边界时，请同时设置 `allowUnknownHosts: false`，只允许连接配置里的集群；或者直接用顶层的 `readOnly`。
 
 ## Docker
 

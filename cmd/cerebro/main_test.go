@@ -58,7 +58,6 @@ func TestRunHelp(t *testing.T) {
 }
 
 func TestRunDashHelp(t *testing.T) {
-	t.Skip("BUG: run 把以 - 开头的第一个参数当成 serve 的 flag，switch 里的 \"-h\"/\"--help\" 分支永远走不到；cerebro --help 退出码 2，只打印 flag 列表")
 	for _, arg := range []string{"-h", "--help"} {
 		code, out, _ := runCmd(arg)
 		if code != 0 || !strings.Contains(out, "Usage:") {

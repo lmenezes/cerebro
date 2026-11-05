@@ -242,7 +242,6 @@ func TestReadOnlyMode_GlobalOverridesHost(t *testing.T) {
 
 // 只读集群的地址被手动输入时，应当同样只读。
 func TestReadOnlyMode_PerHostURLTypedDirectly(t *testing.T) {
-	t.Skip("BUG: hosts[].readOnly 只按名字生效；在连接页直接输入该集群的地址（host=<url>）会被当成未知集群，readOnly=false，写接口照常发到 ES")
 	prod, dev := newFakeES(t), newFakeES(t)
 	h := testServer(t, xTwoHosts(prod, dev, false, false), xQuiet).Handler()
 	xAssertForbidden(t, h, prod, "/overview/delete_indices", xFullBody(prod.url()))

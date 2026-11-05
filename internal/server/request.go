@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/RitterHou/cerebro/internal/es"
@@ -138,7 +139,25 @@ func (s *Server) resolveTarget(body *jsonx.Object, r *http.Request) (*es.Target,
 		}
 		return t, hostName, s.cfg.ReadOnly || h.readOnly, nil
 	}
-	return &es.Target{URL: hostName, Auth: reqAuth, TLS: s.defaultTLS}, hostName, s.cfg.ReadOnly, nil
+	if !s.cfg.AllowsUnknownHosts() {
+		return nil, "", false, errUnknownHost
+	}
+	// 手动输入的地址如果就是某个只读的预设集群，同样只读，免得绕过；凭据和 TLS 仍按手动输入处理
+	readOnly := s.cfg.ReadOnly || s.hostsByURL[normalizeURL(hostName)].readOnly
+	return &es.Target{URL: hostName, Auth: reqAuth, TLS: s.defaultTLS}, hostName, readOnly, nil
+}
+
+var errUnknownHost = errors.New("only the clusters configured in hosts are allowed")
+
+// normalizeURL 用于比较集群地址：协议和主机名小写，去掉默认端口和末尾斜杠。
+func normalizeURL(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil || u.Host == "" {
+		return strings.TrimRight(strings.ToLower(strings.TrimSpace(raw)), "/")
+	}
+	scheme, host := strings.ToLower(u.Scheme), strings.ToLower(u.Host)
+	host = strings.TrimSuffix(host, map[string]string{"http": ":80", "https": ":443"}[scheme])
+	return scheme + "://" + host + strings.TrimRight(u.EscapedPath(), "/")
 }
 
 func optString(o *jsonx.Object, k string) *string {

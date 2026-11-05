@@ -2,6 +2,7 @@
 package config
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -23,6 +24,8 @@ type Config struct {
 	BasePath string `yaml:"basePath"`
 	DataDir  string `yaml:"dataDir"`
 	ReadOnly bool   `yaml:"readOnly"`
+	// AllowUnknownHosts 为 false 时只能连接 hosts 里配置的集群，默认 true。
+	AllowUnknownHosts *bool `yaml:"allowUnknownHosts"`
 
 	Session SessionConfig `yaml:"session"`
 	History HistoryConfig `yaml:"history"`
@@ -31,6 +34,9 @@ type Config struct {
 	Hosts   []HostConfig  `yaml:"hosts"`
 	Log     LogConfig     `yaml:"log"`
 }
+
+// AllowsUnknownHosts 判断能否连接页面上手动输入的地址。
+func (c *Config) AllowsUnknownHosts() bool { return c.AllowUnknownHosts == nil || *c.AllowUnknownHosts }
 
 // SessionConfig 是 Cerebro 登录会话设置。
 type SessionConfig struct {
@@ -173,6 +179,61 @@ func expandEnv(s string, getenv func(string) string) string {
 	})
 }
 
+// decodeYAML 先解析成节点树，只在标量值里展开 ${VAR}，变量值不会被当成 YAML 再解析一遍。
+func decodeYAML(data []byte, cfg *Config, getenv func(string) string) error {
+	var root yaml.Node
+	if err := yaml.Unmarshal(data, &root); err != nil {
+		return err
+	}
+	if root.Kind == 0 { // 空文件
+		return nil
+	}
+	expandNode(&root, getenv)
+	out, err := yaml.Marshal(&root)
+	if err != nil {
+		return err
+	}
+	dec := yaml.NewDecoder(bytes.NewReader(out))
+	dec.KnownFields(true)
+	if err := dec.Decode(cfg); err != nil && !errors.Is(err, io.EOF) {
+		return err
+	}
+	return nil
+}
+
+func expandNode(n *yaml.Node, getenv func(string) string) {
+	if n.Kind == yaml.ScalarNode {
+		v := expandEnv(n.Value, getenv)
+		if v == n.Value {
+			return
+		}
+		n.Value = v
+		// 原本加了引号的保持引号；没加引号的，值能安全地作为普通标量（如端口号）就保持原样，否则加引号
+		if n.Style&(yaml.DoubleQuotedStyle|yaml.SingleQuotedStyle) == 0 {
+			n.Tag = ""
+			n.Style = 0
+			if !plainSafe(v) {
+				n.Style = yaml.DoubleQuotedStyle
+			}
+		}
+		return
+	}
+	for _, c := range n.Content {
+		expandNode(c, getenv)
+	}
+}
+
+// plainSafe 判断 v 不加引号写成 YAML 值时是否原样得到一个标量。
+func plainSafe(v string) bool {
+	var doc yaml.Node
+	if yaml.Unmarshal([]byte("k: "+v), &doc) != nil || len(doc.Content) != 1 {
+		return false
+	}
+	m := doc.Content[0]
+	return m.Kind == yaml.MappingNode && len(m.Content) == 2 &&
+		m.Content[1].Kind == yaml.ScalarNode && m.Content[1].Value == v && m.Content[1].Style == 0
+}
+
 // 第二个默认位置，方便容器里挂载配置。
 const systemConfig = "/etc/cerebro/cerebro.yaml"
 
@@ -199,9 +260,7 @@ func Load(path string, getenv func(string) string) (*Config, error) {
 	data, err := os.ReadFile(path) //nolint:gosec // 路径来自启动参数
 	switch {
 	case err == nil:
-		dec := yaml.NewDecoder(strings.NewReader(expandEnv(string(data), getenv)))
-		dec.KnownFields(true)
-		if err := dec.Decode(cfg); err != nil && !errors.Is(err, io.EOF) {
+		if err := decodeYAML(data, cfg, getenv); err != nil {
 			return nil, fmt.Errorf("parse %s: %w", path, err)
 		}
 	case explicit || !errors.Is(err, os.ErrNotExist):
@@ -261,6 +320,14 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	boolean("CEREBRO_READ_ONLY", &c.ReadOnly)
 	str("CEREBRO_SECRET", &c.Session.Secret)
 	duration("CEREBRO_SESSION_MAX_AGE", &c.Session.MaxAge)
+	if v := getenv("CEREBRO_ALLOW_UNKNOWN_HOSTS"); v != "" {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("CEREBRO_ALLOW_UNKNOWN_HOSTS: %w", err))
+		} else {
+			c.AllowUnknownHosts = &b
+		}
+	}
 	if v := getenv("CEREBRO_HISTORY_ENABLED"); v != "" {
 		b, err := strconv.ParseBool(v)
 		if err != nil {

@@ -191,7 +191,6 @@ func TestEnvExpansionUnsetIsEmpty(t *testing.T) {
 
 // 环境变量的值应原样代入，不应被 YAML 再解析一遍。
 func TestEnvExpansionSpecialChars(t *testing.T) {
-	t.Skip(`BUG: ${VAR} 在 YAML 解析前做文本替换：未加引号时 "p@ss #1" 变成 "p@ss"，"{abc}"/"a: b"/"*ref" 解析报错，含换行的值能注入新键；加双引号时含 " 的值报错`)
 	for _, q := range []string{"${PW}", `"${PW}"`} {
 		for _, v := range []string{"p@ss #1", "{abc}", "a: b", "*ref", "x\ny: z", `a"b`, `a\b`} {
 			cfg, err := load(t, "hosts:\n  - host: http://es:9200\n    auth:\n      username: u\n      password: "+q+"\n", map[string]string{"PW": v})
@@ -369,5 +368,16 @@ func TestIsBcrypt(t *testing.T) {
 		if IsBcrypt(s) != want {
 			t.Errorf("IsBcrypt(%q) != %v", s, want)
 		}
+	}
+}
+
+// 没加引号的 ${VAR} 展开成数字、布尔值时仍按原类型解析。
+func TestEnvExpansionKeepsTypes(t *testing.T) {
+	cfg, err := load(t, "port: ${P}\nreadOnly: ${RO}\nhistory:\n  size: ${S}\n", map[string]string{"P": "9100", "RO": "true", "S": "7"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Port != 9100 || !cfg.ReadOnly || cfg.History.Size != 7 {
+		t.Fatalf("got port=%d readOnly=%v size=%d", cfg.Port, cfg.ReadOnly, cfg.History.Size)
 	}
 }

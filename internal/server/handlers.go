@@ -146,11 +146,12 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 	if err != nil {
 		return 0, nil, err
 	}
+	method = strings.ToUpper(method)
 	path, err := r.get("path")
 	if err != nil {
 		return 0, nil, err
 	}
-	if r.readOnly && !strings.EqualFold(method, http.MethodGet) {
+	if r.readOnly && method != http.MethodGet {
 		return http.StatusForbidden, errorBody(readOnlyMessage), nil
 	}
 	data, hasData := r.getAny("data")
@@ -691,7 +692,8 @@ func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
 	}
 	target, _, _, err := s.resolveTarget(body, r)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, errorBody(err.Error()))
+		status, out := s.errorResponse(r, err)
+		cerebroResponse(w, status, out)
 		return
 	}
 	resp, err := s.api.Execute(r.Context(), target, http.MethodGet, "_cluster/health", nil, false)

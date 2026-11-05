@@ -50,7 +50,7 @@ Usage:
 
 func run(args []string, stdout, stderr io.Writer) int {
 	cmd := "serve"
-	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+	if len(args) > 0 && (!strings.HasPrefix(args[0], "-") || args[0] == "-h" || args[0] == "--help" || args[0] == "-help") {
 		cmd, args = args[0], args[1:]
 	}
 	switch cmd {
@@ -63,7 +63,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	case "version":
 		_, _ = fmt.Fprintln(stdout, version)
 		return 0
-	case "help", "-h", "--help":
+	case "help", "-h", "--help", "-help":
 		usage(stdout)
 		return 0
 	default:

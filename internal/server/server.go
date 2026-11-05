@@ -33,6 +33,7 @@ type Server struct {
 	cfg        *config.Config
 	api        es.API
 	hosts      map[string]host
+	hostsByURL map[string]host
 	hostNames  []string
 	defaultTLS es.TLSConfig
 	history    store.History
@@ -61,6 +62,7 @@ func New(o Options) (*Server, error) {
 		cfg:        o.Config,
 		api:        es.API{Client: o.Client},
 		hosts:      map[string]host{},
+		hostsByURL: map[string]host{},
 		defaultTLS: toTLS(o.Config.ES.TLS),
 		history:    o.History,
 		sessions:   auth.NewSessions(o.SessionKey, o.Config.Session.MaxAge.Duration, o.Config.BasePath, o.Config.Session.Secure),
@@ -77,12 +79,17 @@ func New(o Options) (*Server, error) {
 	for _, h := range o.Config.Hosts {
 		hc := host{url: h.Host, headersWhitelist: h.HeadersWhitelist, readOnly: h.ReadOnly, tls: s.defaultTLS}
 		if h.TLS != nil {
-			hc.tls = toTLS(*h.TLS)
+			hc.tls = mergeTLS(s.defaultTLS, toTLS(*h.TLS))
 		}
 		if a := h.Auth; a != nil {
 			hc.auth = &es.Auth{Username: a.Username, Password: a.Password, APIKey: a.APIKey, Bearer: a.Bearer}
 		}
 		s.hosts[h.Name] = hc
+		// 同一地址配了多个名字时，只要有一个只读就按只读
+		key := normalizeURL(h.Host)
+		if prev, dup := s.hostsByURL[key]; !dup || !prev.readOnly {
+			s.hostsByURL[key] = hc
+		}
 		s.hostNames = append(s.hostNames, h.Name)
 	}
 	a, err := newAssets(o.Public, o.Version)
@@ -95,6 +102,22 @@ func New(o Options) (*Server, error) {
 
 func toTLS(c config.TLSConfig) es.TLSConfig {
 	return es.TLSConfig{CAFile: c.CA, CertFile: c.Cert, KeyFile: c.Key, InsecureSkipVerify: c.InsecureSkipVerify, ServerName: c.ServerName}
+}
+
+// mergeTLS 让集群级 TLS 设置只覆盖它写了的项，其余沿用 es.tls。
+func mergeTLS(base, over es.TLSConfig) es.TLSConfig {
+	out := base
+	if over.CAFile != "" {
+		out.CAFile = over.CAFile
+	}
+	if over.CertFile != "" || over.KeyFile != "" {
+		out.CertFile, out.KeyFile = over.CertFile, over.KeyFile
+	}
+	if over.ServerName != "" {
+		out.ServerName = over.ServerName
+	}
+	out.InsecureSkipVerify = base.InsecureSkipVerify || over.InsecureSkipVerify
+	return out
 }
 
 func (s *Server) authEnabled() bool { return s.authn != nil }
@@ -124,7 +147,8 @@ func (s *Server) process(kind routeKind, fn handlerFunc) http.HandlerFunc {
 		}
 		target, hostName, readOnly, err := s.resolveTarget(body, r)
 		if err != nil {
-			cerebroResponse(w, http.StatusBadRequest, errorBody(err.Error()))
+			status, out := s.errorResponse(r, err)
+			cerebroResponse(w, status, out)
 			return
 		}
 		req := &cerebroRequest{body: body, target: target, user: user, readOnly: readOnly, hostName: hostName}
@@ -149,6 +173,8 @@ func (s *Server) errorResponse(r *http.Request, err error) (int, any) {
 	switch {
 	case errors.As(err, &mp):
 		return http.StatusBadRequest, errorBody(err.Error())
+	case errors.Is(err, errUnknownHost):
+		return http.StatusForbidden, errorBody(err.Error())
 	case errors.As(err, &rf):
 		return rf.status, errorBody(err.Error())
 	case errors.As(err, &fe):
@@ -174,9 +200,9 @@ func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	s.routes(mux)
 	var h http.Handler = mux
-	h = securityHeaders(h)
 	h = gzhttp.GzipHandler(h)
 	h = s.withBasePath(h)
+	h = securityHeaders(h)
 	h = s.logRequests(h)
 	return h
 }

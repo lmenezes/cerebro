@@ -14,6 +14,9 @@ dataDir: .
 # 只读模式：拦截所有修改类操作（删除/关闭索引、迁移分片、改设置、REST 页非 GET 请求等）
 readOnly: false
 
+# 是否允许在连接页手动输入集群地址；false 时只能连接下面 hosts 里的集群
+allowUnknownHosts: true
+
 session:
   # 留空则首次启动随机生成并保存在 dataDir/session.key。多实例部署时需要设成相同的值（至少 32 个字符）
   secret: ""
