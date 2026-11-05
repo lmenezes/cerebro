@@ -5,6 +5,7 @@ import { scenarios as overview } from './scenarios/overview';
 import { scenarios as nodes_aliases_cat_analysis } from './scenarios/nodes_aliases_cat_analysis';
 import { scenarios as rest_templates_create } from './scenarios/rest_templates_create';
 import { scenarios as settings_repos_snapshots } from './scenarios/settings_repos_snapshots';
+import { scenarios as features } from './scenarios/features';
 
 export const scenarios: Scenario[] = [
   { name: 'connect', route: 'connect', noHost: true },
@@ -25,4 +26,5 @@ export const scenarios: Scenario[] = [
   ...nodes_aliases_cat_analysis,
   ...rest_templates_create,
   ...settings_repos_snapshots,
+  ...features,
 ];

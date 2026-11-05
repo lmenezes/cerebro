@@ -80,6 +80,10 @@ for (const s of scenarios) {
         await settle(page);
       }
       shots[side] = await page.screenshot({ fullPage: true, animations: 'disabled', caret: 'hide' });
+      if (s.vueOnly) {
+        // 新页面没有旧版可比，至少保证加载时没有弹出错误
+        await expect(page.locator('.alerts .alert-danger:visible')).toHaveCount(0);
+      }
       writeFileSync(`${dir}/${side}.png`, shots[side]!);
       writeFileSync(`${dir}/${side}.dom.txt`, await domOutline(page));
       await context.close();

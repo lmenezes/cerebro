@@ -1,7 +1,13 @@
 import { defineConfig } from '@playwright/test';
+import { readdirSync } from 'node:fs';
 
 // 同一个 Go 后端、同一份假 ES 数据，分别挂旧前端（../public）和新前端（dist），截图逐像素比对。
-const FIXTURES = process.env.E2E_FIXTURES || 'e2e/fixtures/es9.json';
+// 默认加载 e2e/fixtures 下所有录制文件（es9.json 在最前，其余按名字排序）
+const FIXTURES =
+  process.env.E2E_FIXTURES ||
+  ['es9.json', ...readdirSync('e2e/fixtures').filter((f) => f.endsWith('.json') && f !== 'es9.json').sort()]
+    .map((f) => `e2e/fixtures/${f}`)
+    .join(',');
 // 端口和前端目录可配置，方便多个人（或代理）同时跑：假 ES = BASE，旧前端 = BASE+1，新前端 = BASE+2
 const BASE = Number(process.env.E2E_PORT_BASE || 19300);
 const DIST = process.env.E2E_DIST || 'dist';
