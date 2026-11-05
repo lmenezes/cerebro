@@ -12,38 +12,29 @@ For bug reports, make sure you:
 
 ## Pull requests
 
-Before getting started on a pull request(be it a new feature or a bug fix), please open an issue explaning what you would like to achieve and how you would go about this.
-Even though I'm open to feature requests, I might not always agree on the value a feature might bring. And I would hate to waste someone else's time.
+Before getting started on a pull request (be it a new feature or a bug fix), please open an issue explaining what you would like to achieve and how you would go about this.
 
 Once working on a pull request, please:
-- include the generated css/js files(grunt build)
 - add tests that validate your changes
-- squash your development commits to keep only important commits(fix typo, wrong indent should not be part of git history)
-- rebase it against development before submiting
-- make sure all tests pass(sbt test / grunt test)
+- make sure `go test ./...` and `golangci-lint run` pass
+- for UI changes, make sure the screenshot comparison in `web/` passes (`npm run e2e`)
 
 ## Development
 
-You can run cerebro for development through sbt:
+Backend (Go 1.27+):
 
 ```sh
-$ sbt
-[info] Loading project definition from /Users/leo/dev/cerebro/project
-[info] Set current project to cerebro (in build file:/Users/leo/dev/cerebro/)
-[cerebro] $ run
-
---- (Running the application, auto-reloading is enabled) ---
-
-[info] p.c.s.NettyServer - Listening for HTTP on /0:0:0:0:0:0:0:0:9000
-
-(Server started, use Ctrl+D to stop and go back to the console...)
+go run ./cmd/cerebro            # http://localhost:9000
+go test ./...
 ```
 
-Make sure you also run Grunt in order to build the js/css artifcats as you change the code.
+Frontend (`web/`, Node 22+):
 
 ```sh
-$ grunt watch
-Running "watch" task
-Waiting...(node:20784) DeprecationWarning: process.EventEmitter is deprecated. 
-Use require('events') instead.
+cd web
+npm ci
+npm run dev                     # Vite dev server, proxies API calls to the Go backend on :9000
+npm run build                   # output in web/dist, embedded into the Go binary
 ```
+
+`CEREBRO_UI_DIR=web/dist go run ./cmd/cerebro` serves the frontend from disk instead of the embedded copy.

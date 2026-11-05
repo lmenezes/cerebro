@@ -1,3 +1,0 @@
-package exceptions
-
-object MissingTargetHostException extends Exception
