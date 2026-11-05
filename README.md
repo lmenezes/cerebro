@@ -1,106 +1,78 @@
 Cerebro
 ------------
-[![Docker Pulls](https://img.shields.io/docker/pulls/lmenezes/cerebro.svg)](https://hub.docker.com/r/lmenezes/cerebro)
-![build](https://github.com/lmenezes/cerebro/workflows/build/badge.svg?branch=master)
 
-cerebro is an open source(MIT License) elasticsearch web admin tool built using Scala, Play Framework, AngularJS and Bootstrap.
+Cerebro 是一个开源（MIT 许可证）的 Elasticsearch Web 管理工具。本仓库是 [lmenezes/cerebro](https://github.com/lmenezes/cerebro) 的维护分支：后端用 Go 重写，界面保持原样，只支持 Elasticsearch 7.10+、8.x、9.x，整个程序是一个可执行文件。
 
-### Requirements
+原项目由 Leonardo Menezes 开发，Scala 版的最后状态保留在 tag `scala-final`。
 
-cerebro needs Java 11 or newer to run.
+### 安装
 
-### Installation
-- Download from [https://github.com/lmenezes/cerebro/releases](https://github.com/lmenezes/cerebro/releases)
-- Extract files
-- Run bin/cerebro(or bin/cerebro.bat if on Windows)
-- Access on http://localhost:9000
-
-### Chocolatey (Windows)
-
-You can install `cerebro` using [Chocolatey](https://chocolatey.org/):
-
-```sh
-choco install cerebro-es
-```
-
-Package creates windows service ```cerebro```.
-Access on http://localhost:9000
-
-### Docker
-
-You can find the official docker images in the official [docker hub repo](https://hub.docker.com/r/lmenezes/cerebro/).
-
-Visit [cerebro-docker](https://github.com/lmenezes/cerebro-docker) for further information. 
-
-### Configuration
-
-#### HTTP server address and port
-You can run cerebro listening on a different host and port(defaults to 0.0.0.0:9000):
-
-```
-bin/cerebro -Dhttp.port=1234 -Dhttp.address=127.0.0.1
-```
-
-#### LDAP config
-
-LDAP can be configured using environment variables. If you typically run cerebro using docker,
-you can pass a file with all the env vars. The file would look like:
+#### Docker
 
 ```bash
-# Set it to ldap to activate ldap authorization
-AUTH_TYPE=ldap
-
-# Your ldap url
-LDAP_URL=ldap://exammple.com:389
-
-LDAP_BASE_DN=OU=users,DC=example,DC=com
-
-# Usually method should  be "simple" otherwise, set it to the SASL mechanisms
-LDAP_METHOD=simple
-
-# user-template executes a string.format() operation where
-# username is passed in first, followed by base-dn. Some examples
-#  - %s => leave user untouched
-#  - %s@domain.com => append "@domain.com" to username
-#  - uid=%s,%s => usual case of OpenLDAP
-LDAP_USER_TEMPLATE=%s@example.com
-
-# User identifier that can perform searches
-LDAP_BIND_DN=admin@example.com
-LDAP_BIND_PWD=adminpass
-
-# Group membership settings (optional)
-
-# If left unset LDAP_BASE_DN will be used
-# LDAP_GROUP_BASE_DN=OU=users,DC=example,DC=com
-
-# Attribute that represent the user, for example uid or mail
-# LDAP_USER_ATTR=mail
-
-# If left unset LDAP_USER_TEMPLATE will be used
-# LDAP_USER_ATTR_TEMPLATE=%s
-
-# Filter that tests membership of the group. If this property is empty then there is no group membership check
-# AD example => memberOf=CN=mygroup,ou=ouofthegroup,DC=domain,DC=com
-# OpenLDAP example => CN=mygroup
-# LDAP_GROUP=memberOf=memberOf=CN=mygroup,ou=ouofthegroup,DC=domain,DC=com
-
+docker run -p 9000:9000 -v cerebro-data:/data ghcr.io/ritterhou/cerebro:latest
 ```
 
-You can the pass this file as argument using:
+镜像支持 `linux/amd64` 和 `linux/arm64`，基于 `distroless/static:nonroot`，以非 root 用户运行，数据目录是 `/data`。配置文件挂载到 `/etc/cerebro/cerebro.yaml`，也可以只用环境变量：
 
 ```bash
- docker run -p 9000:9000 --env-file env-ldap  lmenezes/cerebro
+docker run -p 9000:9000 \
+  -e CEREBRO_HOSTS="Local=http://host.docker.internal:9200" \
+  -e CEREBRO_READ_ONLY=true \
+  ghcr.io/ritterhou/cerebro:latest
 ```
 
-There are some examples of configuration in the [examples folder](./examples).
+`main` 分支的最新构建是 `ghcr.io/ritterhou/cerebro:edge`。
 
-#### Other settings
+#### 二进制
 
-Other settings are exposed through the **conf/application.conf** file found on the application directory.
+从 [GitHub Releases](https://github.com/RitterHou/cerebro/releases) 下载对应平台的压缩包（macOS、Linux、Windows 的 amd64 和 arm64），解压后运行：
 
-It is also possible to use an alternate configuration file defined on a different location:
+```bash
+./cerebro                       # 读取 ./cerebro.yaml（如果有）
+./cerebro -config /path/to/cerebro.yaml
+```
+
+然后访问 http://localhost:9000 。
+
+#### 从源码构建
+
+需要 Go 1.27+：
+
+```bash
+go build -o cerebro ./cmd/cerebro
+```
+
+### 配置
+
+完整示例见 [`cerebro.example.yaml`](./cerebro.example.yaml)，各项说明、环境变量以及旧 `application.conf` 的对应关系见 [docs/CONFIG.md](./docs/CONFIG.md)。常用项：
+
+- `hosts`：预设集群，可以带路径前缀（如 `https://example.com/es`），可以预设 Basic、API Key 或 Bearer 凭据，可以配置自定义 CA 和客户端证书；
+- `readOnly`：只读模式，服务端拦截所有修改类操作，适合连生产集群；
+- `auth`：Cerebro 自身的登录，支持 `basic`（多用户，bcrypt 哈希密码）和 `ldap`；
+- `basePath`：部署在子路径下；
+- `history.enabled: false`：不保存 REST 请求历史，适合无状态部署。
+
+在连接页手动登录 ES 时：用户名和密码都填按 Basic 认证；**用户名留空、密码填 API Key** 按 API Key 认证；密码以 `Bearer ` 开头按 Bearer 认证。
+
+### 命令
 
 ```
-bin/cerebro -Dconfig.file=/some/other/dir/alternate.conf
+cerebro [serve] [-config cerebro.yaml]   启动服务（默认）
+cerebro healthcheck                      检查本机服务是否健康（镜像的 HEALTHCHECK 使用）
+cerebro hash-password                    从标准输入读取密码，输出 bcrypt 哈希
+cerebro version                          输出版本号
 ```
+
+### 开发
+
+```bash
+go test ./...
+golangci-lint run
+```
+
+前端目前仍是原来的 AngularJS 版本，打包产物在 `public/`，通过 `go:embed` 打进二进制。
+
+### 许可证
+
+MIT，见 [LICENSE](./LICENSE)。

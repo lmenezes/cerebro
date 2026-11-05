@@ -1,6 +1,33 @@
 Cerebro Releases
 ------------
 
+### v0.10.0 - 未发布
+
+后端用 Go 重写，界面不变。Scala 版的最后状态见 tag `scala-final`。
+
+#### 变化
+- 只支持 Elasticsearch 7.10+、8.x、9.x；删除 2.x–6.x 的兼容逻辑
+- 单个可执行文件，前端打包在内；镜像改为 `ghcr.io/ritterhou/cerebro`（distroless，amd64/arm64）
+- 配置改为 YAML 加环境变量，旧环境变量继续有效，对应关系见 docs/CONFIG.md
+
+#### 新功能
+- 连接 ES 支持 API Key 和 Bearer（页面上用户名留空、密码填 API Key），支持自定义 CA、客户端证书（mTLS）
+- 可以在配置里给集群预设凭据
+- 只读模式（全局或按集群），服务端拦截所有修改类操作
+- Basic 登录支持多用户，密码用 bcrypt 哈希
+- 可以关闭 REST 请求历史，适合无状态部署；`allowUnknownHosts: false` 只允许连接配置里的集群
+- `/healthz` 接口和 `healthcheck` 子命令；结构化日志
+
+#### 修复
+- 会话密钥不再写死在配置里，首次启动随机生成（旧版默认配置下会话 cookie 可以被伪造）
+- 节点角色识别 `data_frozen`
+- 集群地址带路径前缀（如 `https://example.com/es`）时可以正常使用
+- 分析页：mapping 里有 `dynamic`、`_source` 等设置时不再报错
+- 按已有索引创建：不再拿到旧版模板的设置，去掉 `_doc` 类型层和 ES 生成的设置项，7.x 起可以正常创建
+- 创建快照时“忽略不可用索引”“包含全局状态”两个选项现在会真正传给 ES
+- REST 页编辑器为空对象时不发送 body，`GET _cluster/health` 等接口不再报 400
+- LDAP 组查询会转义用户名，空密码直接拒绝
+
 ### v0.1.0 - July 14th, 2016
 
 First cerebro release.

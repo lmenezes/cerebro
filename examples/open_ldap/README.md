@@ -14,7 +14,7 @@ docker-compose up -d
 The open ldap server contains an admin user (username: `admin` / password: `admin`). For testing purpose a new
 user is added (username: `test` / password `test`)
 ```
-docker exec ldap ldapadd -x -D "cn=admin,dc=example,dc=org" -w admin -f /opt/test-user.ldif -H ldap://localhost -ZZ
+docker exec ldap ldapadd -x -D "cn=admin,dc=example,dc=org" -w admin -f /opt/test-user.ldif -H ldap://localhost
 ```
 
 In open ldap `test` users looks like this.

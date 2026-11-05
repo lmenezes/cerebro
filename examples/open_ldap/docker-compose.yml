@@ -1,7 +1,7 @@
 version: '3'
 services:
   cerebro:
-    image: lmenezes/cerebro
+    image: ghcr.io/ritterhou/cerebro
     environment: 
       - AUTH_TYPE=ldap
       - LDAP_URL=ldap://ldap:389
