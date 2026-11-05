@@ -1,6 +1,24 @@
 Cerebro Releases
 ------------
 
+### v0.12.0 - 未发布
+
+#### 新功能
+- 组合索引模板（`_index_template`）、组件模板（`_component_template`）页面
+- data streams 页面：大小、最新事件时间、生命周期策略，支持 rollover 和删除
+- ILM 生命周期策略、SLM 快照策略页面（SLM 支持立即执行）
+- 分片诊断接口：分片大小与未分配原因（`_cat/shards`、`_cluster/allocation/explain`）、迁移进度（`_cat/recovery`）
+- Cerebro 登录支持 OIDC 单点登录，以及信任反向代理（oauth2-proxy、Cloudflare Access）传来的用户
+- 分析页列出 `match_only_text`、`search_as_you_type`、`annotated_text` 字段
+
+### v0.11.0 - 未发布
+
+前端用 Vue 3 + Vite + TypeScript 重写，界面与旧版逐像素一致（Playwright 截图比对，保留为回归测试）。
+
+#### 新功能
+- 连接页新增 API key 输入框
+- 只读连接下隐藏修改类按钮
+
 ### v0.10.0 - 未发布
 
 后端用 Go 重写，界面不变。Scala 版的最后状态见 tag `scala-final`。
