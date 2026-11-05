@@ -30,6 +30,7 @@ type Session struct {
 	Flash    string `json:"f,omitempty"`
 	State    string `json:"s,omitempty"` // OIDC 登录过程中的 state
 	Nonce    string `json:"n,omitempty"` // OIDC 登录过程中的 nonce
+	Verifier string `json:"v,omitempty"` // OIDC 登录过程中的 PKCE code_verifier
 	Expires  int64  `json:"e"`
 }
 

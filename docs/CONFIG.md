@@ -63,7 +63,7 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 - `none`：不需要登录（默认）。
 - `basic`：用户名密码，支持多个用户，密码用 `cerebro hash-password` 生成的 bcrypt 哈希。
 - `ldap`：LDAP 绑定校验，可选组成员校验；支持 `ldaps://` 和 `startTLS`。
-- `oidc`：OpenID Connect 单点登录（授权码流程，校验 state 和 nonce）。登录页显示 “Sign in with SSO” 按钮；回调地址是 `<basePath>auth/oidc/callback`，需要在 IdP 里登记。可以用 `allowedUsers`、`allowedDomains`、`allowedGroups` 限制谁能登录。环境变量：`OIDC_ISSUER`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`OIDC_REDIRECT_URL`。
+- `oidc`：OpenID Connect 单点登录（授权码流程 + PKCE，校验 state 和 nonce；按邮箱限制名单时要求 `email_verified` 为 true）。登录页显示 “Sign in with SSO” 按钮；回调地址是 `<basePath>auth/oidc/callback`，需要在 IdP 里登记。可以用 `allowedUsers`、`allowedDomains`、`allowedGroups` 限制谁能登录。环境变量：`OIDC_ISSUER`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`OIDC_REDIRECT_URL`。
 - `proxy`：信任反向代理传来的用户头，例如 oauth2-proxy 的 `X-Auth-Request-Email`、Cloudflare Access 的 `Cf-Access-Authenticated-User-Email`。**必须**配置 `trustedProxies`，只接受这些地址发来的请求头；还可以配置 `jwt` 校验代理签发的 JWT（Cloudflare Access 推荐这样做）。环境变量：`CEREBRO_PROXY_HEADER`、`CEREBRO_PROXY_TRUSTED`（逗号分隔的 CIDR）。
 
 ## 连接 ES 的凭据
@@ -87,9 +87,9 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 
 - 请求路径里不允许出现 `.`、`..` 段和反斜杠（包括 `%2e%2e` 这类编码形式），避免经反向代理规范化后逃出集群地址的路径前缀。
 - 集群地址里写了凭据（`https://user:pass@host`）时，会自动挪到 `auth`，页面和报错里不会出现密码。
-- 登录失败限速：同一 IP 或同一用户名 5 分钟内失败 10 次后暂时拒绝登录。
+- 登录失败限速：5 分钟内同一来源 IP 对同一用户失败 10 次、同一用户名失败 50 次、或同一来源 IP 失败 100 次后暂时拒绝；尝试在校验前就计数，并发请求绕不过。部署在反向代理后面时请配置顶层的 `trustedProxies`（环境变量 `CEREBRO_TRUSTED_PROXIES`），按 `X-Forwarded-For` 识别真实客户端。
 - 从配置里删掉的 Basic 用户，已登录的会话立即失效。
-- REST 页里 `_security` 相关的请求不写进历史（请求体里可能有密码）；新建的 `cerebro.db` 权限为 0600。
+- REST 页里 `_security` 相关的请求，以及 `_inference`、`_snapshot`、`_watcher`、`_connector` 的写请求不写进历史（请求体里可能有密码或密钥）；新建的 `cerebro.db` 权限为 0600。
 - 不跟随 ES 返回的重定向，凭据和透传的请求头不会被带到别的地址。
 - TLS 配置（CA、客户端证书）在启动时加载，路径或内容有误会直接启动失败。
 

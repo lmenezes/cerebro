@@ -347,12 +347,20 @@ func (a API) AllocationExplain(ctx context.Context, t *Target, index string, sha
 	return a.send(ctx, t, "POST", "/_cluster/allocation/explain", jsonx.Obj("index", index, "shard", jsonx.Num(shard), "primary", primary))
 }
 
+// catPath 为空时查全部索引，否则只查给定的索引（逗号分隔）。
+func catPath(api, indices string) string {
+	if indices == "" {
+		return "/_cat/" + api
+	}
+	return "/_cat/" + api + "/" + enc(indices)
+}
+
 // CatShards 返回分片大小和未分配原因。
-func (a API) CatShards(ctx context.Context, t *Target) (*Response, error) {
-	return a.get(ctx, t, "/_cat/shards?format=json&bytes=b&h=index,shard,prirep,state,node,store,docs,unassigned.reason")
+func (a API) CatShards(ctx context.Context, t *Target, indices string) (*Response, error) {
+	return a.get(ctx, t, catPath("shards", indices)+"?format=json&bytes=b&h=index,shard,prirep,state,node,store,docs,unassigned.reason")
 }
 
 // CatRecovery 返回进行中的分片恢复（迁移）进度。
-func (a API) CatRecovery(ctx context.Context, t *Target) (*Response, error) {
-	return a.get(ctx, t, "/_cat/recovery?active_only=true&format=json&bytes=b&h=index,shard,type,stage,source_node,target_node,files_percent,bytes_percent,bytes_total,time")
+func (a API) CatRecovery(ctx context.Context, t *Target, indices string) (*Response, error) {
+	return a.get(ctx, t, catPath("recovery", indices)+"?active_only=true&format=json&bytes=b&h=index,shard,type,stage,source_node,target_node,files_percent,bytes_percent,bytes_total,time")
 }

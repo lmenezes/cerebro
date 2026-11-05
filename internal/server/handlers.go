@@ -163,8 +163,7 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 	if err != nil {
 		return 0, nil, err
 	}
-	// _security 接口的请求体里可能有密码，不进历史
-	if resp.OK() && !strings.Contains(strings.ToLower(path), "_security") {
+	if resp.OK() && !sensitiveRequest(method, path) {
 		body := "{}"
 		if hasData {
 			if str, ok := data.(string); ok {
@@ -179,6 +178,24 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 		}
 	}
 	return resp.Status, resp.Body(), nil
+}
+
+// sensitiveRequest 判断请求体里可能带密码或密钥的请求，不写进历史：
+// _security 的所有请求，以及 _inference（API key）、_snapshot（仓库密钥）、_watcher、_connector 的写请求。
+func sensitiveRequest(method, path string) bool {
+	p := strings.ToLower(path)
+	if strings.Contains(p, "_security") {
+		return true
+	}
+	if method == http.MethodGet || method == http.MethodHead {
+		return false
+	}
+	for _, s := range []string{"_inference", "_snapshot", "_watcher", "_connector"} {
+		if strings.Contains(p, s) {
+			return true
+		}
+	}
+	return false
 }
 
 // getHasSideEffects 识别会改动集群的 GET 接口：_refresh、_flush 和 8.x 的 _security/enroll。

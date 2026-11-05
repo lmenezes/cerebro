@@ -38,8 +38,8 @@ func (s *Server) featureRoutes(p func(string, routeKind, handlerFunc)) {
 	p("/slm/policies/execute", writeRoute, s.nameArg(s.api.ExecuteSLMPolicy))
 
 	p("/overview/allocation_explain", readRoute, s.allocationExplain)
-	p("/overview/shards", readRoute, s.noArg(s.api.CatShards))
-	p("/overview/recovery", readRoute, s.noArg(s.api.CatRecovery))
+	p("/overview/shards", readRoute, s.optIndices(s.api.CatShards))
+	p("/overview/recovery", readRoute, s.optIndices(s.api.CatRecovery))
 }
 
 // cerebroInfo 告诉前端当前连接是否只读、登录的用户名，用于隐藏修改类按钮。
@@ -55,9 +55,14 @@ type targetFn func(ctx context.Context, t *es.Target) (*es.Response, error)
 type nameFn func(ctx context.Context, t *es.Target, name string) (*es.Response, error)
 type nameBodyFn func(ctx context.Context, t *es.Target, name string, body any) (*es.Response, error)
 
-func (s *Server) noArg(fn targetFn) handlerFunc {
+// optIndices 是可选 indices 参数（逗号分隔）的只读接口，不传时查全部索引。
+func (s *Server) optIndices(fn indexFn) handlerFunc {
 	return func(ctx context.Context, r *cerebroRequest) (int, any, error) {
-		return passthrough(fn(ctx, r.target))
+		indices := ""
+		if v := r.getOpt("indices"); v != nil {
+			indices = *v
+		}
+		return passthrough(fn(ctx, r.target, indices))
 	}
 }
 

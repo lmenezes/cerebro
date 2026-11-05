@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -29,10 +30,15 @@ func NewProxy(cfg config.ProxyConfig) (*Proxy, error) {
 			return nil, fmt.Errorf("invalid trusted proxy %q: %w", cidr, err)
 		}
 		p.trusted = append(p.trusted, n)
+		// 只靠请求头时，可信范围太大意味着范围内的任何机器都能伪造用户
+		if ones, bits := n.Mask.Size(); cfg.JWT == nil && bits-ones > 8 {
+			slog.Warn("auth.proxy.trustedProxies is wide; anything in this range can impersonate users, prefer the proxy's own addresses or jwt verification", "cidr", n.String())
+		}
 	}
 	if j := cfg.JWT; j != nil {
-		keys := oidc.NewRemoteKeySet(context.Background(), j.JWKSURL)
-		p.verifier = oidc.NewVerifier(j.Issuer, keys, &oidc.Config{ClientID: j.Audience})
+		keys := oidc.NewRemoteKeySet(oidc.ClientContext(context.Background(), httpClient), j.JWKSURL)
+		// Cloudflare Access 用 RS256，Google IAP 用 ES256
+		p.verifier = oidc.NewVerifier(j.Issuer, keys, &oidc.Config{ClientID: j.Audience, SupportedSigningAlgs: []string{oidc.RS256, oidc.ES256}})
 	}
 	return p, nil
 }

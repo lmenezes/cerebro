@@ -25,6 +25,8 @@ type Config struct {
 	BasePath string `yaml:"basePath"`
 	DataDir  string `yaml:"dataDir"`
 	ReadOnly bool   `yaml:"readOnly"`
+	// TrustedProxies 是前面的反向代理（CIDR）。来自这些地址的请求按 X-Forwarded-For 识别客户端 IP（用于登录限速）。
+	TrustedProxies []string `yaml:"trustedProxies"`
 	// UIDir 从目录加载前端（开发和截图比对用），为空时用二进制里嵌入的前端。
 	UIDir string `yaml:"uiDir"`
 	// AllowUnknownHosts 为 false 时只能连接 hosts 里配置的集群，默认 true。
@@ -361,6 +363,13 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	str("CEREBRO_BASE_PATH", &c.BasePath)
 	str("CEREBRO_DATA_DIR", &c.DataDir)
 	str("CEREBRO_UI_DIR", &c.UIDir)
+	if v := getenv("CEREBRO_TRUSTED_PROXIES"); v != "" {
+		for _, cidr := range strings.Split(v, ",") {
+			if cidr = strings.TrimSpace(cidr); cidr != "" {
+				c.TrustedProxies = append(c.TrustedProxies, cidr)
+			}
+		}
+	}
 	boolean("CEREBRO_READ_ONLY", &c.ReadOnly)
 	str("CEREBRO_SECRET", &c.Session.Secret)
 	duration("CEREBRO_SESSION_MAX_AGE", &c.Session.MaxAge)
@@ -582,6 +591,12 @@ func (c *Config) normalize() error {
 			if n > 1 {
 				errs = append(errs, fmt.Errorf("hosts[%s].auth: use only one of username/password, apiKey, bearer", h.Name))
 			}
+		}
+	}
+
+	for _, cidr := range c.TrustedProxies {
+		if _, _, err := net.ParseCIDR(cidr); err != nil {
+			errs = append(errs, fmt.Errorf("trustedProxies: invalid CIDR %q", cidr))
 		}
 	}
 

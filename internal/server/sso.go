@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"golang.org/x/oauth2"
+
 	"github.com/RitterHou/cerebro/internal/auth"
 )
 
@@ -40,8 +42,8 @@ func (s *Server) oidcStart(w http.ResponseWriter, r *http.Request) {
 	}
 	sess := s.sessions.Get(r)
 	sess.User, sess.Flash = "", ""
-	sess.State, sess.Nonce = auth.RandomToken(), auth.RandomToken()
-	target, err := o.AuthCodeURL(r.Context(), s.callbackURL(r), sess.State, sess.Nonce)
+	sess.State, sess.Nonce, sess.Verifier = auth.RandomToken(), auth.RandomToken(), oauth2.GenerateVerifier()
+	target, err := o.AuthCodeURL(r.Context(), s.callbackURL(r), sess.State, sess.Nonce, sess.Verifier)
 	if err != nil {
 		s.log.Error("oidc", "err", err)
 		http.Error(w, "single sign-on is not available right now", http.StatusBadGateway)
@@ -61,7 +63,7 @@ func (s *Server) oidcCallback(w http.ResponseWriter, r *http.Request) {
 	sess := s.sessions.Get(r)
 	q := r.URL.Query()
 	fail := func(msg string) {
-		sess.State, sess.Nonce, sess.User = "", "", ""
+		sess.State, sess.Nonce, sess.Verifier, sess.User = "", "", "", ""
 		sess.Flash = msg
 		s.sessions.Save(w, r, sess)
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
@@ -75,7 +77,7 @@ func (s *Server) oidcCallback(w http.ResponseWriter, r *http.Request) {
 		fail("Single sign-on failed: invalid state, please try again")
 		return
 	}
-	user, err := o.Exchange(r.Context(), s.callbackURL(r), q.Get("code"), sess.Nonce)
+	user, err := o.Exchange(r.Context(), s.callbackURL(r), q.Get("code"), sess.Nonce, sess.Verifier)
 	if err != nil {
 		s.log.Info("oidc login failed", "err", err)
 		if errors.Is(err, auth.ErrNotAllowed) {

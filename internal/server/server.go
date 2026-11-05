@@ -75,7 +75,7 @@ func New(o Options) (*Server, error) {
 		authn:      o.Authn,
 		version:    o.Version,
 		log:        o.Logger,
-		limiter:    newLoginLimiter(),
+		limiter:    newLoginLimiter(o.Config.TrustedProxies),
 	}
 	if s.history == nil {
 		s.history = store.Noop{}

@@ -108,25 +108,27 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess := s.sessions.Get(r)
-	if s.limiter.blocked(r, user) {
-		s.log.Warn("too many failed logins", "user", user, "remote", r.RemoteAddr)
+	done, allowed := s.limiter.reserve(r, user)
+	if !allowed {
+		s.log.Warn("too many failed logins", "user", user, "remote", s.limiter.clientIP(r))
 		sess.Flash = tooManyAttemptsMessage
 		s.sessions.Save(w, r, sess)
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
 		return
 	}
-	s.limiter.sem <- struct{}{}
+	if !s.limiter.acquire(r.Context()) {
+		return
+	}
 	username, ok := s.authn.Authenticate(r.Context(), user, password)
-	<-s.limiter.sem
+	s.limiter.release()
+	done(ok)
 	if !ok {
-		s.limiter.fail(r, user)
-		s.log.Info("login failed", "user", user, "remote", r.RemoteAddr)
+		s.log.Info("login failed", "user", user, "remote", s.limiter.clientIP(r))
 		sess.Flash = loginFailedMessage
 		s.sessions.Save(w, r, sess)
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
 		return
 	}
-	s.limiter.succeed(user)
 	target := s.redirectTarget(sess)
 	s.sessions.Save(w, r, auth.Session{User: username})
 	http.Redirect(w, r, target, http.StatusSeeOther) //nolint:gosec // redirectTarget 只放行站内路径

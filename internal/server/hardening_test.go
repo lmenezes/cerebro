@@ -1,10 +1,14 @@
 package server
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -91,5 +95,97 @@ func TestHistoryFilePermissions(t *testing.T) {
 	}
 	if st.Mode().Perm() != 0o600 {
 		t.Fatalf("perm = %v", st.Mode().Perm())
+	}
+}
+
+// countingAuth 统计密码校验次数，密码 "ok" 正确。
+type countingAuth struct {
+	mu sync.Mutex
+	n  int
+}
+
+func (c *countingAuth) Authenticate(_ context.Context, user, password string) (string, bool) {
+	c.mu.Lock()
+	c.n++
+	c.mu.Unlock()
+	time.Sleep(2 * time.Millisecond)
+	return user, password == "ok"
+}
+
+// 并发突发也只会执行上限次数的校验（检查和登记在同一把锁里）。
+func TestLoginRateLimitConcurrentBurst(t *testing.T) {
+	a := &countingAuth{}
+	h := testServer(t, nil, xQuiet, func(o *Options) { o.Authn = a }).Handler()
+	var wg sync.WaitGroup
+	for i := 0; i < 200; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			xReq(t, h, http.MethodPost, "/auth/login", xLoginForm("admin", "wrong"), xFormHdr)
+		}()
+	}
+	wg.Wait()
+	if a.n > 10 {
+		t.Fatalf("%d password checks for a burst of 200, want <= 10", a.n)
+	}
+}
+
+// 同一来源 IP 下别人输错密码，不会把其他用户锁在外面（部署在反向代理后面时所有人同一个 IP）。
+func TestLoginRateLimitDoesNotLockOutOthers(t *testing.T) {
+	a := &countingAuth{}
+	h := testServer(t, nil, xQuiet, func(o *Options) { o.Authn = a }).Handler()
+	for i := 0; i < 30; i++ {
+		xReq(t, h, http.MethodPost, "/auth/login", xLoginForm(fmt.Sprintf("user%d", i), "wrong"), xFormHdr)
+	}
+	for i := 0; i < 10; i++ {
+		xReq(t, h, http.MethodPost, "/auth/login", xLoginForm("mallory", "wrong"), xFormHdr)
+	}
+	rec := xReq(t, h, http.MethodPost, "/auth/login", xLoginForm("bob", "ok"), xFormHdr)
+	if rec.Header().Get("Location") != "/" {
+		t.Fatalf("bob locked out: %d %s", rec.Code, rec.Header().Get("Location"))
+	}
+}
+
+// key 太多时淘汰的是没被封禁的 key，已封禁的不会因此解封。
+func TestLoginLimiterEvictionKeepsBlocked(t *testing.T) {
+	l := newLoginLimiter(nil)
+	l.maxKeys = 100
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", nil)
+	for i := 0; i < 10; i++ {
+		if _, ok := l.reserve(req, "admin"); !ok {
+			t.Fatal("blocked too early")
+		}
+	}
+	for i := 0; i < 500; i++ {
+		r := httptest.NewRequest(http.MethodPost, "/auth/login", nil)
+		r.RemoteAddr = fmt.Sprintf("10.1.%d.%d:1234", i/250, i%250)
+		l.reserve(r, fmt.Sprintf("u%d", i))
+	}
+	if _, ok := l.reserve(req, "admin"); ok {
+		t.Fatal("eviction unblocked admin")
+	}
+	if len(l.entries) > 100 {
+		t.Fatalf("entries = %d", len(l.entries))
+	}
+}
+
+// 只有来自可信代理的请求才看 X-Forwarded-For；IPv6 按 /64 归并。
+func TestLoginLimiterClientIP(t *testing.T) {
+	l := newLoginLimiter([]string{"10.0.0.0/8"})
+	cases := []struct{ remote, xff, want string }{
+		{"10.0.0.5:1", "203.0.113.7", "203.0.113.7"},
+		{"10.0.0.5:1", "198.51.100.1, 203.0.113.7, 10.0.0.9", "203.0.113.7"},
+		{"192.0.2.1:1", "203.0.113.7", "192.0.2.1"},
+		{"[2001:db8:1:2:3:4:5:6]:1", "", "2001:db8:1:2::/64"},
+	}
+	for _, c := range cases {
+		r := httptest.NewRequest(http.MethodPost, "/", nil)
+		r.RemoteAddr = c.remote
+		if c.xff != "" {
+			r.Header.Set("X-Forwarded-For", c.xff)
+		}
+		if got := l.clientIP(r); got != c.want {
+			t.Errorf("%s %q: got %s want %s", c.remote, c.xff, got, c.want)
+		}
 	}
 }

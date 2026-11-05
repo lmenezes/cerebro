@@ -14,6 +14,9 @@ dataDir: .
 # 只读模式：拦截所有修改类操作（删除/关闭索引、迁移分片、改设置、REST 页非 GET 请求等）
 readOnly: false
 
+# 前面的反向代理（CIDR）。来自这些地址的请求按 X-Forwarded-For 识别客户端 IP，用于登录失败限速
+trustedProxies: []
+
 # 是否允许在连接页手动输入集群地址；false 时只能连接下面 hosts 里的集群。
 # 把下面集群的 readOnly 当作安全边界时，请设为 false（否则可以换一种写法输入同一个地址）
 allowUnknownHosts: true
@@ -79,7 +82,7 @@ auth:
   # 信任反向代理（oauth2-proxy、Cloudflare Access 等）传来的用户
   proxy:
     header: X-Forwarded-User        # oauth2-proxy 可用 X-Auth-Request-Email，Cloudflare 可用 Cf-Access-Authenticated-User-Email
-    trustedProxies: [10.0.0.0/8]    # 只接受这些地址发来的请求头，必填
+    trustedProxies: [10.0.0.5/32]   # 只接受代理自己的地址发来的请求头，必填；范围太大时同网段的机器都能伪造用户
     # 可选：校验代理签发的 JWT，用户名取自 claim（以 JWT 为准，忽略 header）
     # jwt:
     #   header: Cf-Access-Jwt-Assertion

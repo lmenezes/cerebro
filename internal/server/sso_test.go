@@ -3,6 +3,8 @@ package server
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -21,10 +23,11 @@ import (
 
 // xIdP 是测试用的最小 OpenID Provider：发现文档、JWKS、token 接口。
 type xIdP struct {
-	srv    *httptest.Server
-	key    *rsa.PrivateKey
-	mu     sync.Mutex
-	claims map[string]map[string]any // code -> id_token claims
+	srv       *httptest.Server
+	key       *rsa.PrivateKey
+	mu        sync.Mutex
+	claims    map[string]map[string]any // code -> id_token claims
+	challenge string                    // 最近一次授权请求的 PKCE code_challenge
 }
 
 func newIdP(t *testing.T) *xIdP {
@@ -47,7 +50,14 @@ func newIdP(t *testing.T) *xIdP {
 		_ = r.ParseForm()
 		p.mu.Lock()
 		claims, ok := p.claims[r.PostForm.Get("code")]
+		challenge := p.challenge
 		p.mu.Unlock()
+		// PKCE：code_verifier 的 S256 必须等于授权请求里的 code_challenge
+		sum := sha256.Sum256([]byte(r.PostForm.Get("code_verifier")))
+		if challenge == "" || base64.RawURLEncoding.EncodeToString(sum[:]) != challenge {
+			http.Error(w, `{"error":"invalid_grant","error_description":"pkce"}`, http.StatusBadRequest)
+			return
+		}
 		if !ok {
 			http.Error(w, `{"error":"invalid_grant"}`, http.StatusBadRequest)
 			return
@@ -99,6 +109,12 @@ func xOIDCLogin(t *testing.T, h http.Handler, idp *xIdP, claims map[string]any, 
 		t.Fatalf("start: %d %s", start.Code, loc)
 	}
 	q := loc.Query()
+	if q.Get("code_challenge_method") != "S256" || q.Get("code_challenge") == "" {
+		t.Fatalf("PKCE missing: %v", q)
+	}
+	idp.mu.Lock()
+	idp.challenge = q.Get("code_challenge")
+	idp.mu.Unlock()
 	if q.Get("redirect_uri") != "http://example.com/auth/oidc/callback" || q.Get("client_id") != "cerebro" {
 		t.Fatalf("authorize params: %v", q)
 	}
@@ -143,7 +159,8 @@ func TestOIDCRejects(t *testing.T) {
 		{"伪造 state", nil, map[string]any{"email": "a@example.com"}, true, "invalid state"},
 		{"nonce 不匹配", nil, map[string]any{"email": "a@example.com", "nonce": "other"}, false, "Single sign-on failed"},
 		{"邮箱未验证", nil, map[string]any{"email": "a@example.com", "email_verified": false}, false, "Single sign-on failed"},
-		{"不在允许名单", func(c *config.OIDCConfig) { c.AllowedDomains = []string{"corp.com"} }, map[string]any{"email": "a@example.com"}, false, "not allowed"},
+		{"不在允许名单", func(c *config.OIDCConfig) { c.AllowedDomains = []string{"corp.com"} }, map[string]any{"email": "a@example.com", "email_verified": true}, false, "not allowed"},
+		{"按域名限制时缺少 email_verified", func(c *config.OIDCConfig) { c.AllowedDomains = []string{"example.com"} }, map[string]any{"email": "a@example.com"}, false, "Single sign-on failed"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -167,9 +184,14 @@ func TestOIDCRejects(t *testing.T) {
 func TestOIDCAllowedGroups(t *testing.T) {
 	idp := newIdP(t)
 	h := xOIDCServer(t, idp, func(c *config.OIDCConfig) { c.AllowedGroups = []string{"es-admins"}; c.GroupsClaim = "groups" })
-	rec := xOIDCLogin(t, h, idp, map[string]any{"email": "b@x.com", "groups": []string{"dev", "es-admins"}}, false)
+	rec := xOIDCLogin(t, h, idp, map[string]any{"email": "b@x.com", "email_verified": true, "groups": []string{"dev", "es-admins"}}, false)
 	if rec.Header().Get("Location") != "/" {
 		t.Fatalf("group member rejected: %s", rec.Header().Get("Location"))
+	}
+	// 只有一个组时有的 IdP 给的是字符串
+	rec = xOIDCLogin(t, h, idp, map[string]any{"email": "c@x.com", "email_verified": true, "groups": "es-admins"}, false)
+	if rec.Header().Get("Location") != "/" {
+		t.Fatalf("string group rejected: %s", rec.Header().Get("Location"))
 	}
 }
 

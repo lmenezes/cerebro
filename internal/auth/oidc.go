@@ -6,9 +6,11 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"net/http"
 	"slices"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
@@ -32,6 +34,8 @@ func (o *OIDC) init(ctx context.Context) (*oidc.Provider, *oidc.IDTokenVerifier,
 	o.mu.Lock()
 	defer o.mu.Unlock()
 	if o.provider == nil {
+		ctx, cancel := context.WithTimeout(oidc.ClientContext(ctx, httpClient), 15*time.Second)
+		defer cancel()
 		p, err := oidc.NewProvider(ctx, o.cfg.Issuer)
 		if err != nil {
 			return nil, nil, fmt.Errorf("oidc discovery: %w", err)
@@ -55,6 +59,9 @@ func (o *OIDC) oauth2Config(p *oidc.Provider, redirectURL string) *oauth2.Config
 	}
 }
 
+// httpClient 用于访问 IdP（发现文档、JWKS、换 token），带超时，IdP 卡住时不会把请求一直挂着。
+var httpClient = &http.Client{Timeout: 15 * time.Second}
+
 // RandomToken 生成 state 和 nonce。
 func RandomToken() string {
 	b := make([]byte, 24)
@@ -62,25 +69,26 @@ func RandomToken() string {
 	return base64.RawURLEncoding.EncodeToString(b)
 }
 
-// AuthCodeURL 返回跳转到 IdP 的地址。
-func (o *OIDC) AuthCodeURL(ctx context.Context, redirectURL, state, nonce string) (string, error) {
+// AuthCodeURL 返回跳转到 IdP 的地址；verifier 是 PKCE 的 code_verifier（存进会话，换 token 时带上）。
+func (o *OIDC) AuthCodeURL(ctx context.Context, redirectURL, state, nonce, verifier string) (string, error) {
 	p, _, err := o.init(ctx)
 	if err != nil {
 		return "", err
 	}
-	return o.oauth2Config(p, redirectURL).AuthCodeURL(state, oidc.Nonce(nonce)), nil
+	return o.oauth2Config(p, redirectURL).AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier)), nil
 }
 
 // ErrNotAllowed 表示 IdP 认证通过但不在允许名单里。
 var ErrNotAllowed = errors.New("user is not allowed to use cerebro")
 
 // Exchange 用授权码换 ID Token，校验 nonce 和允许名单，返回用户名。
-func (o *OIDC) Exchange(ctx context.Context, redirectURL, code, nonce string) (string, error) {
+func (o *OIDC) Exchange(ctx context.Context, redirectURL, code, nonce, codeVerifier string) (string, error) {
 	p, verifier, err := o.init(ctx)
 	if err != nil {
 		return "", err
 	}
-	token, err := o.oauth2Config(p, redirectURL).Exchange(ctx, code)
+	ctx = oidc.ClientContext(ctx, httpClient)
+	token, err := o.oauth2Config(p, redirectURL).Exchange(ctx, code, oauth2.VerifierOption(codeVerifier))
 	if err != nil {
 		return "", fmt.Errorf("oidc token exchange: %w", err)
 	}
@@ -99,8 +107,13 @@ func (o *OIDC) Exchange(ctx context.Context, redirectURL, code, nonce string) (s
 	if err := idToken.Claims(&claims); err != nil {
 		return "", err
 	}
-	if v, ok := claims["email_verified"].(bool); ok && !v && o.cfg.UsernameClaim == "email" {
-		return "", errors.New("oidc: email not verified")
+	if o.cfg.UsernameClaim == "email" {
+		v, ok := claims["email_verified"].(bool)
+		restricted := len(o.cfg.AllowedUsers) > 0 || len(o.cfg.AllowedDomains) > 0
+		// 按邮箱放行时，邮箱必须经过 IdP 验证；没按邮箱限制时只拒绝明确未验证的
+		if (ok && !v) || (!ok && restricted) {
+			return "", errors.New("oidc: email not verified")
+		}
 	}
 	user, _ := claims[o.cfg.UsernameClaim].(string)
 	if user == "" {
@@ -126,12 +139,15 @@ func (o *OIDC) allowed(user string, claims map[string]any) bool {
 			return true
 		}
 	}
-	if groups, ok := claims[c.GroupsClaim].([]any); ok {
+	switch groups := claims[c.GroupsClaim].(type) {
+	case []any:
 		for _, g := range groups {
 			if s, ok := g.(string); ok && slices.Contains(c.AllowedGroups, s) {
 				return true
 			}
 		}
+	case string: // 有的 IdP 只有一个组时给的是字符串
+		return slices.Contains(c.AllowedGroups, groups)
 	}
 	return false
 }
