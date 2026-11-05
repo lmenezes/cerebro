@@ -73,6 +73,10 @@ func Open(path string, max int) (*SQLite, error) {
 			return nil, fmt.Errorf("create data dir: %w", err)
 		}
 	}
+	// 新建的库只有当前用户可读写：历史里可能有请求体
+	if f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0o600); err == nil { //nolint:gosec // 路径来自配置
+		_ = f.Close()
+	}
 	dsn := "file:" + path + "?_pragma=busy_timeout(5000)"
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {

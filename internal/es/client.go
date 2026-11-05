@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -214,14 +215,47 @@ func (c *Client) transport(cfg TLSConfig) (*http.Transport, error) {
 	return t, nil
 }
 
-// ErrInvalidURL 表示集群地址不合法。
-var ErrInvalidURL = errors.New("invalid cluster address")
+// CheckTLS 预先加载 TLS 配置（CA、客户端证书），配置有误时返回错误。
+func (c *Client) CheckTLS(cfg TLSConfig) error {
+	_, err := c.transport(cfg)
+	return err
+}
+
+// ErrInvalidURL 表示集群地址不合法；报错里不带地址本身，免得泄漏地址里的凭据。
+var ErrInvalidURL = errors.New("invalid cluster address, it must start with http:// or https://")
+
+// ErrInvalidPath 表示请求路径不合法，例如含有 . 或 .. 段（会被反向代理规范化，逃出集群的路径前缀）。
+var ErrInvalidPath = errors.New("invalid request path")
+
+// checkPath 拒绝 . 和 .. 段以及反斜杠，保证请求不会逃出集群地址的路径前缀。
+func checkPath(uri string) error {
+	p := uri
+	if i := strings.IndexAny(p, "?#"); i >= 0 {
+		p = p[:i]
+	}
+	decoded, err := url.PathUnescape(p)
+	if err != nil {
+		return fmt.Errorf("%w: %w", ErrInvalidPath, err)
+	}
+	if strings.Contains(decoded, "\\") {
+		return fmt.Errorf("%w: backslash is not allowed", ErrInvalidPath)
+	}
+	for _, seg := range strings.Split(decoded, "/") {
+		if seg == "." || seg == ".." {
+			return fmt.Errorf("%w: '.' and '..' segments are not allowed", ErrInvalidPath)
+		}
+	}
+	return nil
+}
 
 // Do 发请求。uri 以 / 开头（或为空），直接拼在去掉末尾斜杠的集群地址后面。
 func (c *Client) Do(ctx context.Context, t *Target, method, uri string, body []byte, contentType string) (*Response, error) {
 	base := strings.TrimRight(t.URL, "/")
-	if !strings.HasPrefix(base, "http://") && !strings.HasPrefix(base, "https://") {
-		return nil, fmt.Errorf("%w [%s]: must start with http:// or https://", ErrInvalidURL, t.URL)
+	if u, err := url.Parse(base); err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return nil, ErrInvalidURL
+	}
+	if err := checkPath(uri); err != nil {
+		return nil, err
 	}
 	var reader io.Reader
 	if body != nil {
@@ -234,6 +268,10 @@ func (c *Client) Do(ctx context.Context, t *Target, method, uri string, body []b
 	}
 	req, err := http.NewRequestWithContext(ctx, method, base+uri, reader)
 	if err != nil {
+		var ue *url.Error
+		if errors.As(err, &ue) { // url.Error 里带完整地址，只保留原因
+			return nil, fmt.Errorf("%w: %w", ErrInvalidPath, ue.Err)
+		}
 		return nil, err
 	}
 	for k, vs := range t.Headers {
@@ -255,7 +293,9 @@ func (c *Client) Do(ctx context.Context, t *Target, method, uri string, body []b
 	if err != nil {
 		return nil, err
 	}
-	resp, err := (&http.Client{Transport: tr}).Do(req)
+	// ES 不会重定向；不跟随，免得把凭据和透传的请求头带到别的地址
+	client := &http.Client{Transport: tr, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

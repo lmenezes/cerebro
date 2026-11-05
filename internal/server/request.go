@@ -149,6 +149,14 @@ func (s *Server) resolveTarget(body *jsonx.Object, r *http.Request) (*es.Target,
 
 var errUnknownHost = errors.New("only the clusters configured in hosts are allowed")
 
+// redactURL 去掉地址里的密码（前端“复制为 cURL”会用到这个地址）。
+func redactURL(raw string) string {
+	if u, err := url.Parse(raw); err == nil && u.User != nil {
+		return u.Redacted()
+	}
+	return raw
+}
+
 // normalizeURL 用于比较集群地址：协议和主机名小写，去掉默认端口和末尾斜杠。
 func normalizeURL(raw string) string {
 	u, err := url.Parse(strings.TrimSpace(raw))

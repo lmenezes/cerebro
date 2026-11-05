@@ -3,10 +3,12 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/RitterHou/cerebro/internal/config"
 	"github.com/RitterHou/cerebro/internal/es"
+	"github.com/RitterHou/cerebro/internal/jsonx"
 )
 
 // allowUnknownHosts: false 时只能连预设集群，手动输入的地址返回 403 且不访问 ES。
@@ -44,16 +46,23 @@ func TestNormalizeURL(t *testing.T) {
 	}
 }
 
-// 集群级 TLS 只覆盖写了的项。
+// 集群级 TLS 只覆盖写了的项；显式的 insecureSkipVerify: false 能覆盖全局的 true。
 func TestMergeTLS(t *testing.T) {
 	base := es.TLSConfig{CAFile: "ca.pem", ServerName: "a", CertFile: "c", KeyFile: "k"}
-	got := mergeTLS(base, es.TLSConfig{ServerName: "b"})
+	got := mergeTLS(base, config.TLSConfig{ServerName: "b"})
 	if got.CAFile != "ca.pem" || got.ServerName != "b" || got.CertFile != "c" || got.InsecureSkipVerify {
 		t.Fatalf("%+v", got)
 	}
-	got = mergeTLS(base, es.TLSConfig{CAFile: "x.pem", InsecureSkipVerify: true})
+	got = mergeTLS(base, config.TLSConfig{CA: "x.pem", InsecureSkipVerify: new(true)})
 	if got.CAFile != "x.pem" || !got.InsecureSkipVerify {
 		t.Fatalf("%+v", got)
+	}
+	base.InsecureSkipVerify = true
+	if mergeTLS(base, config.TLSConfig{}).InsecureSkipVerify != true {
+		t.Fatal("unset should inherit global")
+	}
+	if mergeTLS(base, config.TLSConfig{InsecureSkipVerify: new(false)}).InsecureSkipVerify {
+		t.Fatal("explicit false should override global true")
 	}
 }
 
@@ -91,4 +100,53 @@ func TestCerebroInfo(t *testing.T) {
 	assertJSON(t, body, `{"read_only":true,"username":null,"version":"0.10.0-test"}`)
 	_, body = call(t, h, "/cerebro_info", hostBody(f.url()+"/other", ""))
 	assertJSON(t, body, `{"read_only":false,"username":null,"version":"0.10.0-test"}`)
+}
+
+// 只读模式下，会改动集群的 GET 接口同样拦截。
+func TestReadOnlyBlocksSideEffectGETs(t *testing.T) {
+	f := newFakeES(t).on("GET /_cluster/health", 200, `{}`)
+	h := testServer(t, func(c *config.Config) { c.ReadOnly = true }, xQuiet).Handler()
+	for _, p := range []string{"_refresh", "idx/_refresh", "/idx/_flush?force=true", "_security/enroll/kibana", "_SECURITY/Enroll/node"} {
+		if status, _ := call(t, h, "/rest/request", hostBody(f.url(), `"method":"GET","path":"`+p+`"`)); status != http.StatusForbidden {
+			t.Errorf("%s: status %d", p, status)
+		}
+	}
+	if status, _ := call(t, h, "/rest/request", hostBody(f.url(), `"method":"GET","path":"_cluster/health"`)); status != 200 {
+		t.Errorf("plain GET blocked: %d", status)
+	}
+	if n := len(f.requests()); n != 1 {
+		t.Fatalf("ES got %d requests", n)
+	}
+}
+
+// 路径里的 . 和 .. 段会被拒绝，避免经反向代理逃出集群的路径前缀。
+func TestRejectsDotSegments(t *testing.T) {
+	f := newFakeES(t)
+	h := testServer(t, nil, xQuiet).Handler()
+	for _, p := range []string{"../other/_search", "a/./b", "%2e%2e/x", "a/%2E%2E/b", "x\\y"} {
+		if status, _ := call(t, h, "/rest/request", hostBody(f.url(), `"method":"GET","path":"`+strings.ReplaceAll(p, `\`, `\\`)+`"`)); status != http.StatusBadRequest {
+			t.Errorf("%s: status %d", p, status)
+		}
+	}
+	if status, _ := call(t, h, "/cat", hostBody(f.url(), `"api":"../../_security/user"`)); status != http.StatusBadRequest {
+		t.Errorf("cat traversal: %d", status)
+	}
+	if n := len(f.requests()); n != 0 {
+		t.Fatalf("ES got %d requests", n)
+	}
+}
+
+// 地址里内嵌的凭据挪到 auth，页面和报错里看不到密码。
+func TestURLCredentialsAreNotExposed(t *testing.T) {
+	f := newFakeES(t).on("GET /_aliases", 200, `{}`)
+	h := testServer(t, nil, xQuiet).Handler()
+	withCreds := strings.Replace(f.url(), "http://", "http://elastic:s3cret@", 1)
+	_, body := call(t, h, "/rest", hostBody(withCreds, ""))
+	if strings.Contains(jsonx.String(body), "s3cret") {
+		t.Fatalf("password leaked: %s", jsonx.String(body))
+	}
+	_, body = call(t, h, "/rest/request", hostBody(withCreds, `"method":"GET","path":"100%"`))
+	if strings.Contains(jsonx.String(body), "s3cret") {
+		t.Fatalf("password leaked in error: %s", jsonx.String(body))
+	}
 }

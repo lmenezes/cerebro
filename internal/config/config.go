@@ -68,12 +68,16 @@ type ESConfig struct {
 
 // TLSConfig 是访问 ES 的 TLS 设置。
 type TLSConfig struct {
-	CA                 string `yaml:"ca"`
-	Cert               string `yaml:"cert"`
-	Key                string `yaml:"key"`
-	InsecureSkipVerify bool   `yaml:"insecureSkipVerify"`
+	CA   string `yaml:"ca"`
+	Cert string `yaml:"cert"`
+	Key  string `yaml:"key"`
+	// InsecureSkipVerify 跳过证书校验；集群上显式写 false 可以覆盖全局的 true
+	InsecureSkipVerify *bool  `yaml:"insecureSkipVerify"`
 	ServerName         string `yaml:"serverName"`
 }
+
+// Insecure 判断是否跳过证书校验。
+func (t TLSConfig) Insecure() bool { return t.InsecureSkipVerify != nil && *t.InsecureSkipVerify }
 
 // HostConfig 是预设集群。
 type HostConfig struct {
@@ -345,7 +349,14 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	str("CEREBRO_ES_CA", &c.ES.TLS.CA)
 	str("CEREBRO_ES_CERT", &c.ES.TLS.Cert)
 	str("CEREBRO_ES_KEY", &c.ES.TLS.Key)
-	boolean("CEREBRO_ES_INSECURE_SKIP_VERIFY", &c.ES.TLS.InsecureSkipVerify)
+	if v := getenv("CEREBRO_ES_INSECURE_SKIP_VERIFY"); v != "" {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("CEREBRO_ES_INSECURE_SKIP_VERIFY: %w", err))
+		} else {
+			c.ES.TLS.InsecureSkipVerify = &b
+		}
+	}
 	str("CEREBRO_ES_SERVER_NAME", &c.ES.TLS.ServerName)
 	str("CEREBRO_LOG_LEVEL", &c.Log.Level)
 	str("CEREBRO_LOG_FORMAT", &c.Log.Format)
@@ -436,6 +447,9 @@ func (c *Config) normalize() error {
 		if l.URL == "" || l.UserTemplate == "" {
 			errs = append(errs, errors.New("auth.ldap.url and auth.ldap.userTemplate are required"))
 		}
+		if l.StartTLS && strings.HasPrefix(strings.ToLower(l.URL), "ldaps://") {
+			errs = append(errs, errors.New("auth.ldap.startTLS cannot be used with an ldaps:// URL"))
+		}
 		if l.Method != "" && !strings.EqualFold(l.Method, "simple") {
 			errs = append(errs, fmt.Errorf("auth.ldap.method %q is not supported, only simple", l.Method))
 		}
@@ -455,7 +469,20 @@ func (c *Config) normalize() error {
 		}
 		u, err := url.Parse(h.Host)
 		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-			errs = append(errs, fmt.Errorf("hosts[%d]: invalid host %q", i, h.Host))
+			errs = append(errs, fmt.Errorf("hosts[%d]: invalid host (must be http:// or https:// with a host name)", i))
+		} else if u.User != nil {
+			// 地址里的凭据挪到 auth，避免地址出现在页面、报错和日志里
+			if h.Auth != nil {
+				errs = append(errs, fmt.Errorf("hosts[%d]: credentials both in the host URL and in auth", i))
+			} else {
+				pw, _ := u.User.Password()
+				h.Auth = &HostAuth{Username: u.User.Username(), Password: pw}
+			}
+			u.User = nil
+			if h.Name == h.Host {
+				h.Name = u.String()
+			}
+			h.Host = u.String()
 		}
 		if names[h.Name] {
 			errs = append(errs, fmt.Errorf("hosts: duplicate name %q", h.Name))

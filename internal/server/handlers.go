@@ -153,7 +153,7 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 	if err != nil {
 		return 0, nil, err
 	}
-	if r.readOnly && method != http.MethodGet {
+	if r.readOnly && (method != http.MethodGet || getHasSideEffects(path)) {
 		return http.StatusForbidden, errorBody(readOnlyMessage), nil
 	}
 	data, hasData := r.getAny("data")
@@ -161,7 +161,8 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 	if err != nil {
 		return 0, nil, err
 	}
-	if resp.OK() {
+	// _security 接口的请求体里可能有密码，不进历史
+	if resp.OK() && !strings.Contains(strings.ToLower(path), "_security") {
 		body := "{}"
 		if hasData {
 			if str, ok := data.(string); ok {
@@ -178,6 +179,20 @@ func (s *Server) restRequest(ctx context.Context, r *cerebroRequest) (int, any, 
 	return resp.Status, resp.Body(), nil
 }
 
+// getHasSideEffects 识别会改动集群的 GET 接口：_refresh、_flush 和 8.x 的 _security/enroll。
+func getHasSideEffects(path string) bool {
+	if i := strings.IndexAny(path, "?#"); i >= 0 {
+		path = path[:i]
+	}
+	segs := strings.Split(strings.ToLower(strings.Trim(path, "/")), "/")
+	for i, seg := range segs {
+		if seg == "_refresh" || seg == "_flush" || (seg == "_security" && i+1 < len(segs) && segs[i+1] == "enroll") {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Server) restIndex(ctx context.Context, r *cerebroRequest) (int, any, error) {
 	resp, err := s.api.Aliases(ctx, r.target)
 	return esResult(resp, err, func(v any) (any, error) {
@@ -185,7 +200,7 @@ func (s *Server) restIndex(ctx context.Context, r *cerebroRequest) (int, any, er
 		if err != nil {
 			return nil, err
 		}
-		return jsonx.Obj("indices", indices, "host", r.target.URL), nil
+		return jsonx.Obj("indices", indices, "host", redactURL(r.target.URL)), nil
 	})
 }
 

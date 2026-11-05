@@ -240,7 +240,7 @@ func TestTarget_TLSConfig(t *testing.T) {
 	h = testServer(t, func(c *config.Config) {
 		c.Hosts = []config.HostConfig{
 			{Name: "own-ca", Host: url, TLS: &config.TLSConfig{CA: ca}},
-			{Name: "insecure", Host: url, TLS: &config.TLSConfig{InsecureSkipVerify: true}},
+			{Name: "insecure", Host: url, TLS: &config.TLSConfig{InsecureSkipVerify: new(true)}},
 			{Name: "none", Host: url},
 		}
 	}, xQuiet).Handler()

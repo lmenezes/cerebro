@@ -1,5 +1,6 @@
 # 第一阶段前端沿用仓库里已打包好的 public/，第二阶段换成 Vue 后在这里加 Node 构建。
-ARG GO_VERSION=1.27
+# 与 go.mod 的 toolchain 一致（官方镜像设置了 GOTOOLCHAIN=local，不会自动切换）
+ARG GO_VERSION=1.27.3
 
 # 在构建机原生架构上交叉编译，不经过 QEMU
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine AS build

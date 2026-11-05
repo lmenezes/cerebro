@@ -20,7 +20,10 @@ var templateFS embed.FS
 
 var pageTemplates = template.Must(template.ParseFS(templateFS, "templates/*.html"))
 
-const loginFailedMessage = "Incorrect username or password"
+const (
+	loginFailedMessage     = "Incorrect username or password"
+	tooManyAttemptsMessage = "Too many failed login attempts, try again later"
+)
 
 // index 对应 Application.index：开启登录且未登录时跳到登录页，并记住原地址。
 func (s *Server) index(w http.ResponseWriter, r *http.Request) {
@@ -88,14 +91,25 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess := s.sessions.Get(r)
+	if s.limiter.blocked(r, user) {
+		s.log.Warn("too many failed logins", "user", user, "remote", r.RemoteAddr)
+		sess.Flash = tooManyAttemptsMessage
+		s.sessions.Save(w, r, sess)
+		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
+		return
+	}
+	s.limiter.sem <- struct{}{}
 	username, ok := s.authn.Authenticate(r.Context(), user, password)
+	<-s.limiter.sem
 	if !ok {
+		s.limiter.fail(r, user)
 		s.log.Info("login failed", "user", user, "remote", r.RemoteAddr)
 		sess.Flash = loginFailedMessage
 		s.sessions.Save(w, r, sess)
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
 		return
 	}
+	s.limiter.succeed(user)
 	target := s.redirectTarget(sess)
 	s.sessions.Save(w, r, auth.Session{User: username})
 	http.Redirect(w, r, target, http.StatusSeeOther) //nolint:gosec // redirectTarget 只放行站内路径

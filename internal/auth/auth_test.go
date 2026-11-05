@@ -299,3 +299,17 @@ func TestLDAPGroupSizeLimitWithEntries(t *testing.T) {
 		t.Fatal("search error should reject")
 	}
 }
+
+// StartTLS 用的 TLS 配置要带上 LDAP 服务器的主机名，否则证书校验必然失败。
+func TestLDAPStartTLSServerName(t *testing.T) {
+	l, err := NewLDAP(config.LDAPConfig{URL: "ldap://ldap.example.com:389", StartTLS: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := l.startTLSConfig().ServerName; got != "ldap.example.com" {
+		t.Fatalf("ServerName = %q", got)
+	}
+	if l.tlsConf.ServerName != "" {
+		t.Fatal("original config must not be modified")
+	}
+}

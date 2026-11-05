@@ -142,7 +142,7 @@ log:
 	if h.Name != "prod" || !h.ReadOnly || h.Auth.APIKey != "abc" || h.TLS.ServerName != "es.internal" || h.HeadersWhitelist[0] != "X-Proxy-User" {
 		t.Fatalf("host: %+v", h)
 	}
-	if !cfg.ES.TLS.InsecureSkipVerify || cfg.ES.TLS.CA != "/ca.pem" {
+	if !cfg.ES.TLS.Insecure() || cfg.ES.TLS.CA != "/ca.pem" {
 		t.Fatalf("es.tls: %+v", cfg.ES.TLS)
 	}
 }
@@ -379,5 +379,23 @@ func TestEnvExpansionKeepsTypes(t *testing.T) {
 	}
 	if cfg.Port != 9100 || !cfg.ReadOnly || cfg.History.Size != 7 {
 		t.Fatalf("got port=%d readOnly=%v size=%d", cfg.Port, cfg.ReadOnly, cfg.History.Size)
+	}
+}
+
+// 地址里的凭据挪到 auth，并从地址和默认名字里去掉。
+func TestHostURLCredentials(t *testing.T) {
+	cfg, err := load(t, "hosts:\n  - host: https://elastic:s3cret@es.example.com/es\n", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := cfg.Hosts[0]
+	if h.Host != "https://es.example.com/es" || h.Name != "https://es.example.com/es" || h.Auth == nil || h.Auth.Username != "elastic" || h.Auth.Password != "s3cret" {
+		t.Fatalf("%+v %+v", h, h.Auth)
+	}
+	if _, err := load(t, "hosts:\n  - host: https://u:p@es\n    auth:\n      apiKey: k\n", nil); err == nil {
+		t.Fatal("credentials in both places should fail")
+	}
+	if _, err := load(t, "auth:\n  type: ldap\n  ldap:\n    url: ldaps://l\n    userTemplate: '%s'\n    startTLS: true\n", nil); err == nil {
+		t.Fatal("ldaps + startTLS should fail")
 	}
 }

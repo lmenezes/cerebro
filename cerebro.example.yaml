@@ -14,7 +14,8 @@ dataDir: .
 # 只读模式：拦截所有修改类操作（删除/关闭索引、迁移分片、改设置、REST 页非 GET 请求等）
 readOnly: false
 
-# 是否允许在连接页手动输入集群地址；false 时只能连接下面 hosts 里的集群
+# 是否允许在连接页手动输入集群地址；false 时只能连接下面 hosts 里的集群。
+# 把下面集群的 readOnly 当作安全边界时，请设为 false（否则可以换一种写法输入同一个地址）
 allowUnknownHosts: true
 
 session:

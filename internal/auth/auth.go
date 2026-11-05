@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -60,6 +61,9 @@ func NewBasic(users []config.BasicUser) (*Basic, error) {
 	}
 	return b, nil
 }
+
+// UserExists 用于让已删除用户的会话失效。
+func (b *Basic) UserExists(name string) bool { _, ok := b.users[name]; return ok }
 
 // Authenticate 实现 Authenticator。
 func (b *Basic) Authenticate(_ context.Context, username, password string) (string, bool) {
@@ -125,12 +129,23 @@ func (l *LDAP) connect(context.Context) (ldapConn, error) {
 	}
 	conn.SetTimeout(timeout)
 	if l.cfg.StartTLS {
-		if err := conn.StartTLS(l.tlsConf); err != nil {
+		if err := conn.StartTLS(l.startTLSConfig()); err != nil {
 			_ = conn.Close()
 			return nil, err
 		}
 	}
 	return conn, nil
+}
+
+// startTLSConfig 补上 ServerName：go-ldap 的 StartTLS 不会自动填，不填就无法校验证书。
+func (l *LDAP) startTLSConfig() *tls.Config {
+	cfg := l.tlsConf.Clone()
+	if cfg.ServerName == "" {
+		if u, err := url.Parse(l.cfg.URL); err == nil {
+			cfg.ServerName = u.Hostname()
+		}
+	}
+	return cfg
 }
 
 // format 模拟 Java String.format("%s...", username, baseDN)：按 %s 出现次数依次填参数。

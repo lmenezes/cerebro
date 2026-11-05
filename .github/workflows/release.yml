@@ -7,12 +7,25 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
-  image:
+  # 发布前先跑一遍测试，失败就不发
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: go test -race -count=1 ./...
+
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v5
       - uses: docker/setup-buildx-action@v3
@@ -29,8 +42,9 @@ jobs:
             type=raw,value=edge,enable={{is_default_branch}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+          # 只有正式版（不带 -rc 之类后缀的 v* tag）才更新 latest
           flavor: |
-            latest=${{ startsWith(github.ref, 'refs/tags/v') }}
+            latest=auto
       - uses: docker/build-push-action@v6
         with:
           context: .
@@ -44,8 +58,11 @@ jobs:
           cache-to: type=gha,mode=max
 
   binaries:
+    needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:

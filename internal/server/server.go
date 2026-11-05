@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"html/template"
 	"io"
 	"io/fs"
@@ -43,6 +44,7 @@ type Server struct {
 	authn      auth.Authenticator
 	assets     *assets
 	spaIndex   []byte // 前端自带 index.html 时（Vue 版）的内容，nil 表示旧版
+	limiter    *loginLimiter
 	version    string
 	log        *slog.Logger
 }
@@ -72,6 +74,7 @@ func New(o Options) (*Server, error) {
 		authn:      o.Authn,
 		version:    o.Version,
 		log:        o.Logger,
+		limiter:    newLoginLimiter(),
 	}
 	if s.history == nil {
 		s.history = store.Noop{}
@@ -82,7 +85,7 @@ func New(o Options) (*Server, error) {
 	for _, h := range o.Config.Hosts {
 		hc := host{url: h.Host, headersWhitelist: h.HeadersWhitelist, readOnly: h.ReadOnly, tls: s.defaultTLS}
 		if h.TLS != nil {
-			hc.tls = mergeTLS(s.defaultTLS, toTLS(*h.TLS))
+			hc.tls = mergeTLS(s.defaultTLS, *h.TLS)
 		}
 		if a := h.Auth; a != nil {
 			hc.auth = &es.Auth{Username: a.Username, Password: a.Password, APIKey: a.APIKey, Bearer: a.Bearer}
@@ -94,6 +97,17 @@ func New(o Options) (*Server, error) {
 			s.hostsByURL[key] = hc
 		}
 		s.hostNames = append(s.hostNames, h.Name)
+	}
+	// TLS 证书路径写错要在启动时发现，而不是等到第一次请求
+	if o.Client != nil {
+		if err := o.Client.CheckTLS(s.defaultTLS); err != nil {
+			return nil, fmt.Errorf("es.tls: %w", err)
+		}
+		for _, name := range s.hostNames {
+			if err := o.Client.CheckTLS(s.hosts[name].tls); err != nil {
+				return nil, fmt.Errorf("hosts[%s].tls: %w", name, err)
+			}
+		}
 	}
 	a, err := newAssets(o.Public, o.Version)
 	if err != nil {
@@ -109,22 +123,24 @@ func New(o Options) (*Server, error) {
 }
 
 func toTLS(c config.TLSConfig) es.TLSConfig {
-	return es.TLSConfig{CAFile: c.CA, CertFile: c.Cert, KeyFile: c.Key, InsecureSkipVerify: c.InsecureSkipVerify, ServerName: c.ServerName}
+	return es.TLSConfig{CAFile: c.CA, CertFile: c.Cert, KeyFile: c.Key, InsecureSkipVerify: c.Insecure(), ServerName: c.ServerName}
 }
 
 // mergeTLS 让集群级 TLS 设置只覆盖它写了的项，其余沿用 es.tls。
-func mergeTLS(base, over es.TLSConfig) es.TLSConfig {
+func mergeTLS(base es.TLSConfig, over config.TLSConfig) es.TLSConfig {
 	out := base
-	if over.CAFile != "" {
-		out.CAFile = over.CAFile
+	if over.CA != "" {
+		out.CAFile = over.CA
 	}
-	if over.CertFile != "" || over.KeyFile != "" {
-		out.CertFile, out.KeyFile = over.CertFile, over.KeyFile
+	if over.Cert != "" || over.Key != "" {
+		out.CertFile, out.KeyFile = over.Cert, over.Key
 	}
 	if over.ServerName != "" {
 		out.ServerName = over.ServerName
 	}
-	out.InsecureSkipVerify = base.InsecureSkipVerify || over.InsecureSkipVerify
+	if over.InsecureSkipVerify != nil {
+		out.InsecureSkipVerify = *over.InsecureSkipVerify
+	}
 	return out
 }
 
@@ -183,6 +199,8 @@ func (s *Server) errorResponse(r *http.Request, err error) (int, any) {
 		return http.StatusBadRequest, errorBody(err.Error())
 	case errors.Is(err, errUnknownHost):
 		return http.StatusForbidden, errorBody(err.Error())
+	case errors.Is(err, es.ErrInvalidPath), errors.Is(err, es.ErrInvalidURL):
+		return http.StatusBadRequest, errorBody(err.Error())
 	case errors.As(err, &rf):
 		return rf.status, errorBody(err.Error())
 	case errors.As(err, &fe):
@@ -200,7 +218,14 @@ func (s *Server) currentUser(r *http.Request) (string, bool) {
 		return "", true
 	}
 	sess := s.sessions.Get(r)
-	return sess.User, sess.User != ""
+	if sess.User == "" {
+		return "", false
+	}
+	// 配置里删掉的用户，已有会话立即失效
+	if c, ok := s.authn.(interface{ UserExists(string) bool }); ok && !c.UserExists(sess.User) {
+		return "", false
+	}
+	return sess.User, true
 }
 
 // Handler 返回完整的 HTTP 处理器（含 basePath、gzip、安全头）。

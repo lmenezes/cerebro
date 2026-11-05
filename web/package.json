@@ -5,7 +5,6 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "postinstall": "node -e \"require('fs').writeFileSync('node_modules/go.mod', 'module ignore\\n')\"",
     "predev": "node scripts/vendor.mjs",
     "dev": "vite",
     "prebuild": "node scripts/vendor.mjs",

@@ -69,9 +69,19 @@ Cerebro 0.10 起用 YAML 配置加环境变量覆盖。完整示例见仓库根�
 - 开关分片分配、迁移分片
 - 模板创建/删除、集群设置和索引设置修改
 - 仓库创建/删除，快照创建/删除/恢复
-- REST 页面里 GET 以外的请求
+- REST 页面里 GET 以外的请求，以及会改动集群的 GET 请求（`_refresh`、`_flush`、`_security/enroll`）
 
 `hosts[].readOnly` 对按名字连接和手动输入同一地址（协议、主机名大小写和默认端口、末尾斜杠都会归一化后比较）都生效。但换一种写法（比如用 IP 代替域名）仍然能连上，所以要把只读当成安全边界时，请同时设置 `allowUnknownHosts: false`，只允许连接配置里的集群；或者直接用顶层的 `readOnly`。
+
+## 安全相关
+
+- 请求路径里不允许出现 `.`、`..` 段和反斜杠（包括 `%2e%2e` 这类编码形式），避免经反向代理规范化后逃出集群地址的路径前缀。
+- 集群地址里写了凭据（`https://user:pass@host`）时，会自动挪到 `auth`，页面和报错里不会出现密码。
+- 登录失败限速：同一 IP 或同一用户名 5 分钟内失败 10 次后暂时拒绝登录。
+- 从配置里删掉的 Basic 用户，已登录的会话立即失效。
+- REST 页里 `_security` 相关的请求不写进历史（请求体里可能有密码）；新建的 `cerebro.db` 权限为 0600。
+- 不跟随 ES 返回的重定向，凭据和透传的请求头不会被带到别的地址。
+- TLS 配置（CA、客户端证书）在启动时加载，路径或内容有误会直接启动失败。
 
 ## Docker
 
@@ -81,4 +91,4 @@ docker run -p 9000:9000 -v cerebro-data:/data \
   ghcr.io/ritterhou/cerebro:latest
 ```
 
-镜像基于 `distroless/static:nonroot`，以 UID 65532 运行，健康检查使用 `cerebro healthcheck` 子命令（读取同一份配置得到端口和 `basePath`）。
+镜像基于 `distroless/static:nonroot`，以 UID 65532 运行，健康检查使用 `cerebro healthcheck` 子命令。healthcheck 只能通过 `CEREBRO_CONFIG` 或默认位置（`/etc/cerebro/cerebro.yaml`）找到配置，读取其中的端口和 `basePath`；所以在 Docker 里请用这两种方式提供配置，不要用 `-config` 参数，否则改了端口或 `basePath` 后健康检查会一直失败。
