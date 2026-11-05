@@ -1,0 +1,69 @@
+{
+  "shards": {
+    "0": [
+      {
+        "state": "STARTED",
+        "primary": true,
+        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        "relocating_node": null,
+        "shard": 0,
+        "index": "some",
+        "allocation_id": {
+          "id": "LEm_TRI3TFuH3icSnvkvQg"
+        }
+      }
+    ],
+    "1": [
+      {
+        "state": "STARTED",
+        "primary": true,
+        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        "relocating_node": null,
+        "shard": 1,
+        "index": "some",
+        "allocation_id": {
+          "id": "YUY5QiPmQJulsereqC1VBQ"
+        }
+      }
+    ],
+    "2": [
+      {
+        "state": "STARTED",
+        "primary": true,
+        "node": "H-4gqX87SYqmQKtsatg92w",
+        "relocating_node": null,
+        "shard": 2,
+        "index": "some",
+        "allocation_id": {
+          "id": "LXEh1othSz6IE5ueTITF-Q"
+        }
+      }
+    ],
+    "3": [
+      {
+        "state": "STARTED",
+        "primary": true,
+        "node": "H-4gqX87SYqmQKtsatg92w",
+        "relocating_node": null,
+        "shard": 3,
+        "index": "some",
+        "allocation_id": {
+          "id": "6X6SMPvvQbOdUct5k3bo6w"
+        }
+      }
+    ],
+    "4": [
+      {
+        "state": "STARTED",
+        "primary": true,
+        "node": "ZqGi3UPESiSa0Z4Sf4NlPg",
+        "relocating_node": null,
+        "shard": 4,
+        "index": "some",
+        "allocation_id": {
+          "id": "oWmBTuCFSuGA4krn5diK3w"
+        }
+      }
+    ]
+  }
+}

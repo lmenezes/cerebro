@@ -1,0 +1,31 @@
+{
+  "id": "nodeId",
+  "current_master": false,
+  "name": "Solara",
+  "host": null,
+  "ip": null,
+  "es_version": "5.1.1",
+  "jvm_version": null,
+  "load_average": 3.17138671875,
+  "available_processors": 2,
+  "cpu_percent": 0,
+  "master": true,
+  "data": true,
+  "coordinating": false,
+  "ingest": false,
+  "heap": {
+    "used": 28420720,
+    "committed": 259522560,
+    "used_percent": 2,
+    "max": 1037959168
+  },
+  "disk": {
+    "total": 249804886016,
+    "free": 41567444992,
+    "used_percent": 84
+  },
+  "attributes": {
+    "aws_availability_zone": "eu-west-1c",
+    "node_type": "warm"
+  }
+}

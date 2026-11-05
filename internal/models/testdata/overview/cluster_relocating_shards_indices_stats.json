@@ -1,0 +1,53 @@
+{
+  "_shards" : {
+    "total" : 10,
+    "successful" : 10,
+    "failed" : 0
+  },
+  "_all" : {
+    "primaries" : {
+      "docs" : {
+        "count" : 108680,
+        "deleted" : 0
+      },
+      "store" : {
+        "size_in_bytes" : 2026271,
+        "throttle_time_in_millis" : 0
+      }
+    },
+    "total" : {
+      "docs" : {
+        "count" : 217360,
+        "deleted" : 0
+      },
+      "store" : {
+        "size_in_bytes" : 4052542,
+        "throttle_time_in_millis" : 0
+      }
+    }
+  },
+  "indices" : {
+    "hello" : {
+      "primaries" : {
+        "docs" : {
+          "count" : 108680,
+          "deleted" : 0
+        },
+        "store" : {
+          "size_in_bytes" : 2026271,
+          "throttle_time_in_millis" : 0
+        }
+      },
+      "total" : {
+        "docs" : {
+          "count" : 217360,
+          "deleted" : 0
+        },
+        "store" : {
+          "size_in_bytes" : 4052542,
+          "throttle_time_in_millis" : 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "coordinating": false,
+  "cpu": {
+    "load": 0.02,
+    "os": 0,
+    "process": 0
+  },
+  "current_master": true,
+  "data": true,
+  "disk": {
+    "available": 8744493056,
+    "percent": 16,
+    "total": 10434699264
+  },
+  "heap": {
+    "max": "1.9gb",
+    "percent": 30,
+    "used": "629.2mb"
+  },
+  "id": "nodeId",
+  "ingest": true,
+  "jvm": null,
+  "master": true,
+  "name": "007ywNv",
+  "uptime": 492790575,
+  "version": "5.1.1",
+  "host": null,
+  "attributes": {
+  }
+}

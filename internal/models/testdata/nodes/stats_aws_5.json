@@ -1,0 +1,183 @@
+{
+  "fs": {
+    "data": [
+      {
+        "available": "8.1gb",
+        "available_in_bytes": 8744493056,
+        "free": "8.6gb",
+        "free_in_bytes": 9298141184,
+        "spins": "false",
+        "total": "9.7gb",
+        "total_in_bytes": 10434699264,
+        "type": "ext4"
+      }
+    ],
+    "io_stats": {
+      "devices": [
+        {
+          "device_name": "xvdf",
+          "operations": 776907,
+          "read_kilobytes": 243292,
+          "read_operations": 11082,
+          "write_kilobytes": 32952024,
+          "write_operations": 765825
+        }
+      ],
+      "total": {
+        "operations": 776907,
+        "read_kilobytes": 243292,
+        "read_operations": 11082,
+        "write_kilobytes": 32952024,
+        "write_operations": 765825
+      }
+    },
+    "timestamp": 1495609672305,
+    "total": {
+      "available": "8.1gb",
+      "available_in_bytes": 8744493056,
+      "free": "8.6gb",
+      "free_in_bytes": 9298141184,
+      "total": "9.7gb",
+      "total_in_bytes": 10434699264
+    }
+  },
+  "jvm": {
+    "buffer_pools": {
+      "direct": {
+        "count": 149,
+        "total_capacity": "69.3mb",
+        "total_capacity_in_bytes": 72703473,
+        "used": "69.3mb",
+        "used_in_bytes": 72703474
+      },
+      "mapped": {
+        "count": 1127,
+        "total_capacity": "1gb",
+        "total_capacity_in_bytes": 1079169406,
+        "used": "1gb",
+        "used_in_bytes": 1079169406
+      }
+    },
+    "classes": {
+      "current_loaded_count": 19949,
+      "total_loaded_count": 20045,
+      "total_unloaded_count": 96
+    },
+    "gc": {
+      "collectors": {
+        "old": {
+          "collection_count": 12,
+          "collection_time": "2.9s",
+          "collection_time_in_millis": 2931
+        },
+        "young": {
+          "collection_count": 10482,
+          "collection_time": "2m",
+          "collection_time_in_millis": 125284
+        }
+      }
+    },
+    "mem": {
+      "heap_committed": "1.9gb",
+      "heap_committed_in_bytes": 2130051072,
+      "heap_max": "1.9gb",
+      "heap_max_in_bytes": 2130051072,
+      "heap_used": "629.2mb",
+      "heap_used_in_bytes": 659820384,
+      "heap_used_percent": 30,
+      "non_heap_committed": "221.4mb",
+      "non_heap_committed_in_bytes": 232173568,
+      "non_heap_used": "214mb",
+      "non_heap_used_in_bytes": 224462688,
+      "pools": {
+        "old": {
+          "max": "1.8gb",
+          "max_in_bytes": 1973026816,
+          "peak_max": "1.8gb",
+          "peak_max_in_bytes": 1973026816,
+          "peak_used": "1.5gb",
+          "peak_used_in_bytes": 1629264184,
+          "used": "555.4mb",
+          "used_in_bytes": 582379832
+        },
+        "survivor": {
+          "max": "16.6mb",
+          "max_in_bytes": 17432576,
+          "peak_max": "16.6mb",
+          "peak_max_in_bytes": 17432576,
+          "peak_used": "16.6mb",
+          "peak_used_in_bytes": 17432576,
+          "used": "6.4mb",
+          "used_in_bytes": 6730120
+        },
+        "young": {
+          "max": "133.1mb",
+          "max_in_bytes": 139591680,
+          "peak_max": "133.1mb",
+          "peak_max_in_bytes": 139591680,
+          "peak_used": "133.1mb",
+          "peak_used_in_bytes": 139591680,
+          "used": "67.4mb",
+          "used_in_bytes": 70710432
+        }
+      }
+    },
+    "threads": {
+      "count": 62,
+      "peak_count": 79
+    },
+    "timestamp": 1495609672305,
+    "uptime": "5.7d",
+    "uptime_in_millis": 492790575
+  },
+  "name": "007ywNv",
+  "os": {
+    "cpu": {
+      "load_average": {
+        "15m": 0.05,
+        "1m": 0.02,
+        "5m": 0.02
+      },
+      "percent": 0
+    },
+    "mem": {
+      "free": "127.2mb",
+      "free_in_bytes": 133480448,
+      "free_percent": 3,
+      "total": "3.8gb",
+      "total_in_bytes": 4147183616,
+      "used": "3.7gb",
+      "used_in_bytes": 4013703168,
+      "used_percent": 97
+    },
+    "swap": {
+      "free": "965.1mb",
+      "free_in_bytes": 1012023296,
+      "total": "1023.9mb",
+      "total_in_bytes": 1073737728,
+      "used": "58.8mb",
+      "used_in_bytes": 61714432
+    },
+    "timestamp": 1495609672304
+  },
+  "process": {
+    "cpu": {
+      "percent": 0,
+      "total": "1.9h",
+      "total_in_millis": 6988190
+    },
+    "max_file_descriptors": 128000,
+    "mem": {
+      "total_virtual": "5.5gb",
+      "total_virtual_in_bytes": 5995511808
+    },
+    "open_file_descriptors": 721,
+    "timestamp": 1495609672304
+  },
+  "roles": [
+    "master",
+    "data",
+    "ingest"
+  ],
+  "timestamp": 1495609672303
+}
