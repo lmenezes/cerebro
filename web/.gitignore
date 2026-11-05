@@ -1,0 +1,10 @@
+node_modules/
+dist/*
+!dist/.gitkeep
+# 由 scripts/vendor.mjs 生成
+public/js/vendor.js
+public/css/
+public/fonts/
+test-results/
+playwright-report/
+e2e/.data/

@@ -2,8 +2,10 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"html/template"
 	"io"
 	"io/fs"
 	"log/slog"
@@ -40,6 +42,7 @@ type Server struct {
 	sessions   *auth.Sessions
 	authn      auth.Authenticator
 	assets     *assets
+	spaIndex   []byte // 前端自带 index.html 时（Vue 版）的内容，nil 表示旧版
 	version    string
 	log        *slog.Logger
 }
@@ -97,6 +100,11 @@ func New(o Options) (*Server, error) {
 		return nil, err
 	}
 	s.assets = a
+	if o.Public != nil {
+		if data, err := fs.ReadFile(o.Public, "index.html"); err == nil {
+			s.spaIndex = bytes.ReplaceAll(data, []byte("__CEREBRO_VERSION__"), []byte(template.HTMLEscapeString(o.Version)))
+		}
+	}
 	return s, nil
 }
 

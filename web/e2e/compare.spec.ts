@@ -1,0 +1,96 @@
+// 新旧前端逐像素比对。差异图和两边的截图、简化 DOM 写到 test-results/<场景>/ 下。
+import { test, expect, type Page } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { PNG } from 'pngjs';
+import pixelmatch from 'pixelmatch';
+import { scenarios } from './scenarios';
+
+const BASE = Number(process.env.E2E_PORT_BASE || 19300);
+const SIDES = { legacy: `http://localhost:${BASE + 1}`, vue: `http://localhost:${BASE + 2}` } as const;
+const ONLY = process.env.E2E_ONLY as keyof typeof SIDES | undefined; // 录制时只跑 legacy
+
+// 隐藏光标、关闭动画，避免截图时间点不同带来的差异
+const STABLE_CSS = `
+  *, *::before, *::after { transition: none !important; animation: none !important; caret-color: transparent !important; }
+  .ace_cursor { visibility: hidden !important; }
+`;
+
+async function settle(page: Page) {
+  await page.waitForLoadState('networkidle');
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(400);
+}
+
+// 简化 DOM：只保留可见元素的标签、id、class（去掉 ng-*）和文字，方便定位结构差异
+async function domOutline(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const lines: string[] = [];
+    const walk = (el: Element, depth: number) => {
+      const style = getComputedStyle(el);
+      if (style.display === 'none') {
+        return;
+      }
+      const cls = [...el.classList].filter((c) => !c.startsWith('ng-')).join('.');
+      const text = [...el.childNodes]
+        .filter((n) => n.nodeType === Node.TEXT_NODE)
+        .map((n) => n.textContent!.replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .join(' ');
+      const tag = el.tagName.toLowerCase();
+      if (!['script', 'style', 'link', 'meta'].includes(tag)) {
+        lines.push(`${'  '.repeat(depth)}${tag}${el.id ? '#' + el.id : ''}${cls ? '.' + cls : ''}${text ? ' "' + text + '"' : ''}`);
+      }
+      [...el.children].forEach((c) => walk(c, depth + 1));
+    };
+    walk(document.body, 0);
+    // Vue 多一层 #app，去掉它让两边对齐
+    return lines
+      .filter((l) => !/^\s*div#app$/.test(l))
+      .map((l) => l.replace(/^ {2}/, ''))
+      .join('\n');
+  });
+}
+
+for (const s of scenarios) {
+  test(s.name, async ({ browser }) => {
+    const dir = `test-results/compare-${BASE}/${s.name}`;
+    mkdirSync(dir, { recursive: true });
+    const shots: Partial<Record<keyof typeof SIDES, Buffer>> = {};
+    for (const side of Object.keys(SIDES) as (keyof typeof SIDES)[]) {
+      if (ONLY && side !== ONLY) {
+        continue;
+      }
+      const context = await browser.newContext();
+      const page = await context.newPage();
+      await page.addInitScript((css) => {
+        document.addEventListener('DOMContentLoaded', () => {
+          const style = document.createElement('style');
+          style.textContent = css;
+          document.head.appendChild(style);
+        });
+      }, STABLE_CSS);
+      const sep = s.route.includes('?') ? '&' : '?';
+      const url = `${SIDES[side]}/#!/${s.route}${s.noHost ? '' : sep + 'host=fixture'}`;
+      await page.goto(url);
+      await settle(page);
+      if (s.act) {
+        await s.act(page);
+        await settle(page);
+      }
+      shots[side] = await page.screenshot({ fullPage: true, animations: 'disabled', caret: 'hide' });
+      writeFileSync(`${dir}/${side}.png`, shots[side]!);
+      writeFileSync(`${dir}/${side}.dom.txt`, await domOutline(page));
+      await context.close();
+    }
+    if (ONLY) {
+      return;
+    }
+    const a = PNG.sync.read(shots.legacy!);
+    const b = PNG.sync.read(shots.vue!);
+    expect(`${b.width}x${b.height}`, 'page size').toBe(`${a.width}x${a.height}`);
+    const diff = new PNG({ width: a.width, height: a.height });
+    const changed = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0 });
+    writeFileSync(`${dir}/diff.png`, PNG.sync.write(diff));
+    expect(changed, `${changed} pixels differ, see ${dir}/diff.png`).toBe(0);
+  });
+}

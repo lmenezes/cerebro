@@ -138,6 +138,10 @@ func serve(args []string, stderr io.Writer) int {
 		log.Error("embedded assets", "err", err)
 		return 1
 	}
+	if cfg.UIDir != "" {
+		public = os.DirFS(cfg.UIDir)
+		log.Info("serving UI from directory", "dir", cfg.UIDir)
+	}
 	client := es.NewClient(cfg.ES.Timeout.Duration, "cerebro/"+version)
 	defer client.Close()
 	srv, err := server.New(server.Options{

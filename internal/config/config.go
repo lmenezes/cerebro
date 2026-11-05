@@ -24,6 +24,8 @@ type Config struct {
 	BasePath string `yaml:"basePath"`
 	DataDir  string `yaml:"dataDir"`
 	ReadOnly bool   `yaml:"readOnly"`
+	// UIDir 从目录加载前端（开发和截图比对用），为空时用二进制里嵌入的前端。
+	UIDir string `yaml:"uiDir"`
 	// AllowUnknownHosts 为 false 时只能连接 hosts 里配置的集群，默认 true。
 	AllowUnknownHosts *bool `yaml:"allowUnknownHosts"`
 
@@ -317,6 +319,7 @@ func applyEnv(c *Config, getenv func(string) string) error {
 	integer("CEREBRO_PORT", &c.Port)
 	str("CEREBRO_BASE_PATH", &c.BasePath)
 	str("CEREBRO_DATA_DIR", &c.DataDir)
+	str("CEREBRO_UI_DIR", &c.UIDir)
 	boolean("CEREBRO_READ_ONLY", &c.ReadOnly)
 	str("CEREBRO_SECRET", &c.Session.Secret)
 	duration("CEREBRO_SESSION_MAX_AGE", &c.Session.MaxAge)

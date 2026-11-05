@@ -33,6 +33,12 @@ func (s *Server) index(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, s.cfg.BasePath+"login", http.StatusSeeOther)
 		return
 	}
+	if s.spaIndex != nil { // Vue 前端：自带 index.html，只替换版本号
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(s.spaIndex)
+		return
+	}
 	s.renderPage(w, "index.html", map[string]string{"Version": s.version})
 }
 
@@ -53,7 +59,7 @@ func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
 		s.sessions.Save(w, r, sess)
 		sess.Flash = flash
 	}
-	s.renderPage(w, "login.html", map[string]string{"Version": s.version, "Flash": sess.Flash})
+	s.renderPage(w, "login.html", map[string]any{"Version": s.version, "Flash": sess.Flash, "LegacyScripts": s.spaIndex == nil})
 }
 
 // redirectTarget 只接受站内路径，防止开放重定向。

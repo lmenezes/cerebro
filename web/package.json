@@ -1,0 +1,36 @@
+{
+  "name": "cerebro-web",
+  "private": true,
+  "version": "0.11.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node -e \"require('fs').writeFileSync('node_modules/go.mod', 'module ignore\\n')\"",
+    "predev": "node scripts/vendor.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/vendor.mjs",
+    "build": "vue-tsc --noEmit && vite build && node scripts/keep-dist.mjs",
+    "typecheck": "vue-tsc --noEmit",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@lmenezes/json-tree": "0.5.0",
+    "ace-builds": "1.2.4",
+    "bootstrap": "3.4.1",
+    "font-awesome": "4.6.3",
+    "jquery": "3.5.1",
+    "vue": "3.5.45",
+    "vue-router": "5.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/jquery": "3.5.32",
+    "@types/node": "24.10.1",
+    "@vitejs/plugin-vue": "6.0.10",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.6",
+    "vue-tsc": "3.3.14"
+  }
+}
