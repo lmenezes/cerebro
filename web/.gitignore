@@ -8,3 +8,4 @@ public/fonts/
 test-results/
 playwright-report/
 e2e/.data/
+dist-*/

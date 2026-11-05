@@ -112,6 +112,32 @@ const link = (page: string) => '#!/' + page + '?host=' + (host.value ?? '');
                 <i class="fa fa-list"></i> cat apis
               </a>
             </li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a class="nav-item nav-link" :href="link('index_templates')">
+                <i class="fa fa-book"></i> composable templates
+              </a>
+            </li>
+            <li>
+              <a class="nav-item nav-link" :href="link('component_templates')">
+                <i class="fa fa-puzzle-piece"></i> component templates
+              </a>
+            </li>
+            <li>
+              <a class="nav-item nav-link" :href="link('data_streams')">
+                <i class="fa fa-database"></i> data streams
+              </a>
+            </li>
+            <li>
+              <a class="nav-item nav-link" :href="link('ilm')">
+                <i class="fa fa-recycle"></i> lifecycle policies
+              </a>
+            </li>
+            <li>
+              <a class="nav-item nav-link" :href="link('slm')">
+                <i class="fa fa-clock-o"></i> snapshot policies
+              </a>
+            </li>
           </ul>
         </li>
       </ul>

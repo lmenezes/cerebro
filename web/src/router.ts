@@ -17,6 +17,12 @@ const routes: RouteRecordRaw[] = [
   { path: '/snapshot', component: page('Snapshot') },
   { path: '/repository', component: page('Repositories') },
   { path: '/cat', component: page('Cat') },
+  // 第三阶段新增
+  { path: '/index_templates', component: () => import('./pages/features/IndexTemplates.vue') },
+  { path: '/component_templates', component: () => import('./pages/features/ComponentTemplates.vue') },
+  { path: '/data_streams', component: () => import('./pages/features/DataStreams.vue') },
+  { path: '/ilm', component: () => import('./pages/features/IlmPolicies.vue') },
+  { path: '/slm', component: () => import('./pages/features/SlmPolicies.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/connect' },
 ];
 

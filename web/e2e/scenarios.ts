@@ -9,7 +9,12 @@ import { scenarios as settings_repos_snapshots } from './scenarios/settings_repo
 export const scenarios: Scenario[] = [
   { name: 'connect', route: 'connect', noHost: true },
   { name: 'connect-unauthorized', route: 'connect?host=fixture&unauthorized=true', noHost: true },
-  { name: 'navbar-more', route: 'nodes', act: (p) => clickText(p, 'a.dropdown-toggle', 'more') },
+  {
+    name: 'navbar-more',
+    route: 'nodes',
+    act: (p) => clickText(p, 'a.dropdown-toggle', 'more'),
+    expectChanged: '第三阶段在 more 菜单末尾新增了 5 个页面入口',
+  },
   { name: 'navbar-refresh', route: 'nodes', act: (p) => p.locator('a.dropdown-toggle').nth(1).click() },
   ...overview,
   ...nodes_aliases_cat_analysis,

@@ -57,7 +57,7 @@ for (const s of scenarios) {
     mkdirSync(dir, { recursive: true });
     const shots: Partial<Record<keyof typeof SIDES, Buffer>> = {};
     for (const side of Object.keys(SIDES) as (keyof typeof SIDES)[]) {
-      if (ONLY && side !== ONLY) {
+      if ((ONLY && side !== ONLY) || (s.vueOnly && side === 'legacy')) {
         continue;
       }
       const context = await browser.newContext();
@@ -82,7 +82,7 @@ for (const s of scenarios) {
       writeFileSync(`${dir}/${side}.dom.txt`, await domOutline(page));
       await context.close();
     }
-    if (ONLY) {
+    if (ONLY || s.vueOnly) {
       return;
     }
     const a = PNG.sync.read(shots.legacy!);
@@ -91,6 +91,10 @@ for (const s of scenarios) {
     const diff = new PNG({ width: a.width, height: a.height });
     const changed = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0 });
     writeFileSync(`${dir}/diff.png`, PNG.sync.write(diff));
+    if (s.expectChanged) {
+      test.info().annotations.push({ type: 'expected change', description: `${s.expectChanged} (${changed} pixels)` });
+      return;
+    }
     expect(changed, `${changed} pixels differ, see ${dir}/diff.png`).toBe(0);
   });
 }
