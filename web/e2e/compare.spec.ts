@@ -95,8 +95,27 @@ for (const s of scenarios) {
     const b = PNG.sync.read(shots.vue!);
     expect(`${b.width}x${b.height}`, 'page size').toBe(`${a.width}x${a.height}`);
     const diff = new PNG({ width: a.width, height: a.height });
-    const changed = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0 });
+    pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0 });
     writeFileSync(`${dir}/diff.png`, PNG.sync.write(diff));
+    // 判定：任一颜色通道相差超过 1（满分 255）才算差异。差 1 是软件渲染阴影模糊时的噪声（Linux CI 上会出现），肉眼不可见
+    let changed = 0;
+    let noise = 0;
+    for (let i = 0; i < a.data.length; i += 4) {
+      const delta = Math.max(
+        Math.abs(a.data[i] - b.data[i]),
+        Math.abs(a.data[i + 1] - b.data[i + 1]),
+        Math.abs(a.data[i + 2] - b.data[i + 2]),
+        Math.abs(a.data[i + 3] - b.data[i + 3]),
+      );
+      if (delta > 1) {
+        changed++;
+      } else if (delta === 1) {
+        noise++;
+      }
+    }
+    if (noise) {
+      test.info().annotations.push({ type: 'render noise', description: `${noise} pixels differ by 1/255` });
+    }
     if (s.expectChanged) {
       test.info().annotations.push({ type: 'expected change', description: `${s.expectChanged} (${changed} pixels)` });
       return;
