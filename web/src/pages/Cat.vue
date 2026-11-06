@@ -41,10 +41,20 @@ const sort = (col: string) => {
   sortCol.value = col;
 };
 
+// 按列名直接取值（docs.count 这类列名不当作嵌套属性），数字按数值比较
+const sortValue = (row: Record<string, unknown>) => {
+  const v = row[sortCol.value as string];
+  const n = Number(v);
+  return v !== undefined && v !== null && v !== '' && !isNaN(n) ? n : v;
+};
+
 const get = (value: string | undefined) => {
+  if (!value) {
+    return;
+  }
   DataService.send(
     'cat',
-    { api: value!.replace(/ /g, '_') }, // thread pool → thread_pool
+    { api: value.replace(/ /g, '_') }, // thread pool → thread_pool
     (body) => {
       if (body.length) {
         headers.value = Object.keys(body[0]);
@@ -60,7 +70,7 @@ const get = (value: string | undefined) => {
 };
 </script>
 
-<!-- 注意旧模板 orderBy:sortCol:sortAsc 把 sortAsc 当作 reverse，照搬。
+<!-- 原版把 sortAsc 当成了倒序、带点的列名排不了序，已修正（截图基准同步）。
      Vue 会删掉元素首尾的纯空白文本，{{' '}} 是补回旧模板里会影响排版的空格 -->
 <template><h4>cat apis</h4>
 <div class="row">
@@ -84,13 +94,13 @@ const get = (value: string | undefined) => {
       <tr>
         <th v-for="(col, index) in headers" :key="index" v-show="col" @click="sort(col)" class="normal-action">
           {{col}}<span v-show="col === sortCol">{{' '}}
-          <i class="fa fa-caret-down" v-show="sortAsc"></i>
-          <i class="fa fa-caret-up" v-show="!sortAsc"></i>
+          <i class="fa fa-caret-up" v-show="sortAsc"></i>
+          <i class="fa fa-caret-down" v-show="!sortAsc"></i>
         {{' '}}</span>
         </th>
       </tr>
       </thead>
-      <tbody><tr v-for="(row, index) in ngOrderBy(data, sortCol, sortAsc)" :key="index" v-show="row">
+      <tbody><tr v-for="(row, index) in ngOrderBy(data, sortValue, !sortAsc)" :key="index" v-show="row">
         <td v-for="(col, index2) in headers" :key="index2" v-show="col">
           {{show(row[col])}}
         </td>

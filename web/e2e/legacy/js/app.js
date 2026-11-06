@@ -220,7 +220,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.analyzeByField = function(index, field, text) {
-      if (text && field && text) {
+      if (index && field && text) {
         $scope.field_tokens = undefined;
         var success = function(response) {
           $scope.field_tokens = response;
@@ -233,7 +233,7 @@ angular.module('cerebro').controller('AnalysisController', ['$scope',
     };
 
     $scope.analyzeByAnalyzer = function(index, analyzer, text) {
-      if (text && analyzer && text) {
+      if (index && analyzer && text) {
         $scope.analyzer_tokens = undefined;
         var success = function(response) {
           $scope.analyzer_tokens = response;
@@ -329,7 +329,16 @@ angular.module('cerebro').controller('CatController', ['$scope',
     $scope.sortCol = undefined;
     $scope.sortAsc = true;
 
+    $scope.sortValue = function(row) {
+      var v = row[$scope.sortCol];
+      var n = Number(v);
+      return v !== undefined && v !== null && v !== '' && !isNaN(n) ? n : v;
+    };
+
     $scope.get = function(api) {
+      if (!api) {
+        return;
+      }
       CatDataService.get(
           api.replace(/ /g, '_'), // transforms thread pool into thread_pool, for example
           function(data) {
@@ -768,7 +777,7 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
     $scope.set = function(setting) {
       var value = $scope.form[setting];
       if (value !== $scope.settings[setting]) {
-        if ($scope.changes[setting]) {
+        if ($scope.changes.hasOwnProperty(setting)) {
           $scope.changes[setting] = value;
         } else {
           $scope.changes[setting] = value;
@@ -780,7 +789,7 @@ angular.module('cerebro').controller('IndexSettingsController', ['$scope',
     };
 
     $scope.removeChange = function(property) {
-      if ($scope.changes[property]) {
+      if ($scope.changes.hasOwnProperty(property)) {
         $scope.pendingChanges -= 1;
         delete $scope.changes[property];
       }
@@ -1853,7 +1862,7 @@ angular.module('cerebro').controller('SnapshotController', ['$scope',
                   AlertService.info('Snapshot successfully deleted');
                 },
                 function(error) {
-                  AlertService.error('Error loading repositories', error);
+                  AlertService.error('Error deleting snapshot', error);
                 }
             );
           }

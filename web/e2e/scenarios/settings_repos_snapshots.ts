@@ -62,6 +62,15 @@ const raw: Scenario[] = [
   { name: 'index-settings', route: 'index_settings?index=logs-app' },
   { name: 'index-settings-show-static', route: 'index_settings?index=logs-app', act: showStatic },
   { name: 'index-settings-filter', route: 'index_settings?index=logs-app', act: (p) => filter(p, 'slowlog') },
+  // 原版把某项改成空值再改别的值时会重复计数（已修复，基准同步），这里应显示 1 pending changes
+  {
+    name: 'index-settings-pending-empty',
+    route: 'index_settings?index=logs-app',
+    act: async (p) => {
+      await settingInput(p, 'index.refresh_interval').fill('');
+      await settingInput(p, 'index.refresh_interval').fill('5s');
+    },
+  },
   {
     name: 'index-settings-pending',
     route: 'index_settings?index=logs-app',

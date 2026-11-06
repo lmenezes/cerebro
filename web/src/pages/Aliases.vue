@@ -149,7 +149,7 @@ onBeforeUnmount(() => editor?.destroy());
                   </span>
                   {{alias?.index_routing}}
                 </span>
-                <i class="fa fa-trash normal-action alert-danger pull-right" @click="removeIndexAlias(alias)" v-show="!alias?.removed && !ClusterInfo.readOnly"></i>
+                <i class="fa fa-trash normal-action alert-danger pull-right" @click.stop="removeIndexAlias(alias)" v-show="!alias?.removed && !ClusterInfo.readOnly"></i>
                 <i class="fa fa-trash alert-danger pull-right disabled" v-show="alias?.removed"></i>
               </span>
               <div class="col-xs-12 collapse " :id="'aliasDetails' + index">

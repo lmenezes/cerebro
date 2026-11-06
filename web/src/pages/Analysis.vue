@@ -48,9 +48,9 @@ const loadFields = (index: string | undefined) => {
   );
 };
 
-// 旧版条件写的是 text && field && text，照搬
+// 原版条件写成了 text && field && text，没检查索引
 const analyzeByField = (index?: string, f?: string, text?: string) => {
-  if (text && f && text) {
+  if (index && f && text) {
     field_tokens.value = undefined;
     DataService.send(
       'analysis/analyze/field',
@@ -64,7 +64,7 @@ const analyzeByField = (index?: string, f?: string, text?: string) => {
 };
 
 const analyzeByAnalyzer = (index?: string, a?: string, text?: string) => {
-  if (text && a && text) {
+  if (index && a && text) {
     analyzer_tokens.value = undefined;
     DataService.send(
       'analysis/analyze/analyzer',

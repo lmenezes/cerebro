@@ -32,7 +32,7 @@
                   </span>
                   {{alias.index_routing}}
                 </span>
-                <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="removeIndexAlias(alias)" ng-hide="alias.removed"></i>
+                <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="removeIndexAlias(alias); $event.stopPropagation()" ng-hide="alias.removed"></i>
                 <i class="fa fa-trash alert-danger pull-right disabled" ng-show="alias.removed"></i>
               </span>
               <div class="col-xs-12 collapse " id="aliasDetails{{$index}}">

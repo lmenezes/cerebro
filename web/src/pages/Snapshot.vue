@@ -80,7 +80,7 @@ const deleteSnapshot = (repo: string | null | undefined, snapshot: string) => {
           AlertService.info('Snapshot successfully deleted');
         },
         (error) => {
-          AlertService.error('Error loading repositories', error);
+          AlertService.error('Error deleting snapshot', error);
         },
       );
     },

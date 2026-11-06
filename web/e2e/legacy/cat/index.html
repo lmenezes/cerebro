@@ -20,13 +20,13 @@
       <tr>
         <th ng-repeat="col in headers track by $index" ng-show="col" ng-click="sort(col)" class="normal-action">
           {{col}}<span ng-show="col === sortCol">
-          <i class="fa fa-caret-down" ng-show="sortAsc"></i>
-          <i class="fa fa-caret-up" ng-hide="sortAsc"></i>
+          <i class="fa fa-caret-up" ng-show="sortAsc"></i>
+          <i class="fa fa-caret-down" ng-hide="sortAsc"></i>
         </span>
         </th>
       </tr>
       </thead>
-      <tr ng-repeat="row in data | orderBy:sortCol:sortAsc track by $index " ng-show="row">
+      <tr ng-repeat="row in data | orderBy:sortValue:!sortAsc track by $index " ng-show="row">
         <td ng-repeat="col in headers track by $index" ng-show="col">
           {{row[col]}}
         </td>

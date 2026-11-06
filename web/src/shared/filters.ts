@@ -58,9 +58,12 @@ export function show(value: unknown): string {
 // angular 1.8 的 orderBy：key 是属性路径（'cpu.load' 取嵌套属性，取不到为 undefined），为空时按元素本身排；
 // 字符串不分大小写按码点比较；不同类型按类型名排，undefined、null 在最后；
 // 相等时按原顺序，倒序时连同相等元素一起倒过来（angular 把 tieBreaker 也乘了 descending）。
-export function orderBy<T>(items: T[] | undefined, key?: string, reverse = false): T[] {
-  const path = key ? key.split('.') : [];
-  const get = (item: any) => path.reduce((v: any, k) => (v === undefined || v === null ? undefined : v[k]), item);
+export function orderBy<T>(items: T[] | undefined, key?: string | ((item: T) => unknown), reverse = false): T[] {
+  const path = typeof key === 'string' && key ? key.split('.') : [];
+  const get =
+    typeof key === 'function'
+      ? key
+      : (item: any) => path.reduce((v: any, k) => (v === undefined || v === null ? undefined : v[k]), item);
   const typeOf = (v: unknown) => (v === null ? 'null' : typeof v);
   const indexed = (items || []).map((item, index) => ({ item, index, value: get(item) }));
   indexed.sort((a, b) => {

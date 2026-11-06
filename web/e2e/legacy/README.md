@@ -11,3 +11,10 @@
 | `overview.html` | “force merge selected” 补上 `data-toggle="modal"`（原来误写成 `wtarget`） | 原版点了不弹确认框，操作执行不了 |
 | `navbar.html` | more 菜单末尾新增 5 个页面入口 | 第三阶段的新页面 |
 | `connect.html` | 认证表单新增 API key 输入框 | 第二阶段新增 |
+| `cat/index.html`、`js/app.js` | cat 表格升序用向上箭头、第一次点击是升序；按列名直接取值（`docs.count` 这类列名不再当嵌套属性），数字按数值排；没选 api 时不执行 | 原版把 sortAsc 当成倒序，带点的列名排不了序，空选择会报错 |
+| `aliases.html` | 删除图标点击不再冒泡 | 原版点删除会顺带展开这条别名的详情 |
+| `js/app.js`（IndexSettingsController） | 待保存的修改按“是否已有这一项”判断 | 原版把某项改成空值后计数重复累加，撤销也删不掉 |
+| `js/app.js`（SnapshotController） | 删除快照失败的提示改为 “Error deleting snapshot” | 原版提示文字写错 |
+| `js/app.js`（AnalysisController） | 未选索引时不发分析请求 | 原版条件写成了 `text && field && text` |
+
+第三方脚本（jQuery、ace）在新前端里换成了同版本的压缩文件，基准保持原来的未压缩版本，比对同时验证了两者表现一致。

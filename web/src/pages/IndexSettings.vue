@@ -24,7 +24,8 @@ const index = useRoute().query.index as string | undefined;
 const set = (setting: string) => {
   const value = form.value![setting];
   if (value !== settings.value![setting]) {
-    if (changes.value![setting]) {
+    // 原版用真假判断，改成空值后会重复计数，这里按“是否已有这一项”判断
+    if (setting in changes.value!) {
       changes.value![setting] = value;
     } else {
       changes.value![setting] = value;
@@ -45,7 +46,7 @@ const input = (setting: string) => {
 };
 
 const removeChange = (property: string) => {
-  if (changes.value![property]) {
+  if (property in changes.value!) {
     pendingChanges.value -= 1;
     delete changes.value![property];
   }
