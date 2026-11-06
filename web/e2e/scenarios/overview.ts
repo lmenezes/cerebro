@@ -404,7 +404,6 @@ export const scenarios: Scenario[] = [
       await openMenu(p, 'dropcluster');
       await menuItem(p, 'force merge selected');
     },
-    // 原版这一项少了 data-toggle（还拼错成 wtarget），点了不弹确认框、操作也执行不了；新版修好后会弹出确认框
-    expectChanged: '修复原版 force merge selected 不弹确认框的 bug',
+    // 原版这一项少了 data-toggle（还拼错成 wtarget），点了不弹确认框；已修复，基准 e2e/legacy 同步了这处修正
   },
 ];

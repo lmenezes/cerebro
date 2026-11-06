@@ -9,3 +9,5 @@ test-results/
 playwright-report/
 e2e/.data/
 dist-*/
+public/mode-json.js
+public/worker-json.js

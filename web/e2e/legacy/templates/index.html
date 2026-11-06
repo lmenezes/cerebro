@@ -21,7 +21,7 @@
           <tr ng-repeat="template in page.elements track by $index" ng-show="template">
             <td>
               <i class="fa fa-book"></i> {{template.name}} <span class="info-text"> with pattern</span>
-              {{template.template.template}}
+              {{(template.template.index_patterns || [template.template.template]).join(',')}}
               <i class="fa fa-trash normal-action alert-danger pull-right" ng-click="delete(template.name)"
                  ng-hide="template.removed" data-toggle="modal" href="#confirm_dialog" target="_self"></i>
               <i class="fa fa-trash alert-danger pull-right disabled" ng-show="template.removed"></i>

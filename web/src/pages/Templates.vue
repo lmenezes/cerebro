@@ -8,7 +8,7 @@ import { ModalService } from '../services/modal';
 import { AceEditorService, type AceEditor } from '../services/aceEditor';
 import { Paginator, type Page } from '../shared/paginator';
 import Pagination from '../components/Pagination.vue';
-import { IndexTemplateFilter } from './templates/indexTemplateFilter';
+import { IndexTemplateFilter, templatePatterns } from './templates/indexTemplateFilter';
 
 type Callback = (body: any) => void;
 
@@ -22,7 +22,7 @@ const TemplatesDataService = {
 
 const TemplateBase = JSON.stringify(
   {
-    template: 'template pattern(e.g.: index_name_*)',
+    index_patterns: ['index_name_*'],
     settings: {},
     mappings: {},
     aliases: {},
@@ -139,7 +139,7 @@ onBeforeUnmount(() => editor?.destroy());
           <tbody><tr v-for="(template, $index) in page.elements" :key="$index" v-show="template">
             <td>
               <i class="fa fa-book"></i> {{template?.name}} <span class="info-text"> with pattern</span>
-              {{template?.template?.template}}
+              {{templatePatterns(template?.template)}}
               <i class="fa fa-trash normal-action alert-danger pull-right" @click="deleteTemplate(template.name)"
                  v-show="!template?.removed && !ClusterInfo.readOnly" data-toggle="modal" href="#confirm_dialog" target="_self"></i>
               <i class="fa fa-trash alert-danger pull-right disabled" v-show="template?.removed"></i>

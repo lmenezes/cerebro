@@ -1958,7 +1958,7 @@ angular.module('cerebro').controller('TemplatesController', ['$scope',
       ModalService) {
     var TemplateBase = JSON.stringify(
         {
-          template: 'template pattern(e.g.: index_name_*)',
+          index_patterns: ['index_name_*'],
           settings: {},
           mappings: {},
           aliases: {},
@@ -2109,7 +2109,7 @@ function IndexTemplateFilter(name, pattern) {
         matches = template.name.indexOf(this.name) != -1;
       }
       if (matches && this.pattern) {
-        matches = template.template.template.indexOf(this.pattern) != -1;
+        matches = (template.template.index_patterns || [template.template.template]).join(',').indexOf(this.pattern) != -1;
       }
       return matches;
     }

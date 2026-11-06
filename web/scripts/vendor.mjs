@@ -26,3 +26,9 @@ writeFileSync(out('css/lib.css'), cat([
 ], '\n'));
 cpSync(join(root, 'styles/app.css'), out('css/app.css'));
 cpSync(nm('font-awesome/fonts'), out('fonts'), { recursive: true });
+
+// ace 按需加载的 JSON 模式和语法检查 worker，用与 ace.js 同版本（1.2.4）的文件。
+// 原版仓库里的 mode-json.js / worker-json.js 来自别的 ace 版本，worker 与 1.2.4 不配套，
+// 会对合法 JSON 误报 "Unexpected ''"，编辑器左侧出现错误标记。
+cpSync(nm('ace-builds/src/mode-json.js'), out('mode-json.js'));
+cpSync(nm('ace-builds/src/worker-json.js'), out('worker-json.js'));

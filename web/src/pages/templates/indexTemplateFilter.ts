@@ -20,7 +20,7 @@ export class IndexTemplateFilter implements Filter<any> {
     return !this.name && !this.pattern;
   }
 
-  // 旧版按 template.template.template 匹配模式；ES 6 起模板里是 index_patterns，这里会抛异常，与旧前端一致
+  // 按模式匹配：ES 6 起模板里是 index_patterns（原版只读 ES 5 的 template 字段，在 7.x 起会抛异常）
   matches(template: any) {
     if (this.isBlank()) {
       return true;
@@ -30,8 +30,13 @@ export class IndexTemplateFilter implements Filter<any> {
       matches = template.name.indexOf(this.name) != -1;
     }
     if (matches && this.pattern) {
-      matches = template.template.template.indexOf(this.pattern) != -1;
+      matches = templatePatterns(template.template).indexOf(this.pattern) != -1;
     }
     return matches;
   }
+}
+
+// 模板匹配的索引模式：ES 6 起是 index_patterns 数组，ES 5 是 template 字符串
+export function templatePatterns(template: any): string {
+  return (template?.index_patterns || [template?.template]).join(',');
 }
