@@ -29,6 +29,39 @@ jobs:
           go-version-file: go.mod
       - run: go test -race -count=1 ./...
 
+  # 对真实 ES 跑一遍所有接口（开启安全认证）
+  integration:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        es: ["7.17.29", "8.19.5", "9.3.2"]
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:${{ matrix.es }}
+        env:
+          discovery.type: single-node
+          xpack.security.enabled: "true"
+          xpack.security.http.ssl.enabled: "false"
+          xpack.ml.enabled: "false"
+          ELASTIC_PASSWORD: changeme
+          ES_JAVA_OPTS: -Xms1g -Xmx1g
+          path.repo: /tmp/snapshots
+        ports: ["9200:9200"]
+        options: >-
+          --health-cmd "curl -sf -u elastic:changeme http://localhost:9200/_cluster/health || exit 1"
+          --health-interval 10s --health-timeout 5s --health-retries 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: go test -tags integration -count=1 -run TestIntegration -v ./internal/server/
+        env:
+          CEREBRO_IT_ES_URL: http://localhost:9200
+          CEREBRO_IT_ES_USER: elastic
+          CEREBRO_IT_ES_PASSWORD: changeme
+
   web:
     runs-on: ubuntu-latest
     defaults:
