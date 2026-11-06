@@ -19,6 +19,17 @@ Cerebro Releases
 - 连接页新增 API key 输入框
 - 只读连接下隐藏修改类按钮
 
+#### 修复（原版遗留）
+- templates 页模式列和按模式筛选改读 `index_patterns`（原来在 7.x 起一直为空），新建示例改用 `index_patterns`
+- 编辑器的 JSON 语法检查改用与 ace 1.2.4 配套的 worker，不再对合法 JSON 误报
+- REST 页路径补全会转义索引名（原来恶意集群可以注入脚本）
+- 确认框用 Esc 关闭后不再残留回调；overview 的 “force merge selected” 会弹确认框
+- cat 表格排序方向、带点列名排序；aliases 删除不再展开详情；index settings 待保存计数；snapshot 删除失败提示；analysis 未选索引时不发请求
+- 离开页面时销毁编辑器，不再泄漏 worker
+
+#### 改进
+- 第三方脚本改用同版本的压缩文件，首屏下载约减少 40%
+
 ### v0.10.0 - 未发布
 
 后端用 Go 重写，界面不变。Scala 版的最后状态见 tag `scala-final`。
