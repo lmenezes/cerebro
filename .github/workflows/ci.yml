@@ -1,8 +1,9 @@
 name: ci
 
 on:
+  # 任何分支的推送都跑，开发分支不用建 PR 也能看到结果
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
 
 permissions:
